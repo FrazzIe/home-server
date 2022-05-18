@@ -1,0 +1,9 @@
+# Target host
+- hosts: localhost
+  # Elevate privileges
+  become: yes
+  # Init submodules
+  roles:
+    - role: docker
+      tags: 
+        - docker
