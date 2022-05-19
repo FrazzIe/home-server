@@ -3,3 +3,7 @@
 - name: Include os-specific variables
   include_vars: "{{ os_distro }}.yml"
 
+- name: Install required system packages
+  package:
+    state: present
+    name: "{{ docker_deps }}"
