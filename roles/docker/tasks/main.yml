@@ -21,3 +21,9 @@
       repo: deb [arch={{ repo_arch }}] https://download.docker.com/linux/{{ os_distro }} {{ ansible_lsb["codename"] }} stable
       state: present
 
+- name: Update apt and install docker-ce
+  apt:
+    name: "{{ docker_packages }}"
+    state: present
+    update_cache: yes
+
