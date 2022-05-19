@@ -43,3 +43,8 @@
   pip:
     name: docker
 
+- name: Make sure Docker is running and enabled
+  service:
+    name: docker
+    state: started
+    enabled: yes
