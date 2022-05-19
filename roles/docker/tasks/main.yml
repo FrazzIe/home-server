@@ -12,3 +12,12 @@
   when: os_distro != "raspbian"
   block:
   - name: Get docker GPG apt key
+    apt_key:
+      url: https://download.docker.com/linux/{{ os_distro }}/gpg
+      state: present
+
+  - name: Add docker repository
+    apt_repository:
+      repo: deb [arch={{ repo_arch }}] https://download.docker.com/linux/{{ os_distro }} {{ ansible_lsb["codename"] }} stable
+      state: present
+
