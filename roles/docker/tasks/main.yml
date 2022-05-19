@@ -7,3 +7,8 @@
   package:
     state: present
     name: "{{ docker_deps }}"
+
+- name: Install docker (Default)
+  when: os_distro != "raspbian"
+  block:
+  - name: Get docker GPG apt key
