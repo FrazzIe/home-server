@@ -1,1 +1,5 @@
 - include_tasks: repo_arch.yml
+
+- name: Include os-specific variables
+  include_vars: "{{ os_distro }}.yml"
+
