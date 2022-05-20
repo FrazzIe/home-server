@@ -18,10 +18,16 @@
       debug:
         msg: "public key is: {{ ansible_ssh_key }}"
 
+# Target host
+- hosts: all:!localhost
   # Elevate privileges
+  become_user: "{{ remote_username }}"
   become: yes
   # Init submodules
   roles:
-    - role: docker
-      tags: 
-        - docker
+    - role: system
+      tags:
+        - system
+    # - role: docker
+    #   tags: 
+    #     - docker

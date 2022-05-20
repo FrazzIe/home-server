@@ -1,2 +1,5 @@
 # Supported [ https://download.docker.com/linux/{ os_distro } ]
 os_distro: "ubuntu"
+
+# Remote machine username
+remote_username: "frazzle"
