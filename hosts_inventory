@@ -1,0 +1,5 @@
+[source]
+source ansible_host=127.0.0.1
+
+[target]
+target ansible_host=172.28.112.130

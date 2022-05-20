@@ -1,28 +1,21 @@
-# Target host
-- hosts: localhost
+- hosts: source
   connection: local
   tasks:
     - name: Generate SSH Key
       openssh_keypair:
-        path: "~/.ssh/ansible_{{ inventory_hostname }}" # required. Name of the files containing the public and private key. The file containing the public key will have the extension C(.pub).
-        state: present # not required. choices: present;absent. Whether the private and public keys should exist or not, taking action if the state is different from what is stated.
-        type: ed25519 # not required. choices: rsa;dsa;rsa1;ecdsa;ed25519. The algorithm used to generate the SSH private key. C(rsa1) is for protocol version 1. C(rsa1) is deprecated and may not be supported by every version of ssh-keygen.
-        force: False # not required. Should the key be regenerated even if it already exists
-        comment: "{{ ansible_hostname }}_{{ inventory_hostname }}" # not required. Provides a new comment to the public key. When checking if the key is in the correct state this will be ignored.
+        path: "~/.ssh/{{ ssh_key_name }}" # Name of key
+        state: present # Ensure key exists
+        type: ed25519 # The algorithm used to generate the SSH private key
+        force: False # Prevent key regen
+        comment: "source:{{ hostvars['source']['ansible_host'] }}->target:{{ hostvars['target']['ansible_host'] }}" # public key metadata comment
     
     - name: Store the public key using Lookup
       set_fact:
-        ansible_ssh_key: "{{ lookup('file', '~/.ssh/ansible_{{ inventory_hostname }}.pub') }}" # required. The C(set_fact) module takes key=value pairs as variables to set in the playbook scope. Or alternatively, accepts complex arguments using the C(args:) statement.
-    
-    - name: Print public key
-      debug:
-        msg: "public key is: {{ ansible_ssh_key }}"
+        ssh_key: "{{ lookup('file', '~/.ssh/{{ ssh_key_name }}.pub') }}" # kvp, open public key, store in var
 
-# Target host
-- hosts: all:!localhost
-  # Elevate privileges
-  become_user: "{{ remote_username }}"
+- hosts: target
   become: yes
+  become_user: "{{ target_username }}"
   # Init submodules
   roles:
     - role: system

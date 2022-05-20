@@ -1,5 +1,8 @@
 # Supported [ https://download.docker.com/linux/{ os_distro } ]
 os_distro: "ubuntu"
 
-# Remote machine username
-remote_username: "frazzle"
+# Name of ssh key generated
+ssh_key_name: "id_ansible_src_target"
+
+# Target username
+target_username: "frazzle"
