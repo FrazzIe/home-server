@@ -15,7 +15,6 @@
 
 - hosts: target
   become: yes
-  become_user: "{{ target_username }}"
   # Init submodules
   roles:
     - role: system
