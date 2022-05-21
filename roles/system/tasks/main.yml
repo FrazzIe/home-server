@@ -2,7 +2,17 @@
 - name: Remove sudo password requirement
   include_tasks:
     file: "passwordless.yml" # The name of the imported file
+
 - name: Auth ssh public key
   include_tasks:
     file: "ssh.yml" # The name of the imported file
-  
+
+- name: Suppress login messages
+  file:
+    name: /home/{{ target_username }}/.hushlogin
+    mode: 0644
+    state: touch
+    owner: "{{ target_username }}"
+    group: "{{ target_username }}"
+    modification_time: preserve
+    access_time: preserve
