@@ -20,6 +20,6 @@
     - role: system
       tags:
         - system
-    # - role: docker
-    #   tags: 
-    #     - docker
+    - role: docker
+      tags: 
+        - docker
