@@ -1,11 +1,7 @@
 ---
-- name: Remove sudo password requirement
-  include_tasks:
-    file: "passwordless.yml" # The name of the imported file
+- include_tasks: "passwordless.yml" # The name of the imported file
 
-- name: Auth ssh public key
-  include_tasks:
-    file: "ssh.yml" # The name of the imported file
+- include_tasks: "ssh.yml" # The name of the imported file
 
 - name: Suppress login messages
   file:
