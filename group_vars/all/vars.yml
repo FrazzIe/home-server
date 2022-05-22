@@ -1,6 +1,3 @@
-# Supported [ https://download.docker.com/linux/{ os_distro } ]
-os_distro: "ubuntu"
-
 # Name of ssh key generated
 ssh_key_name: "id_ansible_src_target"
 
