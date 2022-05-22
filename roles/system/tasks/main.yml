@@ -12,3 +12,12 @@
     group: "{{ target_username }}"
     modification_time: preserve
     access_time: preserve
+
+- name: Update and upgrade apt packages (Debian and Ubuntu)
+  when: ansible_os_family == 'Debian'
+  apt:
+    upgrade: yes
+    autoremove: yes
+    update_cache: yes
+
+- include_tasks: "reboot.yml" # The name of the imported file
