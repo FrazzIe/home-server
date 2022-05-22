@@ -32,9 +32,9 @@
     name: docker
     state: present
 
-- name: Add user "{{ username }}" to group docker
+- name: Add user "{{ target_username }}" to group docker
   user:
-    name: "{{ username }}"
+    name: "{{ target_username }}"
     groups:
       - docker
     append: yes
