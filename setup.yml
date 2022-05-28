@@ -14,6 +14,13 @@
         ssh_key: "{{ lookup('file', '~/.ssh/{{ ssh_key_name }}.pub') }}" # kvp, open public key, store in var
 
 - hosts: target
+  gather_facts: no
+  pre_tasks:
+    - import_tasks: tasks/ssh_juggle_port.yml
+      tags:
+        - port
+
+- hosts: target
   become: yes
   # Init submodules
   roles:
