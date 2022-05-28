@@ -3,3 +3,6 @@ ssh_key_name: "id_ansible_src_target"
 
 # Target username
 target_username: "frazzle"
+
+# Address for mail alerts
+mail_to_address: ""

@@ -20,6 +20,11 @@
     - role: system
       tags:
         - system
+    
+    - role: geerlingguy.security
+      tags:
+        - security
+
     - role: docker
       tags: 
         - docker
