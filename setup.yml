@@ -35,3 +35,7 @@
     - role: docker
       tags: 
         - docker
+    
+    - role: filesystems/mounts
+      tags:
+        - mounts

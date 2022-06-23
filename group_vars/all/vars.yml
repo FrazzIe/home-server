@@ -6,3 +6,8 @@ target_username: "frazzle"
 
 # Address for mail alerts
 mail_to_address: ""
+
+disks:
+  - { dev: /dev/sda, label: data-0 }
+  - { dev: /dev/sdb, label: data-1 }
+  - { dev: /dev/sdc, label: data-2 }

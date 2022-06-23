@@ -1,0 +1,30 @@
+---
+
+- name: dsdsdsdsd
+  debug:
+    msg: "{{ disks }}"
+    verbosity: 0 # not required. A number that controls when the debug is run, if you set to 3 it will only run debug when -vvv or above
+
+# - name: Determine current data drive filesystems
+#   command: "/sbin/blkid -s TYPE -o value {{ item.dev }}"
+#   register: disk_blkid
+#   with_items: "{{ disks }}"
+
+- name: Create data drive filesystems
+  filesystem:
+    fstype: xfs
+    force: yes
+    dev: "{{ item.dev }}"
+    opts: "-L {{ item.label }}"
+  with_items: "{{ disks }}"
+  when: disks[0] is defined
+
+- name: Mount the data drives
+  mount:
+    path: "/mnt/{{ item.label }}"
+    src: "/dev/disk/by-label/{{ item.label }}"
+    fstype: xfs
+    state: mounted
+    passno: "2"
+  with_items: "{{ disks }}"
+  when: disks[0] is defined
