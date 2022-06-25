@@ -1,13 +1,17 @@
 # Name of ssh key generated
-ssh_key_name: "id_ansible_src_target"
+ssh_key_name: id_ansible_src_target
 
 # Target username
-target_username: "frazzle"
+target_username: frazzle
 
 # Address for mail alerts
 mail_to_address: ""
 
-disks:
+# Drive mounts
+data_disks:
   - { dev: /dev/sda, label: data-0 }
   - { dev: /dev/sdb, label: data-1 }
-  - { dev: /dev/sdc, label: data-2 }
+
+parity_disks:
+  - { dev: /dev/sdc, label: parity-0 }
+
