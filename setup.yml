@@ -43,3 +43,7 @@
     - role: filesystems/mergerfs
       tags:
         - mergerfs
+
+    - role: filesystems/snapraid
+      tags:
+        - snapraid
