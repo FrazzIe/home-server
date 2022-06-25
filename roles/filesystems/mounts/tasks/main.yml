@@ -9,11 +9,6 @@
   set_fact:
     all_disks: "{{ data_disks + parity_disks }}"
 
-- name: dsdsdsdsd
-  debug:
-    msg: "{{ all_disks }}"
-    verbosity: 0 # not required. A number that controls when the debug is run, if you set to 3 it will only run debug when -vvv or above
-
 - name: Create data drive filesystems
   filesystem:
     fstype: xfs
