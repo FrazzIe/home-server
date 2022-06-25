@@ -39,3 +39,7 @@
     - role: filesystems/mounts
       tags:
         - mounts
+    
+    - role: filesystems/mergerfs
+      tags:
+        - mergerfs

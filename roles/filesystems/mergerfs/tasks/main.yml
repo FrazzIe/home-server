@@ -1,0 +1,15 @@
+---
+- name: Install required system packages
+  apt:
+    name: mergerfs
+    state: present
+    update_cache: yes
+
+- name: Mount the mergerfs array
+  mount:
+    name: "{{ mergerfs_root }}"
+    src: /mnt/data*
+    opts: direct_io,defaults,allow_other,moveonenospc=1,minfreespace=10G,fsname=mergerfs,uid=1000,gid=1000
+    fstype: fuse.mergerfs
+    state: mounted
+  when: data_disks[0] is defined

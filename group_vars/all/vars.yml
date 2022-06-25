@@ -15,3 +15,5 @@ data_disks:
 parity_disks:
   - { dev: /dev/sdc, label: parity-0 }
 
+# MergerFS
+mergerfs_root: /mnt/storage
