@@ -1,11 +1,8 @@
-security_sudoers_passwordless: [ "{{ target_username }}" ]
-
-security_autoupdate_reboot: true
-
-security_autoupdate_mail_to: "{{ mail_to_address }}"
-
 security_autoupdate_reboot_time: "23:00"
 
+# don't touch
+security_sudoers_passwordless: [ "{{ target_username }}" ]
+security_autoupdate_mail_to: "{{ target_email }}"
 security_autoupdate_mail_on_error: false
-
 security_fail2ban_enabled: false
+security_autoupdate_reboot: true
