@@ -1,0 +1,4 @@
+snapraid_apt_package_name: snapraid
+snapraid_force_install: false
+install_snapraid: true
+snapraid_install: true

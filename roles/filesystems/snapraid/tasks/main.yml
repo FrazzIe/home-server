@@ -13,6 +13,10 @@
     snapraid_parity_disks: "{{ snapraid_parity_disks + [ item | combine({ 'path': '/mnt/' + item.label }) ] }}"
   with_items: "{{ parity_disks }}"
 
-# - name: Handover snapraid setup to external role
-#   include_role:
-#     name: ironicbadger.snapraid # required. The name of the role to be executed.
+- name: Install snapraid
+  include_tasks: install-debian.yml
+  when: ansible_os_family == 'Debian' and snapraid_install
+
+- name: Handover snapraid setup to external role
+  include_role:
+    name: ironicbadger.snapraid # required. The name of the role to be executed.
