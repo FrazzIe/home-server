@@ -23,3 +23,6 @@
     update_cache: yes
 
 - include_tasks: "reboot.yml"
+
+- include_tasks: netplan.yml
+  when: netplan_config is defined
