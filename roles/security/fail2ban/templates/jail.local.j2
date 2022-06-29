@@ -14,6 +14,7 @@ enabled = true
 port = {{ security_ssh_port }}
 filter = sshd
 
+{% if variable is defined %}
 {% for name in installed_configs %}
 [{{ name }}]
 enabled = true
@@ -25,3 +26,4 @@ maxretry = 0
 filter = {{ name }}
 logpath = %({{ name }}_log)s
 {% endfor %}
+{% endif %}
