@@ -40,6 +40,10 @@
       tags:
         - fail2ban
 
+    - role: security/iptables
+      tags:
+        - iptables
+
     - role: filesystems/mounts
       tags:
         - mounts
