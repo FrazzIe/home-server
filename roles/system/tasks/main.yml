@@ -25,4 +25,6 @@
 - include_tasks: "reboot.yml"
 
 - include_tasks: netplan.yml
+  tags:
+    - netplan
   when: netplan_config is defined
