@@ -60,6 +60,15 @@
     jump: ACCEPT
     comment: Ansible managed
 
+- name: Allow endlessh
+  iptables:
+    chain: INPUT
+    protocol: tcp
+    destination_port: 22
+    ctstate: NEW,ESTABLISHED
+    jump: ACCEPT
+    comment: Ansible managed
+
 - name: Set the policy for the INPUT chain to DROP
   iptables:
     chain: INPUT

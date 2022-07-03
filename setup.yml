@@ -35,7 +35,7 @@
     - role: docker
       tags: 
         - docker
-    
+
     - role: security/fail2ban
       tags:
         - fail2ban
@@ -43,6 +43,10 @@
     - role: security/iptables
       tags:
         - iptables
+
+    - role: security/endlessh
+      tags:
+        - endlessh
 
     - role: filesystems/mounts
       tags:
