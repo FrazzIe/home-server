@@ -1,7 +1,9 @@
 ---
-- include_tasks: "passwordless.yml"
+- include_tasks: passwordless.yml
 
-- include_tasks: "ssh.yml"
+- include_tasks: ssh.yml
+
+- include_tasks: user.yml
 
 - name: Suppress login messages
   file:
@@ -13,7 +15,7 @@
     modification_time: preserve
     access_time: preserve
 
-- include_tasks: "boot_delay.yml"
+- include_tasks: boot_delay.yml
 
 - name: Update and upgrade apt packages (Debian and Ubuntu)
   when: ansible_os_family == 'Debian'
@@ -22,7 +24,7 @@
     autoremove: yes
     update_cache: yes
 
-- include_tasks: "reboot.yml"
+- include_tasks: reboot.yml
 
 - include_tasks: netplan.yml
   tags:
