@@ -12,4 +12,8 @@ sender_smtp_port:
 
 # Email address that receives the email
 target_email:
+
+# Cloudflare API tokens
+cloudflare_firewall_token:
+cloudflare_dns_token:
 ```
