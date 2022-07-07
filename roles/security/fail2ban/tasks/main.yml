@@ -54,6 +54,16 @@
   notify:
     - Restart fail2ban
 
+- name: Install the cloudflare.conf file
+  template:
+    src: "cloudflare.conf.j2"
+    dest: "/etc/fail2ban/cloudflare.conf"
+    mode: 0644
+    owner: root
+    group: root
+  notify:
+    - Restart fail2ban
+
 - name: Make sure the fail2ban systemd service is enabled and started
   service:
     name: fail2ban
