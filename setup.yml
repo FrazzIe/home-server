@@ -36,6 +36,10 @@
       tags: 
         - docker
 
+    - role: geerlingguy.ntp
+      tags:
+        - ntp
+
     - role: security/fail2ban
       tags:
         - fail2ban
