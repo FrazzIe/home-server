@@ -63,3 +63,9 @@
     - role: filesystems/snapraid
       tags:
         - snapraid
+
+    - role: containers/network/cloudflare-ddns
+      tags:
+        - container
+        - cloudflare
+        - ddns
