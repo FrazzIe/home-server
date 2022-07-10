@@ -1,0 +1,28 @@
+- name: Get a list of container directories
+  delegate_to: localhost
+  become: false
+  find:
+    paths: "roles/containers"
+    patterns: "defaults"
+    file_type: directory
+    recurse: yes
+    depth: 4
+  register: container_dir_list
+
+- name: Get a list of container names
+  delegate_to: localhost
+  become: false
+  set_fact:
+    container_name_list: "{{ container_name_list | default([]) + [ (lookup('template', item.path + '/main.yml') | from_yaml).container_name ] }}"
+  with_items: "{{ container_dir_list.files }}"
+
+- name: Get a list of container names known to docker
+  command: docker ps --format "{{ '{{' }} .Names {{ '}}' }}"
+  register: container_list
+
+- name: Remove inactive containers
+  docker_container:
+    name: "{{ item }}"
+    state: absent
+  when: item not in container_name_list
+  loop: "{{ container_list.stdout_lines }}"

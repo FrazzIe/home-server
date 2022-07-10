@@ -85,3 +85,6 @@
     name: docker
     state: started
     enabled: yes
+
+- name: Cleanup inactive / removed containers
+  include_tasks: cleanup.yml
