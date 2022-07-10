@@ -16,7 +16,7 @@ parity_disks:
 mergerfs_root: /mnt/storage
 
 # Docker
-docker_dir: /opt/docker/data/
+docker_dir: /opt/docker/data
 
 # Timezone
 timezone: Europe/London
