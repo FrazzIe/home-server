@@ -1,0 +1,40 @@
+---
+- name: Check if the docker data folder exists
+  stat:
+    path: "{{ docker_dir }}"
+  register: docker_data_info
+
+- name: Check if the docker data folder is empty
+  find:
+    paths:
+      - "{{ docker_dir }}/"
+    recurse: yes
+  register: docker_data_files
+
+- name: Create the docker data folder
+  file:
+    dest: "{{ docker_dir }}"
+    state: directory
+    owner: "{{ target_username }}"
+    group: users
+    mode: ug=rwx,o=rx,g+s
+    recurse: yes
+  when: not docker_data_info.stat.exists
+
+- name: Restore the "{{ docker_dir }}" folder from the MergerFS array
+  synchronize:
+    src: "{{ mergerfs_root }}/docker_data"
+    dest: "{{ docker_dir }}/"
+    delete: true
+    recursive: yes
+  delegate_to: "{{ inventory_hostname }}"
+  when: docker_data_files.matched < 20 or not docker_data_info.stat.exists
+
+- name: Chmod the data folder
+  file:
+    dest: "{{ docker_dir }}"
+    state: directory
+    owner: "{{ target_username }}"
+    mode: 0775
+    group: users
+    recurse: yes

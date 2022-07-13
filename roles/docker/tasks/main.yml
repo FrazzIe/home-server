@@ -49,3 +49,5 @@
 - name: Cleanup inactive / removed containers
   include_tasks: cleanup.yml
 
+- name: Create / Restore data directory
+  include_tasks: data_directory.yml
