@@ -13,7 +13,7 @@
   delegate_to: localhost
   become: false
   set_fact:
-    container_name_list: "{{ container_name_list | default([]) + [ (lookup('template', item.path + '/main.yml') | from_yaml).container_name ] }}"
+    container_name_list: "{{ container_name_list | default([]) + [ (lookup('template', item.path + '/main.yml') | from_yaml).container ] }}"
   with_items: "{{ container_dir_list.files }}"
 
 - name: Get a list of container names known to docker

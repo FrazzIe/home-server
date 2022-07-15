@@ -1,1 +1,2 @@
-container_name: cloudflare-ddns
+container: cloudflare-ddns
+subdomain: ddns
