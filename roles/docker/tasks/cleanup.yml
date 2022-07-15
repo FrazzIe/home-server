@@ -7,14 +7,30 @@
     file_type: directory
     recurse: yes
     depth: 4
-  register: container_dir_list
+  register: container_dirs
 
-- name: Get a list of container names
+- name: Get a list of container defaults
   delegate_to: localhost
   become: false
   set_fact:
-    container_name_list: "{{ container_name_list | default([]) + [ (lookup('template', item.path + '/main.yml') | from_yaml).container ] }}"
-  with_items: "{{ container_dir_list.files }}"
+    container_defaults: "{{ container_defaults | default([]) + [ (lookup('template', item.path + '/main.yml') | from_yaml) ] }}"
+  with_items: "{{ container_dirs.files }}"
+
+- name: Get a list of container names from defaults (str)
+  delegate_to: localhost
+  become: false
+  set_fact:
+    container_names: "{{ container_names | default([]) + [ item.container | string ] }}"
+  when: item.container | type_debug != "list"
+  with_items: "{{ container_defaults }}"
+
+- name: Get a list of container names from defaults (list)
+  delegate_to: localhost
+  become: false
+  set_fact:
+    container_names: "{{ container_names | default([]) + item.container }}"
+  when: item.container | type_debug == "list"
+  with_items: "{{ container_defaults }}"
 
 - name: Get a list of container names known to docker
   command: docker ps --format "{{ '{{' }} .Names {{ '}}' }}"
@@ -24,5 +40,5 @@
   docker_container:
     name: "{{ item }}"
     state: absent
-  when: item not in container_name_list
+  when: not item in container_names
   loop: "{{ container_list.stdout_lines }}"
