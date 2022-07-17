@@ -1,0 +1,10 @@
+---
+
+- name: Empty known container list
+  set_fact:
+    container_list: []
+  when: container_list is defined
+
+- name: Get a list of container names known to docker
+  command: docker ps --format "{{ '{{' }} .Names {{ '}}' }}"
+  register: container_list

@@ -1,0 +1,15 @@
+---
+
+- include_tasks: get_docker_container_info.yml
+
+- name: Empty known container state
+  set_fact:
+    container_state: {}
+  when: container_state is defined
+
+- name: Create container state dictionary
+  set_fact:
+    container_state: "{{ container_state | default({}) | combine({ item: container_info.results[c_idx].container['State'] }) }}"
+  loop: "{{ container_list.stdout_lines }}"
+  loop_control:
+    index_var: c_idx

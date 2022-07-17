@@ -1,0 +1,25 @@
+---
+
+- name: Empty known container dirs & defaults
+  set_fact:
+    container_dirs: {}
+    container_defaults: []
+  when: container_dirs is defined or container_defaults is defined
+
+- name: Get a list of container directories
+  delegate_to: localhost
+  become: false
+  find:
+    paths: roles/containers
+    patterns: defaults
+    file_type: directory
+    recurse: yes
+    depth: 4
+  register: container_dirs
+
+- name: Get a list of container defaults
+  delegate_to: localhost
+  become: false
+  set_fact:
+    container_defaults: "{{ container_defaults | default([]) + [ (lookup('template', item.path + '/main.yml') | from_yaml) ] }}"
+  with_items: "{{ container_dirs.files }}"
