@@ -1,0 +1,60 @@
+---
+
+- name: Create / Run local swag containers
+  docker_container:
+    name: "swag_{{ item.name }}"
+    image: ghcr.io/linuxserver/swag
+    pull: yes
+    networks:
+      - name: "swag_{{ item.name }}_macvlan"
+        ipv4_address: "{{ (swag_base, item.base, item.container) | join('.') }}"
+    capabilities:
+      - net_admin
+    state: started
+    env:
+      PUID: "{{ target_username_puid }}"
+      PGID: "{{ target_username_pgid }}"
+      TZ: "{{ timezone }}"
+      URL: "{{ item.url }}"
+      SUBDOMAINS: wildcard
+      VALIDATION: dns
+      DNSPLUGIN: cloudflare
+      EMAIL: "{{ target_email }}"
+    volumes:
+      - "{{ docker_dir }}/swag/{{ item.name }}/nginx:/config/nginx"
+      - "{{ docker_dir }}/swag/{{ item.name }}/www:/config/www"
+      - "{{ docker_dir }}/swag/dns-conf:/config/dns-conf"
+      - "{{ docker_dir }}/swag/letsencrypt:/config/etc/letsencrypt"
+    restart_policy: unless-stopped
+  when: item.local
+  loop: "{{ swag_networks }}"
+
+- name: Create / Run global swag containers
+  docker_container:
+    name: "swag_{{ item.name }}"
+    image: ghcr.io/linuxserver/swag
+    pull: yes
+    networks:
+      - name: "swag_{{ item.name }}_macvlan"
+        ipv4_address: "{{ (swag_base, item.base, item.container) | join('.') }}"
+    capabilities:
+        - net_admin
+    state: started
+    env:
+      PUID: "{{ target_username_puid }}"
+      PGID: "{{ target_username_pgid }}"
+      TZ: "{{ timezone }}"
+      URL: "{{ item.url }}"
+      SUBDOMAINS: wildcard
+      VALIDATION: dns
+      DNSPLUGIN: cloudflare
+      EMAIL: "{{ target_email }}"
+    ports:
+      - 443:443
+    volumes:
+      - "{{ docker_dir }}/swag/{{ item.name }}/nginx:/config/nginx"
+      - "{{ docker_dir }}/swag/dns-conf:/config/dns-conf"
+      - "{{ docker_dir }}/swag/letsencrypt:/config/etc/letsencrypt"
+    restart_policy: unless-stopped
+  when: not item.local
+  loop: "{{ swag_networks }}"

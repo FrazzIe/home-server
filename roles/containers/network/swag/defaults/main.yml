@@ -1,0 +1,1 @@
+container: "{{ ['swag_'] | product(swag_networks | map(attribute='name') | list) | map('join') | join(',') }}"
