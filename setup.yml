@@ -8,7 +8,7 @@
         type: ed25519 # The algorithm used to generate the SSH private key
         force: False # Prevent key regen
         comment: "source:{{ hostvars['source']['ansible_host'] }}->target:{{ hostvars['target']['ansible_host'] }}" # public key metadata comment
-    
+
     - name: Store the public key using Lookup
       set_fact:
         ssh_key: "{{ lookup('file', '~/.ssh/{{ ssh_key_name }}.pub') }}" # kvp, open public key, store in var
@@ -27,14 +27,14 @@
     - role: system
       tags:
         - system
-    
-    - role: geerlingguy.security
-      tags:
-        - security
-
+  
     - role: docker
       tags: 
         - docker
+
+    - role: geerlingguy.security
+      tags:
+        - security
 
     - role: geerlingguy.ntp
       tags:
@@ -69,3 +69,14 @@
         - container
         - cloudflare
         - ddns
+    
+    - role: containers/network/swag
+      tags:
+        - container
+        - swag
+
+    - role: containers/services/vaultwarden
+      tags:
+        - container
+        - swag
+        - vaultwarden
