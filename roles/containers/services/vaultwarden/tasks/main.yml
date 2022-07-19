@@ -1,0 +1,20 @@
+---
+
+- name: Create / Run {{ container }} container
+  docker_container:
+    name: "{{ container }}"
+    image: vaultwarden/server
+    networks:
+      - name: "swag_{{ network }}_macvlan"
+    pull: true
+    state: started
+    env:
+      WEBSOCKET_ENABLED: "true"
+      INVITATIONS_ALLOWED: "false"
+      SIGNUPS_ALLOWED: "false"
+      DOMAIN: "https://{{ subdomain }}.{{ web_domain }}"
+      LOG_FILE: "/data/vaultwarden.log"
+      TZ: "{{ timezone }}"
+    volumes:
+      - "{{ docker_dir }}/{{ container }}:/data"
+    restart_policy: unless-stopped

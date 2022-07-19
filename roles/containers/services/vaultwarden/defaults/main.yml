@@ -1,0 +1,4 @@
+---
+container: vaultwarden
+subdomain: vault
+network: "{{ swag_network.public }}"
