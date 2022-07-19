@@ -6,11 +6,11 @@
     pull: yes
     state: started
     env:
-      "PUID": "{{ target_username_puid }}"
-      "PGID": "{{ target_username_pgid }}"
-      "TZ": "{{ timezone }}"
-      "API_KEY": "{{ cloudflare_dns_token }}"
-      "ZONE": "{{ web_domain }}"
-      "PROXIED": "true"
-      "SUBDOMAIN": "{{ subdomain }}"
+      PUID: "{{ target_username_puid }}"
+      PGID: "{{ target_username_pgid }}"
+      TZ: "{{ timezone }}"
+      API_KEY: "{{ cloudflare_dns_token }}"
+      ZONE: "{{ web_domain }}"
+      PROXIED: "true"
+      SUBDOMAIN: "{{ subdomain }}"
     restart_policy: unless-stopped
