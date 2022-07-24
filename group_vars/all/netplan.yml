@@ -1,14 +1,14 @@
-netplan_interface: &netplan_interface eth0
+netplan_interface: &netplan_interface enp3s0
 netplan_base: 192.168.1
 netplan_gateway: 254
-netplan_address: 119
+netplan_address: 63
 
 netplan_config:
   network:
     ethernets:
       *netplan_interface:
-        dhcp4: true
-        dhcp6: true
+        dhcp4: false
+        dhcp6: false
         addresses: 
           - "{{ (netplan_base, netplan_address) | join('.') }}/24"
         routes:

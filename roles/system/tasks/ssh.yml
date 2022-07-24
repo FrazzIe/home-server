@@ -1,7 +1,0 @@
----
-- name: Add authorized public key
-  authorized_key:
-    user: "{{ target_username }}" # The username on the remote host
-    key: "{{ hostvars['source']['ssh_key'] }}" # The SSH public key
-    manage_dir: True # not required. Whether this module should manage the directory of the authorized key file. If set to C(yes), the module will create the directory, as well as set the owner and permissions of an existing directory. Be sure to set C(manage_dir=no) if you are using an alternate directory for authorized_keys, as set with C(path), since you could lock yourself out of SSH access. See the example below.
-    state: present # Ensure public key is inside authorized_keys

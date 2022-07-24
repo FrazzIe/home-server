@@ -1,8 +1,6 @@
 ---
 - include_tasks: passwordless.yml
 
-- include_tasks: ssh.yml
-
 - include_tasks: user.yml
 
 - name: Suppress login messages

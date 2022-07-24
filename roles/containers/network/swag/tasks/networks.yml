@@ -5,8 +5,8 @@
     driver_options:
       parent: "{{ (item.interface, net_idx + 1) | join('.') }}"
     ipam_config:
-      - subnet: "{{ (swag_base, item.base, item.subnet) | join('.') }}"
-        gateway: "{{ (swag_base, item.base, item.gateway) | join('.') }}"
+      - subnet: "{{ (swag_base, item.subnet) | join('.') }}"
+        gateway: "{{ (swag_base, item.gateway) | join('.') }}"
   loop: "{{ swag_networks }}"
   loop_control:
     index_var: net_idx

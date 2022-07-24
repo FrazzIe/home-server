@@ -1,20 +1,19 @@
-swag_base: "{{ netplan_base.split('.')[0:2] | join('.') }}"
+swag_base: "{{ netplan_base }}"
 
 swag_networks:
-  - name: private
-    interface: "{{ netplan_interface }}"
-    base: 2
-    subnet: 0/24
-    gateway: 1
-    container: 2
-    local: true
-    url: "local"
+  # - name: private
+  #   interface: "{{ netplan_interface }}"
+  #   base: 2
+  #   subnet: 0/24
+  #   gateway: 1
+  #   container: 2
+  #   local: true
+  #   url: "local"
   - name: public
     interface: "{{ netplan_interface }}"
-    base: 3
     subnet: 0/24
     gateway: 1
-    container: 3
+    container: 10
     local: false
     url: "{{ web_domain }}"
 

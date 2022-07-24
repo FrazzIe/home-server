@@ -7,7 +7,7 @@
     pull: yes
     networks:
       - name: "swag_{{ item.name }}_macvlan"
-        ipv4_address: "{{ (swag_base, item.base, item.container) | join('.') }}"
+        ipv4_address: "{{ (swag_base, item.container) | join('.') }}"
     capabilities:
       - net_admin
     state: started
@@ -36,7 +36,7 @@
     pull: yes
     networks:
       - name: "swag_{{ item.name }}_macvlan"
-        ipv4_address: "{{ (swag_base, item.base, item.container) | join('.') }}"
+        ipv4_address: "{{ (swag_base, item.container) | join('.') }}"
     capabilities:
         - net_admin
     state: started
