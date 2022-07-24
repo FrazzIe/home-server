@@ -1,11 +1,11 @@
 ---
 - name: Create the proxy-conf folders
   file:
-    path: "{{ docker_dir }}/swag/{{ item.value }}/nginx/proxy-confs/"
+    path: "{{ docker_dir }}/swag/{{ item.name }}/nginx/proxy-confs/"
     state: directory
     recurse: yes
     mode: 0755
-  with_items: "{{ lookup('dict', swag_network) }}"
+  with_items: "{{ swag_networks }}"
 
 - name: Get a list of container subdomains
   delegate_to: localhost
