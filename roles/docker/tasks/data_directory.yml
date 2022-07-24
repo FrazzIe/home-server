@@ -21,6 +21,11 @@
     recurse: yes
   when: not docker_data_info.stat.exists
 
+- name: Check if the mergerfs docker data folder exists
+  stat:
+    path: "{{ mergerfs_root }}/docker_data"
+  register: mergerfs_docker_data_info
+
 - name: Restore the "{{ docker_dir }}" folder from the MergerFS array
   synchronize:
     src: "{{ mergerfs_root }}/docker_data"
@@ -28,7 +33,7 @@
     delete: true
     recursive: yes
   delegate_to: "{{ inventory_hostname }}"
-  when: docker_data_files.matched < 20 or not docker_data_info.stat.exists
+  when: (docker_data_files.matched < 20 or not docker_data_info.stat.exists) and mergerfs_docker_data_info.stat.exists
 
 - name: Chmod the data folder
   file:
