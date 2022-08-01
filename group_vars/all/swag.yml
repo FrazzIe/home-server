@@ -11,9 +11,11 @@ swag_networks:
   #   url: "local"
   - name: public
     interface: "{{ netplan_interface }}"
-    subnet: 0/24
-    gateway: 1
-    container: 10
+    subnet: 0/24 # 1 - 254
+    gateway: "{{ netplan_gateway }}" # 254
+    range: 27 # 1 - 30
+    host: 30 # 192.168.1.30/27
+    container: 29 # 192.168.1.29
     local: false
     url: "{{ web_domain }}"
 
