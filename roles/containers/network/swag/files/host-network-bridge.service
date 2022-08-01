@@ -1,0 +1,8 @@
+[Unit]
+After=network.target
+
+[Service]
+ExecStart=/sbin/host-network-bridge.sh
+
+[Install]
+WantedBy=default.target

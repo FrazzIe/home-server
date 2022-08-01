@@ -16,3 +16,30 @@
     index_var: net_idx
   notify:
     - restart swag
+
+- name: Install macvlan network host shim script
+  template:
+    src: "host-network-bridge.sh.j2"
+    dest: "/sbin/host-network-bridge.sh"
+    mode: 0110
+    owner: root
+    group: root
+
+- name: Run macvlan network host shim script
+  shell: host-network-bridge.sh
+  args:
+    chdir: /sbin/
+
+- name: Install macvlan network host shim service
+  copy:
+    src: "files/host-network-bridge.service"
+    dest: "/etc/systemd/system/host-network-bridge.service"
+    mode: 0777
+    owner: root
+    group: root
+
+- name: Start macvlan network host shim service
+  service:
+    name: host-network-bridge
+    state: started
+    enabled: yes
