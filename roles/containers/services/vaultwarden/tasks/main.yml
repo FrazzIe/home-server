@@ -6,6 +6,7 @@
     image: vaultwarden/server
     networks:
       - name: "swag_{{ network }}_macvlan"
+        ipv4_address: "{{ (swag_base, 28) | join('.') }}"
     pull: true
     state: started
     env:
