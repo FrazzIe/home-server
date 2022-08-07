@@ -1,22 +1,10 @@
-swag_base: "{{ netplan_base }}"
-
 swag_networks:
-  # - name: private
-  #   interface: "{{ netplan_interface }}"
-  #   base: 2
-  #   subnet: 0/24
-  #   gateway: 1
-  #   container: 2
-  #   local: true
-  #   url: "local"
+  - name: private
+    container: 61
+    local: true
+    url: "local"
   - name: public
-    interface: "{{ netplan_interface }}"
-    subnet: 0/24 # 1 - 254
-    gateway: "{{ netplan_gateway }}" # 254
-    range: 27 # 1 - 30
-    host: 30 # 192.168.1.30/27
-    container: 29 # 192.168.1.29
-    local: false
+    container: 29
     url: "{{ web_domain }}"
 
 swag_network: "{{ swag_networks | items2dict(key_name='name', value_name='name') }}"

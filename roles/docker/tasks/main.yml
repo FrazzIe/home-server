@@ -51,3 +51,6 @@
 
 - name: Create / Restore data directory
   include_tasks: data_directory.yml
+
+- name: Create macvlan network
+  include_tasks: macvlan.yml

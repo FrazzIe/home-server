@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-
-{% for network in swag_networks %}
-ip link add sg-{{ network.name }} link {{ network.interface }} type macvlan mode bridge
-ip addr add {{ (swag_base, network.host) | join('.') }}/{{ network.range }} dev sg-{{ network.name }}
-ip link set sg-{{ network.name }} up
-{% endfor %}
