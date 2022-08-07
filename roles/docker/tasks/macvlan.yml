@@ -6,6 +6,10 @@
 
 #     {% endif %}
 # {% endfor %}
+
+- name: Include macvlan variables
+  include_vars: macvlan.yml
+
 - name: Install macvlan host bridge script
   template:
     src: "macvlan_host_bridge.sh.j2"

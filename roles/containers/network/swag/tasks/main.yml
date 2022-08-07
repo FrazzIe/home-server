@@ -4,7 +4,7 @@
 
 - include_tasks: install_configs.yml
 
-- include_tasks: networks.yml
+- include_tasks: network_bridge.yml
 
 - include_tasks: docker.yml
 

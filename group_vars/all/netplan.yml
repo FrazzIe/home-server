@@ -1,7 +1,7 @@
-netplan_interface: &netplan_interface enp3s0
+netplan_interface: &netplan_interface enp3s0 #eth0
 netplan_base: 192.168.1
 netplan_gateway: 254
-netplan_address: 63
+netplan_address: 64 #119
 
 netplan_config:
   network:

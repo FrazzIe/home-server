@@ -1,0 +1,12 @@
+- name: Create swag network bridge
+  docker_network:
+    name: "swag_{{ item.name }}_bridge"
+    driver: bridge
+  loop: "{{ swag_networks }}"
+
+# - name: Update network with aliases
+#   docker_container:
+#     name: sleepy
+#     networks:
+#       - name: "swag_{{ item.name }}_macvlan"
+#         ipv4_address: "{{ (swag_base, item.container) | join('.') }}"

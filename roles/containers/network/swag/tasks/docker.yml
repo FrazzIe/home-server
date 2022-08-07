@@ -6,8 +6,9 @@
     image: ghcr.io/linuxserver/swag
     pull: yes
     networks:
-      - name: "swag_{{ item.name }}_macvlan"
-        ipv4_address: "{{ (swag_base, item.container) | join('.') }}"
+      - name: "docker_macvlan"
+        ipv4_address: "{{ (netplan_base, item.container) | join('.') }}"
+      - name: "swag_{{ item.name }}_bridge"
     capabilities:
       - net_admin
     state: started
@@ -35,8 +36,9 @@
     image: ghcr.io/linuxserver/swag
     pull: yes
     networks:
-      - name: "swag_{{ item.name }}_macvlan"
-        ipv4_address: "{{ (swag_base, item.container) | join('.') }}"
+      - name: "docker_macvlan"
+        ipv4_address: "{{ (netplan_base, item.container) | join('.') }}"
+      - name: "swag_{{ item.name }}_bridge"
     capabilities:
         - net_admin
     state: started
