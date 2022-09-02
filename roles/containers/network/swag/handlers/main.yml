@@ -14,8 +14,3 @@
   changed_when: swag_nginx_test is not search("test is successful")
   failed_when: swag_nginx_test is not search("test is successful")
   with_items: "{{ container | split(',') }}"
-
-- name: ip route add
-  become: yes
-  command:
-    cmd: ip route add {{ swag_network }} dev mynet-shim
