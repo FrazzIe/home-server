@@ -6,7 +6,6 @@
     image: vaultwarden/server
     networks:
       - name: "swag_{{ network }}_bridge"
-        # ipv4_address: "{{ (netplan_base, 28) | join('.') }}"
     pull: true
     state: started
     env:

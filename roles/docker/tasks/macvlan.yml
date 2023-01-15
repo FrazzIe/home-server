@@ -1,12 +1,5 @@
 ---
 
-# - include_tasks: get_docker_container_defaults.yml
-# {% for container in container_defaults %}
-#     {% if container.bridge is defined and container.bridge is sameas true and container.ipv4_address is defined %}
-
-#     {% endif %}
-# {% endfor %}
-
 - name: Include macvlan variables
   include_vars: macvlan.yml
 
