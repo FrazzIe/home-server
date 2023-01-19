@@ -1,12 +1,12 @@
-netplan_interface: &netplan_interface enp3s0 #eth0
-netplan_base: 192.168.1
-netplan_gateway: 254
-netplan_address: 64 #119
+netplan_interface: &netplan_interface eth0 #enp3s0,eth0
+netplan_base: 192.168.0
+netplan_gateway: 1
+netplan_address: 96 #64,96
 
 netplan_config:
   network:
     ethernets:
-      *netplan_interface:
+      *netplan_interface :
         dhcp4: false
         dhcp6: false
         addresses: 
