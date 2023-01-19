@@ -1,12 +1,12 @@
 - hosts: target
-  gather_facts: no
+  gather_facts: false
   pre_tasks:
     - import_tasks: tasks/ssh_juggle_port.yml
       tags:
         - port
 
 - hosts: target
-  become: yes
+  become: true
   # Init submodules
   roles:
     - role: system

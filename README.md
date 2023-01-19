@@ -15,7 +15,7 @@ ansible-galaxy install -r requirements.yml
 
 First run:
 ```
-ansible-playbook setup.yml -l your-inventory-file -K
+ansible-playbook setup.yml -l your-inventory-file -Kk
 ```
 
 Afterward:
