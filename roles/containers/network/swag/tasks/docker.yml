@@ -22,10 +22,10 @@
       DNSPLUGIN: cloudflare
       EMAIL: "{{ target_email }}"
     ports:
-      - "{% if 'local' in item %}443:443{% endif %}"
+      - 443:443
     volumes:
       - "{{ docker_dir }}/swag/{{ item.name }}/nginx:/config/nginx"
-      - "{% if 'local' in item %}{{ docker_dir }}/swag/{{ item.name }}/www:/config/www{% endif %}"
+      - "{% if 'local' in item %}{{ docker_dir }}/swag/{{ item.name }}/www:/config/www{% else %}omit{% endif %}"
       - "{{ docker_dir }}/swag/dns-conf:/config/dns-conf"
       - "{{ docker_dir }}/swag/letsencrypt:/config/etc/letsencrypt"
     restart_policy: unless-stopped
