@@ -1,3 +1,6 @@
+1. Create folder named using the host you would like to use
+2. Create vault inside folder called `secret.yml`
+
 # Secret Template
 
 ```yaml
@@ -16,4 +19,7 @@ target_email:
 # Cloudflare API tokens
 cloudflare_firewall_token:
 cloudflare_dns_token:
+
+# Web domain
+web_domain: 
 ```
