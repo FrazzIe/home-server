@@ -7,21 +7,19 @@
     mode: 0755
   with_items: "{{ swag_networks }}"
 
-- name: Get a list of container subdomains
+- include_tasks: get_docker_container_defaults.yml
+
+- name: Get a list of containers with subdomain & network
   delegate_to: localhost
   become: false
-  find:
-    paths: roles/containers
-    patterns: subdomain.*
-    file_type: file
-    recurse: yes
-    depth: 4
-  register: container_subdomains
-
-- name: Get container defaults with subdomain template
   set_fact:
-    container_configs: "{{ container_configs | default([]) + [ (lookup('template', (item.path | dirname | dirname, 'defaults', 'main.yml') | path_join) | from_yaml) | combine({ 'path': item.path }) ] }}"
-  with_items: "{{ container_subdomains.files }}"
+    container_subdomains: "{{ container_subdomains | default([]) + [ item ] }}"
+  with_items: "{{ container_defaults }}"
+  when: item.subdomain is defined and item.network is defined
+
+- name: container subdomains debug
+  debug:
+    var: container_subdomains
 
 - name: Get swag templates path
   delegate_to: localhost
@@ -38,12 +36,12 @@
   set_fact:
     swag_template_dir: "{{ (swag_template_dir.files[0].path, 'templates') | path_join }}"
 
-- name: Install the proxy config files
+- name: Install the proxy subdomain config files
   template:
-    src: "{{ item.path }}"
-    dest: "{{ docker_dir }}/swag/{{ item.network }}/nginx/proxy-confs/{{ item.container }}.{{ item.path | basename | regex_replace('.j2$', '') }}"
+    src: "{{ (item.root, 'templates', 'subdomain.conf.j2') | path_join }}"
+    dest: "{{ docker_dir }}/swag/{{ item.network }}/nginx/proxy-confs/{{ item.container }}.subdomain.conf"
     mode: 0644
-  with_items: "{{ container_configs }}"
+  with_items: "{{ container_subdomains }}"
   notify:
     - restart swag
     - test nginx
