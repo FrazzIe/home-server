@@ -72,3 +72,9 @@
         - container
         - swag
         - vaultwarden
+
+    - role: containers/services/homepage
+      tags:
+        - container
+        - swag
+        - homepage

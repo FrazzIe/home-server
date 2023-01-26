@@ -1,0 +1,45 @@
+---
+- include_tasks: get_docker_container_defaults.yml
+
+- name: Create homepage config directories
+  file:
+    path: "{{ docker_dir }}/{{ item.container }}"
+    state: directory
+  loop: "{{ containers }}"
+
+- name: Install homepage services layout
+  template:
+    src: "services.yaml.j2"
+    dest: "{{ docker_dir }}/{{ item.container }}/services.yaml"
+    mode: 0644
+  loop: "{{ containers }}"
+
+- name: Install homepage docker config
+  template:
+    src: "docker.yaml.j2"
+    dest: "{{ docker_dir }}/{{ item.container }}/docker.yaml"
+    mode: 0644
+  loop: "{{ containers }}"
+
+- name: Install homepage widgets config
+  template:
+    src: "widgets.yaml.j2"
+    dest: "{{ docker_dir }}/{{ item.container }}/widgets.yaml"
+    mode: 0644
+  loop: "{{ containers }}"
+
+- name: Create / Run homepage containers
+  docker_container:
+    name: "{{ item.container }}"
+    image: ghcr.io/benphelps/homepage:latest
+    networks:
+      - name: "swag_{{ item.network }}_bridge"
+    pull: true
+    state: started
+    env:
+      PUID: "{{ target_username_puid }}"
+      PGID: "{{ target_username_pgid }}"
+    volumes:
+      - "{{ docker_dir }}/{{ item.container }}:/app/config"
+    restart_policy: unless-stopped
+  loop: "{{ containers }}"
