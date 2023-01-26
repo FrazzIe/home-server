@@ -54,6 +54,13 @@
         - container
         - cloudflare
         - ddns
+
+    - role: containers/network/docker-socket-proxy
+      tags:
+        - container
+        - docker-socket-proxy
+        - docker-socket
+        - socket-proxy
     
     - role: containers/network/swag
       tags:
