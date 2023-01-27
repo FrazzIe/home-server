@@ -41,5 +41,7 @@
       PGID: "{{ target_username_pgid }}"
     volumes:
       - "{{ docker_dir }}/{{ item.container }}:/app/config"
+      - "{{ mergerfs_root }}:{{ mergerfs_root }}"
+
     restart_policy: unless-stopped
   loop: "{{ containers }}"
