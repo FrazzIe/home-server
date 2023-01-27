@@ -1,6 +1,10 @@
 ---
 - include_tasks: get_docker_container_defaults.yml
 
+- name: Retrieve list of services groups
+  set_fact:
+    service_groups: "{{ container_defaults | selectattr('homepage_group', 'defined') | map(attribute='homepage_group') | list }}"
+
 - name: Create homepage config directories
   file:
     path: "{{ docker_dir }}/{{ item.container }}"
