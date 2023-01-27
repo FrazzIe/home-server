@@ -28,6 +28,13 @@
     mode: 0644
   loop: "{{ containers }}"
 
+- name: Install homepage bookmarks config
+  template:
+    src: "bookmarks.yaml.j2"
+    dest: "{{ docker_dir }}/{{ item.container }}/bookmarks.yaml"
+    mode: 0644
+  loop: "{{ containers }}"
+
 - name: Create / Run homepage containers
   docker_container:
     name: "{{ item.container }}"
