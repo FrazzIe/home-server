@@ -4,7 +4,23 @@
     state: started
     restart: yes
   when: container_state[item] is defined and container_state[item].Running == true
-  with_items: "{{ container | split(',') }}"
+  loop: "{{ container | split(',') }}"
+
+- name: restart swag internal
+  docker_container:
+    name: "{{ item }}"
+    state: started
+    restart: yes
+  when: container_state[item] is defined and container_state[item].Running == true
+  loop: "{{ internal_containers }}"
+
+- name: restart swag external
+  docker_container:
+    name: "{{ item }}"
+    state: started
+    restart: yes
+  when: container_state[item] is defined and container_state[item].Running == true
+  loop: "{{ external_containers }}"
 
 - name: test nginx
   command:
@@ -13,4 +29,23 @@
   when: container_state[item] is defined and container_state[item].Running == true
   changed_when: swag_nginx_test is not search("test is successful")
   failed_when: swag_nginx_test is not search("test is successful")
-  with_items: "{{ container | split(',') }}"
+  loop: "{{ container | split(',') }}"
+
+- name: test nginx internal
+  command:
+    cmd: "docker exec -it {{ item }} /usr/sbin/nginx -c /config/nginx/nginx.conf -t"
+  register: swag_nginx_test
+  when: container_state[item] is defined and container_state[item].Running == true
+  changed_when: swag_nginx_test is not search("test is successful")
+  failed_when: swag_nginx_test is not search("test is successful")
+  loop: "{{ internal_containers }}"
+
+- name: test nginx external
+  command:
+    cmd: "docker exec -it {{ item }} /usr/sbin/nginx -c /config/nginx/nginx.conf -t"
+  register: swag_nginx_test
+  when: container_state[item] is defined and container_state[item].Running == true
+  changed_when: swag_nginx_test is not search("test is successful")
+  failed_when: swag_nginx_test is not search("test is successful")
+  loop: "{{ external_containers }}"
+  
