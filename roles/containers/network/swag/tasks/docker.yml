@@ -16,7 +16,7 @@
       PUID: "{{ target_username_puid }}"
       PGID: "{{ target_username_pgid }}"
       TZ: "{{ timezone }}"
-      URL: "{{ item.url }}"
+      URL: "{{ item.domain }}"
       SUBDOMAINS: wildcard
       VALIDATION: dns
       DNSPLUGIN: cloudflare
@@ -25,7 +25,7 @@
       - 443:443
     volumes:
       - "{{ docker_dir }}/swag/{{ item.name }}/nginx:/config/nginx"
-      - "{% if 'local' in item %}{{ docker_dir }}/swag/{{ item.name }}/www:/config/www{% else %}omit{% endif %}"
+      - "{% if 'internal' in item %}{{ docker_dir }}/swag/{{ item.name }}/www:/config/www{% else %}omit{% endif %}"
       - "{{ docker_dir }}/swag/dns-conf:/config/dns-conf"
       - "{{ docker_dir }}/swag/letsencrypt:/config/etc/letsencrypt"
     restart_policy: unless-stopped
