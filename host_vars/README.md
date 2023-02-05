@@ -22,4 +22,8 @@ cloudflare_dns_token:
 
 # Web domain
 web_domain: 
+
+# VPN
+vpn_username: 
+vpn_password: 
 ```
