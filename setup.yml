@@ -88,5 +88,10 @@
       tags:
         - container
         - jackett
+
+    - role: containers/services/sonarr
+      tags:
+        - container
+        - sonarr
   tasks:
     - include_tasks: get_docker_container_state.yml
