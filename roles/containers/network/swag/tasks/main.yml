@@ -1,7 +1,5 @@
 ---
 
-- include_tasks: get_docker_container_state.yml
-
 - include_tasks: install_configs.yml
 
 - include_tasks: network_bridge.yml
