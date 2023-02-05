@@ -1,0 +1,3 @@
+deluge_address: 26
+privoxy_url: "{{ (netplan_base, deluge_address) | join('.') }}"
+privoxy_port: 8118

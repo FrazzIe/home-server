@@ -78,3 +78,8 @@
         - container
         - swag
         - homepage
+
+    - role: containers/services/deluge
+      tags:
+        - container
+        - deluge
