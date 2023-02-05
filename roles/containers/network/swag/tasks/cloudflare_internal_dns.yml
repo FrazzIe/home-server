@@ -1,0 +1,11 @@
+# Not needed (I believe)
+# - name: Setup A records for internal swag instances
+#   community.general.cloudflare_dns:
+#     zone: "{{ item.zone }}"
+#     record: "{{ item.domain | regex_replace(item.zone, '') | split('.') | reject('match', '^$') | join('.') }}"
+#     type: A
+#     value: "{{ (netplan_base, item.container) | join('.') }}"
+#     api_token: "{{ cloudflare_dns_token }}"
+#     state: present
+#   loop: "{{ swag_networks }}"
+#   when: item.internal is defined and item.internal == true

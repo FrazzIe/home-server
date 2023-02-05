@@ -1,0 +1,17 @@
+swag_networks:
+  - name: public
+    container: 28
+    zone: "{{ web_domain }}"
+    domain: "{{ web_domain }}"
+    target: "ddns.{{ web_domain }}"
+  - name: private
+    container: 27
+    zone: "{{ web_domain }}"
+    domain: "private.{{ web_domain }}"
+    internal: true
+
+swag_network: "{{ swag_networks | items2dict(key_name='name', value_name='name') }}"
+
+swag_network_domains: "{{ swag_networks | items2dict(key_name='name', value_name='domain') }}"
+
+swag_docker_networks: "{{ ['swag_'] | product(swag_networks | map(attribute='name') | list) | map('join') | list | product(['_bridge']) | map('join') | list | map('community.general.dict_kv', 'name') }}"

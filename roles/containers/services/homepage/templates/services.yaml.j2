@@ -1,0 +1,25 @@
+{% set service_groups_added = {} %}
+{% for group in service_groups %}
+{% for container in container_defaults %}
+{% if container.homepage_group is defined and container.homepage_group.lower() == group and (container.network is not defined or item.network == container.network) %}
+{% if service_groups_added[group] is not defined %}
+{% set _ = service_groups_added.update({ group: true }) %}
+- {{ group | capitalize }}:
+{% endif %}
+  - {{ container.container | capitalize }}:
+{% if container.subdomain is defined and container.network is defined and container.network in swag_network_domains %}
+      href: "https://{{ container.subdomain }}.{{ swag_network_domains[container.network] }}/"
+{% endif %}
+{% if container.homepage_description is defined %}
+      description: "{{ container.homepage_description | capitalize }}"
+{% endif %}
+{% if container.homepage_icon is defined %}
+      icon: "{{ container.homepage_icon }}"
+{% else %}
+      icon: "{{ container.container }}.png"
+{% endif %}
+      server: my-docker
+      container: "{{ container.container }}"
+{% endif %}
+{% endfor %}
+{% endfor %}

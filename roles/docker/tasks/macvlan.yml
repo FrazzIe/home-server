@@ -1,0 +1,44 @@
+---
+
+- name: Include macvlan variables
+  include_vars: macvlan.yml
+
+- name: Install macvlan host bridge script
+  template:
+    src: "macvlan_host_bridge.sh.j2"
+    dest: "/sbin/macvlan_host_bridge.sh"
+    mode: 0110
+    owner: root
+    group: root
+
+- name: Run macvlan network bridge script
+  shell: macvlan_host_bridge.sh
+  args:
+    chdir: /sbin/
+
+- name: Install macvlan host bridge service
+  copy:
+    src: "files/macvlan_host_bridge.service"
+    dest: "/etc/systemd/system/macvlan_host_bridge.service"
+    mode: 0777
+    owner: root
+    group: root
+
+- name: Start macvlan network host shim service
+  service:
+    name: macvlan_host_bridge
+    state: started
+    enabled: yes
+
+- name: Create macvlan network
+  docker_network:
+    name: "{{ macvlan_name }}"
+    driver: macvlan
+    driver_options:
+      parent: "{{ macvlan_interface }}"
+    ipam_config:
+      - subnet: "{{ (netplan_base, macvlan_subnet) | join('.') }}"
+        gateway: "{{ (netplan_base, macvlan_gateway) | join('.') }}"
+        iprange: "{{ (netplan_base, macvlan_range) | join('.') }}"
+        aux_addresses:
+          host: "{{ (netplan_base, macvlan_host) | join('.') }}"

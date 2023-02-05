@@ -1,40 +1,25 @@
-- hosts: source
-  connection: local
-  tasks:
-    - name: Generate SSH Key
-      openssh_keypair:
-        path: "~/.ssh/{{ ssh_key_name }}" # Name of key
-        state: present # Ensure key exists
-        type: ed25519 # The algorithm used to generate the SSH private key
-        force: False # Prevent key regen
-        comment: "source:{{ hostvars['source']['ansible_host'] }}->target:{{ hostvars['target']['ansible_host'] }}" # public key metadata comment
-    
-    - name: Store the public key using Lookup
-      set_fact:
-        ssh_key: "{{ lookup('file', '~/.ssh/{{ ssh_key_name }}.pub') }}" # kvp, open public key, store in var
-
 - hosts: target
-  gather_facts: no
+  gather_facts: false
   pre_tasks:
     - import_tasks: tasks/ssh_juggle_port.yml
       tags:
         - port
 
 - hosts: target
-  become: yes
+  become: true
   # Init submodules
   roles:
     - role: system
       tags:
         - system
-    
-    - role: geerlingguy.security
-      tags:
-        - security
-
+  
     - role: docker
       tags: 
         - docker
+
+    - role: geerlingguy.security
+      tags:
+        - security
 
     - role: geerlingguy.ntp
       tags:
@@ -69,3 +54,44 @@
         - container
         - cloudflare
         - ddns
+    
+    - role: containers/network/swag
+      tags:
+        - container
+        - swag
+
+    - role: containers/network/docker-socket-proxy
+      tags:
+        - container
+        - docker-socket-proxy
+        - docker-socket
+        - socket-proxy
+
+    - role: containers/services/vaultwarden
+      tags:
+        - container
+        - swag
+        - vaultwarden
+
+    - role: containers/services/homepage
+      tags:
+        - container
+        - swag
+        - homepage
+
+    - role: containers/services/deluge
+      tags:
+        - container
+        - deluge
+
+    - role: containers/services/jackett
+      tags:
+        - container
+        - jackett
+
+    - role: containers/services/sonarr
+      tags:
+        - container
+        - sonarr
+  tasks:
+    - include_tasks: get_docker_container_state.yml

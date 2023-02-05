@@ -1,0 +1,8 @@
+[Unit]
+After=network.target
+
+[Service]
+ExecStart=/sbin/macvlan_host_bridge.sh
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,37 @@
+- name: Set the retry max
+  set_fact:
+    retry_max: "{{ retry_max | default(5) }}"
+
+- name: Wait for docker container to be ready
+  block:
+    - name: Set the retry count
+      set_fact:
+        retry_count: "{{ retry_count | default(0) | int + 1 }}"
+    
+    - name: "Get '{{ target_container }}' container info"
+      docker_container_info:
+        name: "{{ target_container }}"
+      register: target_container_info
+
+    - name: Does {{ target_container }} exist yet?
+      fail:
+        msg: "'{{ target_container }}' does not exist yet!"
+      when: not target_container_info.exists
+
+    - name: Is {{ target_container }} up and running?
+      fail:
+        msg: "'{{ target_container }}' has not started up yet!"
+      when: not (target_container_info.container['State'] is defined and target_container_info.container['State'].Running == true)
+  rescue:
+    - fail:
+        msg: Unable to retry after {{ retry_count }} retries
+      when: retry_count | int == retry_max | int
+
+    - debug:
+        msg: "'{{ target_container }}' container is not available yet, retrying... ({{ retry_count | int }} / {{ retry_max }})"
+
+    - name: Sleep
+      pause:
+        seconds: 5
+
+    - include_tasks: get_single_docker_container_ready.yml
