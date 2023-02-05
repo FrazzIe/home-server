@@ -3,7 +3,7 @@
 
 - name: Retrieve list of services groups
   set_fact:
-    service_groups: "{{ container_defaults | selectattr('homepage_group', 'defined') | map(attribute='homepage_group') | list }}"
+    service_groups: "{{ container_defaults | selectattr('homepage_group', 'defined') | map(attribute='homepage_group') | map('lower') | unique }}"
 
 - name: Create homepage config directories
   file:

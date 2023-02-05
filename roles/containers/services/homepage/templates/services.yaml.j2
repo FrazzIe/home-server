@@ -1,9 +1,9 @@
-{% set service_groups_used = {} %}
+{% set service_groups_added = {} %}
 {% for group in service_groups %}
 {% for container in container_defaults %}
-{% if container.homepage_group is defined and container.homepage_group == group and (container.network is not defined or item.network == container.network) %}
+{% if container.homepage_group is defined and container.homepage_group.lower() == group and (container.network is not defined or item.network == container.network) %}
 {% if service_groups_added[group] is not defined %}
-{% set _ = service_groups_used.update({ group: true }) %}
+{% set _ = service_groups_added.update({ group: true }) %}
 - {{ group | capitalize }}:
 {% endif %}
   - {{ container.container | capitalize }}:
