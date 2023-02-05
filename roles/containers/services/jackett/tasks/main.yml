@@ -1,0 +1,105 @@
+---
+
+- name: Create / Run {{ container }} container
+  docker_container:
+    name: "{{ container }}"
+    image: lscr.io/linuxserver/jackett:latest
+    networks:
+      - name: "swag_{{ network }}_bridge"
+    pull: true
+    state: started
+    env:
+      PUID: "{{ target_username_puid }}"
+      PGID: "{{ target_username_pgid }}"
+      TZ: "{{ timezone }}"
+      AUTO_UPDATE: "true" # optional
+      # RUN_OPTS: "" # run options
+    ports:
+      - 9117:9117
+    volumes:
+      - "{{ docker_dir }}/{{ container }}:/config"
+      - "{{ mergerfs_root }}/downloads:/downloads"
+    restart_policy: unless-stopped
+
+- name: Set target_container to {{ container }}
+  set_fact:
+    target_container: "{{ container }}"
+
+- include_tasks: get_single_docker_container_ready.yml
+
+- name: Wait until {{ container }} api key exists
+  ansible.builtin.wait_for:
+    path: "{{ docker_dir }}/{{ container }}/Jackett/ServerConfig.json"
+    search_regex: "APIKey"
+
+- name: Retrieve raw {{ container }} configuration
+  slurp:
+    src: "{{ docker_dir }}/{{ container }}/Jackett/ServerConfig.json"
+  register: jackett_config_raw
+
+- name: Decode {{ container }} configuration
+  set_fact:
+    jackett_config: "{{ jackett_config_raw.content | b64decode }}"
+
+- name: Set {{ container }} api key
+  set_fact:
+    jackett_config: "{{ jackett_config | combine({ 'APIKey': jackett_api_key }) }}"
+  when: jackett_api_key is defined
+
+- name: Fetch {{ container }} api key
+  set_fact:
+    jackett_api_key: jackett_config.APIKey
+  when: jackett_api_key is not defined
+
+- name: Set {{ container }} proxy
+  set_fact:
+    jackett_config: "{{ jackett_config | combine({ 'ProxyUrl': privoxy_url, 'ProxyPort': privoxy_port, 'ProxyType': 0 }) }}"
+
+- name: Remove {{ container }} admin password from configuration
+  set_fact:
+    jackett_config: "{{ jackett_config | combine({ 'AdminPassword': None }) }}"
+
+- name: Update {{ container }} configuration
+  copy:
+    content: "{{ jackett_config | to_nice_json }}"
+    dest: "{{ docker_dir }}/{{ container }}/Jackett/ServerConfig.json"
+
+- name: Restart {{ container }} container
+  docker_container:
+    name: "{{ container }}"
+    image: lscr.io/linuxserver/jackett:latest
+    state: started
+    restart: true
+
+- debug:
+    var: jackett_config
+- debug:
+    var: jackett_api_key
+
+- name: Wait until {{ container }} web portal is available
+  uri:
+    url: "https://{{ subdomain }}.{{ swag_network_domains[network] }}"
+    method: GET
+    status_code: 200
+  register: result
+  until: result.status == 200
+  retries: 5
+  delay: 5
+
+- name: Get auth cookie
+  uri:
+    url: "https://{{ subdomain }}.{{ swag_network_domains[network] }}/UI/Login"
+    method: GET
+    status_code: 200
+    follow_redirects: true
+  register: login_response
+
+- name: Set jackett admin password
+  uri:
+    url: "https://{{ subdomain }}.{{ swag_network_domains[network] }}/api/v2.0/server/adminpassword"
+    method: POST
+    body_format: json
+    status_code: [200, 204]
+    headers:
+      Cookie: "{{ login_response.cookies_string }}"
+    body: "\"{{ jackett_admin_password }}\""

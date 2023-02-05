@@ -26,4 +26,8 @@ web_domain:
 # VPN
 vpn_username: 
 vpn_password: 
+
+# Jackett admin password
+jackett_admin_password: 
+jackett_api_key: 
 ```

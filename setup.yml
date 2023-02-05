@@ -84,5 +84,9 @@
         - container
         - deluge
 
+    - role: containers/services/jackett
+      tags:
+        - container
+        - jackett
   tasks:
     - include_tasks: get_docker_container_state.yml
