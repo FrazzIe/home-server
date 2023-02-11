@@ -34,7 +34,7 @@
       PUID: "{{ target_username_puid }}"
       PGID: "{{ target_username_pgid }}"
     ports:
-      - 8112:8112
+      - "{{ deluge_port }}:8112"
       - "{{ privoxy_port }}:8118"
       - 58846:58846
       - 58946:58946 

@@ -19,3 +19,84 @@
       - "{{ mergerfs_root }}/downloads:/downloads"
       - "{{ mergerfs_root }}/media/tv:/tv"
     restart_policy: unless-stopped
+
+- name: Set target_container to {{ container }}
+  set_fact:
+    target_container: "{{ container }}"
+
+- include_tasks: get_single_docker_container_ready.yml
+
+- name: Wait until {{ container }} api key exists
+  ansible.builtin.wait_for:
+    path: "{{ docker_dir }}/{{ container }}/config.xml"
+    search_regex: "ApiKey"
+
+- name: pip install lxml for xml module 
+  pip:
+    name: lxml>=2.3.0
+
+- name: Search {{ container }} config for api key
+  xml:
+    path: "{{ docker_dir }}/{{ container }}/config.xml"
+    xpath: /Config/ApiKey
+    content: "text"
+  register: sonarr_api_key_xml
+
+- name: Retrieve {{ container }} api key
+  set_fact:
+    sonarr_api_key: "{{ sonarr_api_key_xml.matches[0].ApiKey }}"
+  failed_when: sonarr_api_key_xml is not defined or sonarr_api_key_xml.count == 0
+
+- name: Disable {{ container }} analytics
+  xml:
+    path: "{{ docker_dir }}/{{ container }}/config.xml"
+    xpath: /Config/AnalyticsEnabled
+    value: "False"
+
+- debug:
+    var: sonarr_api_key
+
+- name: Restart {{ container }} container
+  docker_container:
+    name: "{{ container }}"
+    image: lscr.io/linuxserver/sonarr:latest
+    state: started
+    restart: true
+
+- name: Wait until {{ container }} web portal is available
+  uri:
+    url: "https://{{ subdomain }}.{{ swag_network_domains[network] }}/ping"
+    method: GET
+    status_code: 200
+  register: result
+  until: result.status == 200
+  retries: 5
+  delay: 5
+
+- debug:
+    msg: "{{ item | combine(download_client_defaults) | combine({ 'fields': item.fields | dict2items(key_name='name', value_name='value') }) }}"
+  loop: "{{ download_clients }}"
+
+- name: Fetch existing {{ container }} download clients
+  uri:
+    url: "https://{{ subdomain }}.{{ swag_network_domains[network] }}/api/v3/downloadclient"
+    method: GET
+    headers:
+      X-Api-Key: "{{ sonarr_api_key }}"
+  register: download_clients_resp
+
+- name: Get existing {{ container }} download client names
+  set_fact:
+    download_clients_existing: "{{ download_clients_resp.json | selectattr('name', 'defined') | map(attribute='name') }}"
+
+- name: Add download clients to {{ container }}
+  uri:
+    url: "https://{{ subdomain }}.{{ swag_network_domains[network] }}/api/v3/downloadclient"
+    method: POST
+    body_format: json
+    status_code: [200, 201]
+    headers:
+      X-Api-Key: "{{ sonarr_api_key }}"
+    body: "{{ item | combine(download_client_defaults) | combine({ 'fields': item.fields | dict2items(key_name='name', value_name='value') }) }}"
+  loop: "{{ download_clients }}"
+  when: not (item.name in download_clients_existing)

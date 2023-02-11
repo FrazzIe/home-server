@@ -1,3 +1,7 @@
 deluge_address: 26
-privoxy_url: "{{ (netplan_base, deluge_address) | join('.') }}"
+deluge_url: "{{ (netplan_base, deluge_address) | join('.') }}"
+deluge_port: 8112
+deluge_password: deluge
+
+privoxy_url: "{{ deluge_url }}"
 privoxy_port: 8118
