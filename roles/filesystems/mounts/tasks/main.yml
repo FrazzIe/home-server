@@ -26,3 +26,10 @@
     passno: "2"
   with_items: "{{ all_disks }}"
   when: all_disks[0] is defined
+
+- name: Change ownership of data drive mounts
+  file:
+    path: "/mnt/{{ item.label }}"
+    owner: "{{ target_username_puid }}"
+    group: "{{ target_username_pgid }}"
+  loop: "{{ data_disks }}"
