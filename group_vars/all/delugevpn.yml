@@ -2,6 +2,10 @@ deluge_address: 26
 deluge_url: "{{ (netplan_base, deluge_address) | join('.') }}"
 deluge_port: 8112
 deluge_password: deluge
+deluge_plugins:
+  - Label
+deluge_max_upload: 30000.0
+deluge_stop_seed_ratio: 0.5
 
 privoxy_url: "{{ deluge_url }}"
 privoxy_port: 8118
