@@ -1,21 +1,6 @@
 ---
 
-- name: Create / Run {{ container }} container
-  docker_container:
-    name: "{{ container }}"
-    image: lscr.io/linuxserver/sonarr:latest
-    networks:
-      - name: "swag_{{ network }}_bridge"
-    pull: true
-    state: started
-    env:
-      PUID: "{{ target_username_puid }}"
-      PGID: "{{ target_username_pgid }}"
-      TZ: "{{ timezone }}"
-    ports:
-      - 8989:8989
-    volumes:
-      - "{{ docker_dir }}/{{ container }}:/config"
-      - "{{ mergerfs_root }}/downloads:/downloads"
-      - "{{ mergerfs_root }}/media/tv:/tv"
-    restart_policy: unless-stopped
+- include_tasks: docker.yml
+- include_tasks: configure.yml
+- include_tasks: dl_client_mgmt.yml
+- include_tasks: indexer_mgmt.yml

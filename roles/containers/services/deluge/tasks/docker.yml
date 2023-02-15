@@ -1,0 +1,49 @@
+- name: Create / Run {{ container }} container
+  docker_container:
+    name: "{{ container }}"
+    image: ghcr.io/binhex/arch-delugevpn:latest
+    networks:
+      - name: "docker_macvlan"
+        ipv4_address: "{{ (netplan_base, deluge_address) | join('.') }}"
+    pull: true
+    privileged: true
+    sysctls:
+      "net.ipv4.conf.all.src_valid_mark": "1"
+    capabilities: 
+      - net_admin
+    state: started
+    env:
+      VPN_ENABLED: "yes"
+      VPN_USER: "{{ vpn_username }}"
+      VPN_PASS: "{{ vpn_password }}"
+      VPN_PROV: pia # pia, airvpn, custom
+      VPN_CLIENT: wireguard # openvpn, wireguard
+      # VPN_OPTIONS: <additional openvpn cli options>
+      STRICT_PORT_FORWARD: "yes"
+      ENABLE_PRIVOXY: "yes"
+      LAN_NETWORK: "{{ (netplan_base, netplan_gateway) | join('.') }}/24"
+      NAME_SERVERS: "84.200.69.80,37.235.1.174,1.1.1.1,37.235.1.177,84.200.70.40,1.0.0.1"
+      DELUGE_DAEMON_LOG_LEVEL: info
+      DELUGE_WEB_LOG_LEVEL: info
+      # VPN_INPUT_PORTS: <port number(s)>
+      # VPN_OUTPUT_PORTS: <port number(s)>
+      DEBUG: "true"
+      UMASK: "000"
+      PUID: "{{ target_username_puid }}"
+      PGID: "{{ target_username_pgid }}"
+    ports:
+      - "{{ deluge_port }}:8112"
+      - "{{ privoxy_port }}:8118"
+      - 58846:58846
+      - 58946:58946 
+    volumes:
+      - "{{ docker_dir }}/{{ container }}:/config"
+      - "{{ mergerfs_root }}/downloads:/data/incomplete"
+      - /etc/localtime:/etc/localtime:ro
+    restart_policy: unless-stopped
+
+- name: Set target_container to {{ container }}
+  set_fact:
+    target_container: "{{ container }}"
+
+- include_tasks: get_single_docker_container_ready.yml

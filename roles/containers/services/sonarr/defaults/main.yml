@@ -2,5 +2,65 @@
 container: sonarr
 subdomain: sonarr
 network: "{{ swag_network.public }}"
+
 homepage_group: media
 homepage_description: tv scraper
+
+download_client_defaults:
+  enable: true
+  protocol: torrent
+  priority: 1
+  removeCompletedDownloads: true
+  removeFailedDownloads: true
+  fields:
+    tvCategory: "tv-sonarr"
+    recentTvPriority: 0
+    olderTvPriority: 0
+    addPaused: false
+
+download_clients:
+  - name: deluge
+    fields:
+      host: "{{ deluge_url }}"
+      port: "{{ deluge_port }}"
+      password: "{{ deluge_password }}"
+    implementationName: Deluge
+    implementation: Deluge
+    configContract: DelugeSettings
+
+indexer_defaults:
+  enableRss: true
+  enableAutomaticSearch: true
+  enableInteractiveSearch: true
+  supportsRss: true
+  protocol: torrent
+  priority: 25
+  downloadClientId: 0 # any
+  implementationName: Torznab
+  implementation: Torznab
+  configContract: TorznabSettings
+  fields:
+    apiPath: /api
+    animeStandardFormatSearch: false
+    minimumSeeders: 5
+
+# (?=.*word) for each word
+# '|' OR for each array
+# Partial matching of each word (be careful)
+# e.g. 'subtitle' would match 'subtitled' and so forth
+tv_categories:
+  include:
+    - [ tv, hd ]
+    - [ tv, doc ]
+  exclude: []
+
+# (?=.*word) for each word
+# '|' OR for each array
+# Partial matching of each word (be careful)
+# e.g. 'subtitle' would match 'subtitled' and so forth
+anime_categories:
+  include:
+    - [ english, subtitle, anime ]
+    - [ english, subbed, anime ]
+  exclude:
+    - [ non-english ]

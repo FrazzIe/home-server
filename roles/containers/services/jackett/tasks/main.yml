@@ -71,11 +71,6 @@
     state: started
     restart: true
 
-- debug:
-    var: jackett_config
-- debug:
-    var: jackett_api_key
-
 - name: Wait until {{ container }} web portal is available
   uri:
     url: "https://{{ subdomain }}.{{ swag_network_domains[network] }}"
@@ -86,20 +81,29 @@
   retries: 5
   delay: 5
 
-- name: Get auth cookie
+- name: Get {{ container }} auth cookie
   uri:
     url: "https://{{ subdomain }}.{{ swag_network_domains[network] }}/UI/Login"
     method: GET
     status_code: 200
     follow_redirects: true
-  register: login_response
+  register: jackett_login_resp
 
-- name: Set jackett admin password
+- name: Store {{ container }} cookie
+  set_fact:
+    jackett_cookie: "{{ jackett_login_resp.cookies_string }}"
+
+- name: Set {{ container }} admin password
   uri:
     url: "https://{{ subdomain }}.{{ swag_network_domains[network] }}/api/v2.0/server/adminpassword"
     method: POST
     body_format: json
     status_code: [200, 204]
     headers:
-      Cookie: "{{ login_response.cookies_string }}"
+      Cookie: "{{ jackett_cookie }}"
     body: "\"{{ jackett_admin_password }}\""
+
+- name: Set {{ container }} url
+  set_fact:
+    jackett_url: "{{ subdomain }}.{{ swag_network_domains[network] }}"
+    jackett_indexer_prefix: "ansible-{{ container }}"

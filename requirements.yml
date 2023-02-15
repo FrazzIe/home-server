@@ -1,4 +1,6 @@
 ---
+collections:
+  - name: community.general
 roles:
   - name: geerlingguy.security
   - name: geerlingguy.ntp
