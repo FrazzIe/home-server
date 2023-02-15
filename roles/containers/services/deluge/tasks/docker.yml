@@ -1,7 +1,7 @@
 - name: Create / Run {{ container }} container
   docker_container:
     name: "{{ container }}"
-    image: ghcr.io/binhex/arch-delugevpn:test
+    image: ghcr.io/binhex/arch-delugevpn:latest
     networks:
       - name: "docker_macvlan"
         ipv4_address: "{{ (netplan_base, deluge_address) | join('.') }}"
