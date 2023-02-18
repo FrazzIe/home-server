@@ -84,17 +84,17 @@
         - container
         - deluge
 
-    - role: containers/services/jackett
+    - role: containers/media/jackett
       tags:
         - container
         - jackett
 
-    - role: containers/services/sonarr
+    - role: containers/media/sonarr
       tags:
         - container
         - sonarr
 
-    - role: containers/services/jellyfin
+    - role: containers/media/jellyfin
       tags:
         - container
         - jellyfin
