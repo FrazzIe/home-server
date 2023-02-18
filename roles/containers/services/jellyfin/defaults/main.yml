@@ -1,0 +1,7 @@
+---
+
+container: jellyfin
+subdomain: jellyfin
+network: "{{ swag_network.public }}"
+homepage_group: media
+homepage_description: Media streaming
