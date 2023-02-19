@@ -108,5 +108,6 @@
       tags:
         - container
         - authelia
+
   tasks:
     - include_tasks: tasks/get_docker_container_state.yml

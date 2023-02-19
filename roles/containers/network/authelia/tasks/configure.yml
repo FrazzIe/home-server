@@ -1,0 +1,4 @@
+- name: Install authelia configuration
+  template:
+    src: configuration.yml.j2
+    dest: "{{ docker_dir }}/{{ container }}/configuration.yml"
