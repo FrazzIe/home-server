@@ -1,0 +1,33 @@
+- name: Set {{ container }} database
+  set_fact:
+    authelia_database: "{{ container }}_{{ network }}"
+
+- name: Create {{ container }} db user script
+  copy:
+    content: |
+      CREATE USER IF NOT EXISTS {{ authelia_storage_user }}@localhost IDENTIFIED BY '{{ authelia_storage_password }}';
+      GRANT USAGE, EXECUTE, SELECT, SHOW VIEW, ALTER, ALTER ROUTINE, CREATE, CREATE ROUTINE, CREATE TEMPORARY TABLES, CREATE VIEW, DELETE, DROP, EVENT, INDEX, INSERT, REFERENCES, TRIGGER, UPDATE  ON `{{ container }}_%`.* TO {{ authelia_storage_user }}@localhost;
+    dest: "{{ docker_dir }}/{{ mariadb_container }}/{{ container }}_user.sql"
+
+- name: Execute {{ container }} db user script
+  community.docker.docker_container_exec:
+    container: "{{ mariadb_container }}"
+    argv:
+      - /bin/bash
+      - "-c"
+      - "mysql --user=root --password={{ mariadb_root_password }} < /{{ mariadb_script_directory }}/{{ container }}_user.sql"
+    chdir: /root
+
+- name: Remove {{ container }} db user script
+  file:
+    path: "{{ docker_dir }}/{{ mariadb_container }}/{{ container }}_user.sql"
+    state: absent
+
+- name: Create {{ container }} db
+  community.docker.docker_container_exec:
+    container: "{{ mariadb_container }}"
+    argv:
+      - /bin/bash
+      - "-c"
+      - "mysql --user=root --password={{ mariadb_root_password }} -e \"CREATE DATABASE IF NOT EXISTS {{ authelia_database }}\""
+    chdir: /root
