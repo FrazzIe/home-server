@@ -30,4 +30,10 @@ vpn_password:
 # Jackett admin password
 jackett_admin_password: 
 jackett_api_key: 
+
+# MariaDB
+mariadb_user: 
+mariadb_user_password: 
+mariadb_root_password: 
+
 ```

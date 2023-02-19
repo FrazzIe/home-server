@@ -67,6 +67,11 @@
         - docker-socket
         - socket-proxy
 
+    - role: containers/network/mariadb
+      tags:
+        - container
+        - mariadb
+
     - role: containers/services/vaultwarden
       tags:
         - container

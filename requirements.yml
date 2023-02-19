@@ -1,6 +1,7 @@
 ---
 collections:
   - name: community.general
+  - name: community.docker
 roles:
   - name: geerlingguy.security
   - name: geerlingguy.ntp

@@ -1,0 +1,4 @@
+mariadb_container: mariadb
+mariadb_network: "{{ mariadb_container }}_bridge"
+mariadb_socket: "{{ mariadb_container }}_socket"
+mariadb_script_directory: ansible_managed
