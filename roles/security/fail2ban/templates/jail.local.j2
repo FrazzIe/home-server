@@ -7,7 +7,7 @@ maxretry = 3
 ignoreip = 127.0.0.1/8 ::1 {{ ansible_host }}/24
 action = %(action_mwl)s
 destemail = {{ target_email }}
-sender = {{ sender_email }}
+sender = {{ snapraid_sender_email }}
 sendername = Fail2Ban - Report
 
 [sshd]

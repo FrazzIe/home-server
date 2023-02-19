@@ -8,13 +8,13 @@
 # Will email on any errors
 
 # Email address that composes and sends the email
-sender_email:
-sender_password:
-sender_smtp_host:
-sender_smtp_port:
+snapraid_sender_email:
+snapraid_sender_password:
+snapraid_sender_smtp_host:
+snapraid_sender_smtp_port:
 
 # Email address that receives the email
-target_email:
+snapraid_target_email:
 
 # Cloudflare API tokens
 cloudflare_firewall_token:
