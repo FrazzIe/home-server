@@ -1,0 +1,5 @@
+---
+
+container: authelia
+subdomain: auth
+network: "{{ swag_network.public }}"

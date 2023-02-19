@@ -1,0 +1,23 @@
+- name: Create / Run {{ container }} container
+  docker_container:
+    name: "{{ container }}"
+    image: ghcr.io/authelia/authelia:latest
+    pull: true
+    state: started
+    env:
+      AUTHELIA_JWT_SECRET: "{{ authelia_jwt_secret }}"
+      AUTHELIA_SESSION_SECRET: "{{ authelia_session_secret }}"
+      AUTHELIA_STORAGE_MYSQL_PASSWORD: "{{ authelia_storage_password }}"
+      AUTHELIA_STORAGE_ENCRYPTION_KEY: "{{ authelia_storage_key }}"
+    ports:
+      - "9091:9091"
+    volumes:
+      - "{{ docker_dir }}/{{ container }}:/config"
+      - "{{ mariadb_socket }}:/mysql"
+    restart_policy: unless-stopped
+
+- name: Set target_container to {{ container }}
+  set_fact:
+    target_container: "{{ container }}"
+
+- include_tasks: get_single_docker_container_ready.yml
