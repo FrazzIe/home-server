@@ -36,4 +36,11 @@ mariadb_user:
 mariadb_user_password: 
 mariadb_root_password: 
 
+# Authelia
+authelia_storage_key: 
+authelia_jwt_secret: 
+authelia_session_secret: 
+# Authelia MariaDB
+authelia_storage_user: 
+authelia_storage_password: 
 ```
