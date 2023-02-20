@@ -45,7 +45,7 @@ server:
 
   ## Set the single level path Authelia listens on.
   ## Must be alphanumeric chars and should not contain any slashes.
-  path: ""
+  path: "authelia"
 
   ## Set the path on disk to Authelia assets.
   ## Useful to allow overriding of specific static assets.
@@ -890,7 +890,7 @@ storage:
   mysql:
     host: /mysql/mysqld.sock
     # port: 3306
-    database: "{{ authelia_database }}"
+    database: "{{ item.container }}"
     username: "{{ authelia_storage_user }}"
     ## Password can also be set using a secret: https://www.authelia.com/c/secrets
     # password: mypassword
