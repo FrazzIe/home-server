@@ -4,6 +4,16 @@
     state: directory
   loop: "{{ containers }}"
 
+- include_tasks: get_docker_container_defaults.yml
+
+- name: Get a list of container specific authelia rules
+  delegate_to: localhost
+  become: false
+  set_fact:
+    container_authelia_rules: "{{ container_authelia_rules | default([]) + [ item | combine({ 'authelia_rules': item.authelia_rules | map('combine', { 'domain': item.subdomain + '.' + swag_network_domains[item.network] }) }) ] }}"
+  loop: "{{ container_defaults }}"
+  when: item.subdomain is defined and item.network is defined and item.authelia_rules is defined
+
 - name: Install {{ container_root }} configuration
   template:
     src: configuration.yml.j2
