@@ -25,9 +25,6 @@
     xpath: /Config/AnalyticsEnabled
     value: "False"
 
-- debug:
-    var: sonarr_api_key
-
 - name: Restart {{ container }} container
   docker_container:
     name: "{{ container }}"
