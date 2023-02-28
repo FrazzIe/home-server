@@ -28,3 +28,7 @@
   tags:
     - netplan
   when: netplan_config is defined
+
+- name: Get public ip address
+  community.general.ipify_facts:
+  failed_when: ipify_public_ip is not defined

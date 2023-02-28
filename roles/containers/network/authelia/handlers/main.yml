@@ -1,0 +1,18 @@
+- name: disable ansible network
+  set_fact:
+    authelia_public_ip_bypass: false
+
+- name: reinstall authelia configuration
+  template:
+    src: configuration.yml.j2
+    dest: "{{ docker_dir }}/{{ item.container }}/configuration.yml"
+  loop: "{{ containers }}"
+  listen: "disable ansible network"
+
+- name: restart authelia containers
+  docker_container:
+    name: "{{ item.container }}"
+    state: started
+    restart: true
+  loop: "{{ containers }}"
+  listen: "disable ansible network"

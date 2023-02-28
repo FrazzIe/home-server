@@ -8,9 +8,8 @@ homepage_description: tv scraper
 
 authelia_rules:
   - policy: bypass
-    resources: 
-      - ^/api([/?].*)?$
-      - ^/ping$
+    networks:
+      - 'ansible'
 
 download_client_defaults:
   enable: true
