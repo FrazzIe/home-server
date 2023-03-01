@@ -10,13 +10,13 @@
   delegate_to: localhost
   become: false
   set_fact:
-    container_authelia_rules: "{{ container_authelia_rules | default([]) + [ item | combine({ 'authelia_rules': item.authelia_rules | map('combine', { 'domain': item.subdomain + '.' + swag_network_domains[item.network] }) }) ] }}"
+    container_authelia_rules: "{{ container_authelia_rules | default([]) + [ item | combine({ 'authelia_rules': item.authelia_rules | default([]) | map('combine', { 'domain': item.subdomain + '.' + swag_network_domains[item.network] }), 'authelia_rules_temporary': item.authelia_rules_temporary | default([]) | map('combine', { 'domain': item.subdomain + '.' + swag_network_domains[item.network] }) }) ] }}"
   loop: "{{ container_defaults }}"
-  when: item.subdomain is defined and item.network is defined and item.authelia_rules is defined
+  when: item.subdomain is defined and item.network is defined and (item.authelia_rules is defined or item.authelia_rules_temporary is defined)
 
 - name: Enable {{ container_root }} public ip bypass
   set_fact:
-    authelia_public_ip_bypass: true
+    authelia_temporary_control: true
   notify:
     - disable ansible network
   changed_when: true

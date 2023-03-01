@@ -575,16 +575,24 @@ access_control:
       networks:
         - "{{ (netplan_base, netplan_address) | join('.') }}/24"
     - name: ansible
-      networks: [ {% if authelia_public_ip_bypass == true %}"{{ ipify_public_ip }}"{% endif %} ]
+      networks: [ {% if authelia_temporary_control == true %}"{{ ipify_public_ip }}"{% endif %} ]
 
   rules:
 {% for container in container_authelia_rules %}
 {% if container.network == item.network %}
+
 {% if container.authelia_rules is defined %}
 {% for rule in container.authelia_rules %}
     - {{ rule }}
 {% endfor %}
 {% endif %}
+
+{% if container.authelia_rules_temporary is defined and authelia_temporary_control == true %}
+{% for rule in container.authelia_rules_temporary %}
+    - {{ rule }}
+{% endfor %}
+{% endif %}
+
 {% endif %}
 {% endfor %}
 

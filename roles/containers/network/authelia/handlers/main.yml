@@ -1,6 +1,6 @@
 - name: disable ansible network
   set_fact:
-    authelia_public_ip_bypass: false
+    authelia_temporary_control: false
 
 - name: reinstall authelia configuration
   template:

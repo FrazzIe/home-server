@@ -6,10 +6,9 @@ network: "{{ swag_network.public }}"
 homepage_group: media
 homepage_description: tv scraper
 
-authelia_rules:
+authelia_rules_temporary:
   - policy: bypass
-    networks:
-      - 'ansible'
+    networks: ansible
 
 download_client_defaults:
   enable: true
