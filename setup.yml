@@ -55,6 +55,11 @@
         - cloudflare
         - ddns
 
+    - role: containers/network/mariadb
+      tags:
+        - container
+        - mariadb
+
     - role: containers/network/authelia
       tags:
         - container
@@ -71,11 +76,6 @@
         - docker-socket-proxy
         - docker-socket
         - socket-proxy
-
-    - role: containers/network/mariadb
-      tags:
-        - container
-        - mariadb
 
     - role: containers/services/vaultwarden
       tags:
