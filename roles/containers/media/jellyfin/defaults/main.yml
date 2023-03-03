@@ -5,3 +5,9 @@ subdomain: jellyfin
 network: "{{ swag_network.public }}"
 homepage_group: media
 homepage_description: Media streaming
+
+jellyfin_repositories: # name: manifest
+  sso: https://raw.githubusercontent.com/9p4/jellyfin-plugin-sso/manifest-release/manifest.json
+
+jellyfin_plugins: # guid: target version
+  505ce9d1d91642fa86ca673ef241d7df: 3.4.0.0

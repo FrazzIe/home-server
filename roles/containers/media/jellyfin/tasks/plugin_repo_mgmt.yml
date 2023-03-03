@@ -1,0 +1,27 @@
+- name: Get {{ container }} plugin repositories
+  uri:
+    url: "https://{{ jellyfin_url }}/Repositories"
+    method: GET
+    status_code: 200
+    headers: "{{ jellyfin_headers }}"
+  register: result
+
+- name: Get existing {{ container }} plugin repositories
+  set_fact:
+    jellyfin_repositories_response: "{{ result.json | default([]) }}"
+    jellyfin_repositories_existing: "{{ result.json | selectattr('Name', 'defined') | map(attribute='Name') }}"
+
+- name: Add external {{ container }} plugin repositories
+  set_fact:
+    jellyfin_repositories_new: "{{ jellyfin_repositories_new | default([]) + [ item ] }}"
+  loop: "{{ jellyfin_repositories | dict2items(key_name='Name', value_name='Url') | map('combine', { 'Enabled': true }) }}"
+  when: not (item.Name in jellyfin_repositories_existing)
+
+- name: Set {{ container }} plugin repositories
+  uri:
+    url: "https://{{ jellyfin_url }}/Repositories"
+    method: POST
+    status_code: 204
+    headers: "{{ jellyfin_headers }}"
+    body_format: json
+    body: "{{ jellyfin_repositories_response + jellyfin_repositories_new | default([]) }}"

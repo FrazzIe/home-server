@@ -3,3 +3,5 @@
 - include_tasks: docker.yml
 - include_tasks: setup_wizard.yml
 - include_tasks: authenticate.yml
+- include_tasks: plugin_repo_mgmt.yml
+- include_tasks: plugin_mgmt.yml
