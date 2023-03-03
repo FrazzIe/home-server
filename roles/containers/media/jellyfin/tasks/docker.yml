@@ -28,3 +28,17 @@
     target_container: "{{ container }}"
 
 - include_tasks: get_single_docker_container_ready.yml
+
+- name: Set {{ container }} url
+  set_fact:
+    jellyfin_url: "{{ subdomain }}.{{ swag_network_domains[network] }}"
+
+- name: Wait until {{ container }} web portal is available
+  uri:
+    url: "https://{{ jellyfin_url }}"
+    method: GET
+    status_code: 200
+  register: result
+  until: result.status == 200
+  retries: 5
+  delay: 5
