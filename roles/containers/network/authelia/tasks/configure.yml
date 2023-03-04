@@ -14,6 +14,14 @@
   loop: "{{ container_defaults }}"
   when: item.subdomain is defined and item.network is defined and (item.authelia_rules is defined or item.authelia_rules_temporary is defined)
 
+- name: Get a list of container specific authelia oidc clients
+  delegate_to: localhost
+  become: false
+  set_fact:
+    container_authelia_oidc_clients: "{{ container_authelia_oidc_clients | default([]) + [ item ] }}"
+  loop: "{{ container_defaults }}"
+  when: item.subdomain is defined and item.network is defined and item.authelia_oidc_client is defined
+
 - name: Enable {{ container_root }} public ip bypass
   set_fact:
     authelia_temporary_control: true
@@ -51,4 +59,9 @@
     name: "{{ item.container }}"
     state: started
     restart: true
+  loop: "{{ containers }}"
+
+- name: Set {{ container }} url
+  set_fact:
+    authelia_url: "{{ authelia_url | default({}) | combine({ item.network: item.subdomain + '.' + swag_network_domains[item.network] }) }}"
   loop: "{{ containers }}"

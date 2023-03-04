@@ -571,9 +571,6 @@ access_control:
   default_policy: deny
 
   networks:
-    - name: internal
-      networks:
-        - "{{ (netplan_base, netplan_address) | join('.') }}/24"
     - name: ansible
       networks: [ {% if authelia_temporary_control == true %}"{{ ipify_public_ip }}"{% endif %} ]
 
@@ -1280,14 +1277,14 @@ notifier:
 ##
 ## Identity Providers
 ##
-# identity_providers:
+identity_providers:
 
   ##
   ## OpenID Connect (Identity Provider)
   ##
   ## It's recommended you read the documentation before configuration of this section:
   ## https://www.authelia.com/c/oidc
-  # oidc:
+  oidc:
     ## The hmac_secret is used to sign OAuth2 tokens (authorization code, access tokens and refresh tokens).
     ## HMAC Secret can also be set using a secret: https://www.authelia.com/c/secrets
     # hmac_secret: this_is_a_secret_abc123abc123abc
@@ -1403,7 +1400,12 @@ notifier:
       # allowed_origins_from_client_redirect_uris: false
 
     ## Clients is a list of known clients and their configuration.
-    # clients:
+    clients:
+{% for container in container_authelia_oidc_clients %}
+{% if container.network == item.network %}
+      - {{ container.authelia_oidc_client | combine({ 'redirect_uris': container.authelia_oidc_client.redirect_uris | map('regex_replace', '(_domain_)', container.subdomain + '.' + swag_network_domains[container.network]) }) }}
+{% endif %}
+{% endfor %}
       # -
         ## The ID is the OpenID Connect ClientID which is used to link an application to a configuration.
         # id: myapp
