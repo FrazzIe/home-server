@@ -1,0 +1,57 @@
+- name: Set single sign-on {{ container }} plugin id
+  set_fact:
+    jellyfin_sso_plugin_id: 505ce9d1d91642fa86ca673ef241d7df
+
+- name: Get single sign-on {{ container }} plugin configuration
+  uri:
+    url: "https://{{ jellyfin_url }}/Plugins/{{ jellyfin_sso_plugin_id }}/Configuration"
+    method: GET
+    status_code: 200
+    headers: "{{ jellyfin_headers }}"
+  register: result
+
+- name: Store single sign-on {{ container }} plugin configuration
+  set_fact:
+    jellyfin_sso_plugin_config: "{{ result.json }}"
+
+- name: Retrieve authelia oidc provider configuration
+  set_fact:
+    jellyfin_sso_plugin_provider: "{{ jellyfin_sso_plugin_config.OidConfigs.authelia }}"
+  when: jellyfin_sso_plugin_config.OidConfigs['authelia'] is defined
+
+- name: Add authelia oidc provider
+  set_fact:
+    jellyfin_sso_plugin_provider:
+      Enabled: true
+      EnableAuthorization: false
+      EnableAllFolders: true
+      EnabledFolders: []
+      AdminRoles: []
+      Roles: []
+      EnableFolderRoles: false
+      FolderRoleMapping: []
+      RoleClaim: groups
+      OidScopes:
+        - groups
+      DefaultProvider: Jellyfin.Server.Implementations.Users.DefaultAuthenticationProvider
+      CanonicalLinks: {}
+      OidProviderName: authelia
+  when: not (jellyfin_sso_plugin_config.OidConfigs['authelia'] is defined)
+
+- name: Update authelia oidc provider
+  set_fact:
+    jellyfin_sso_plugin_provider: "{{ jellyfin_sso_plugin_provider | combine(jellyfin_sso_plugin_provider_properties) }}"
+  vars:
+    jellyfin_sso_plugin_provider_properties:
+      OidEndpoint: "https://{{ authelia_url[network] }}/.well-known/openid-configuration"
+      OidClientId: "{{ authelia_oidc_client.id }}"
+      OidSecret: "{{ authelia_oidc_client.secret }}"
+
+- name: Set single sign-on {{ container }} plugin configuration
+  uri:
+    url: "https://{{ jellyfin_url }}/Plugins/{{ jellyfin_sso_plugin_id }}/Configuration"
+    method: POST
+    status_code: 204
+    headers: "{{ jellyfin_headers }}"
+    body_format: json
+    body: "{{ jellyfin_sso_plugin_config | combine({ 'OidConfigs': jellyfin_sso_plugin_config.OidConfigs | combine({ 'authelia': jellyfin_sso_plugin_provider }) }) }}"
