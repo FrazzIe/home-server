@@ -43,7 +43,7 @@
     status_code: 204
     headers: "{{ jellyfin_headers }}"
   loop: "{{ jellyfin_plugins_new }}"
-  when: jellyfin_plugins_new | length > 0
+  when: jellyfin_plugins_new is defined
 
 - name: Restart {{ container }}
   uri:
@@ -51,6 +51,6 @@
     method: POST
     status_code: 204
     headers: "{{ jellyfin_headers }}"
-  when: jellyfin_plugins_new | length > 0
+  when: jellyfin_plugins_new is defined
 
   
