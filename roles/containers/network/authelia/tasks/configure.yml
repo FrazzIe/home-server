@@ -35,6 +35,12 @@
     dest: "{{ docker_dir }}/{{ item.container }}/configuration.yml"
   loop: "{{ containers }}"
 
+- name: Create {{ container_root }} swag data directory
+  file:
+    path: "{{ docker_dir }}/swag/{{ item.network }}/nginx"
+    state: directory
+  loop: "{{ containers }}"
+
 - name: Install {{ container_root }} swag nginx location conf
   template:
     src: authelia-location.conf.j2
@@ -48,20 +54,5 @@
   loop: "{{ containers }}"
 
 - name: Restart swag containers
-  docker_container:
-    name: "swag_{{ item.network }}"
-    state: started
-    restart: true
-  loop: "{{ containers }}"
-
-- name: Restart {{ container_root }} containers
-  docker_container:
-    name: "{{ item.container }}"
-    state: started
-    restart: true
-  loop: "{{ containers }}"
-
-- name: Set {{ container }} url
-  set_fact:
-    authelia_url: "{{ authelia_url | default({}) | combine({ item.network: item.subdomain + '.' + swag_network_domains[item.network] }) }}"
-  loop: "{{ containers }}"
+  include_tasks: "restart_docker_container.yml"
+  loop: "{{ ['swag_'] | product(containers | selectattr('network', 'defined') | map(attribute='network')) | map('join') }}"  
