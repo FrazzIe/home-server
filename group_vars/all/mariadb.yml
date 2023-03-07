@@ -1,4 +1,12 @@
 mariadb_container: mariadb
-mariadb_network: "{{ mariadb_container }}_bridge"
 mariadb_socket: "{{ mariadb_container }}_socket"
 mariadb_script_directory: ansible_managed
+
+mariadb_network:
+  name: "{{ mariadb_container }}_bridge"
+  base: 172.20.0
+  subnet: 0/28
+  gateway: 1
+  address: 2
+
+mariadb_network_address: "{{ (mariadb_network.base, mariadb_network.address) | join('.') }}"
