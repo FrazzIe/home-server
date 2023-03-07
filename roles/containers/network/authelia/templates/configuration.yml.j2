@@ -273,7 +273,7 @@ authentication_backend:
   ## See the below documentation for more information.
   ## Duration Notation docs:  https://www.authelia.com/c/common#duration-notation-format
   ## Refresh Interval docs: https://www.authelia.com/c/1fa#refresh-interval
-  refresh_interval: 5m
+  refresh_interval: 1m
 
   ##
   ## LDAP (Authentication Provider)
@@ -281,7 +281,7 @@ authentication_backend:
   ## This is the recommended Authentication Provider in production
   ## because it allows Authelia to offload the stateful operations
   ## onto the LDAP service.
-  # ldap:
+  ldap:
     ## The LDAP implementation, this affects elements like the attribute utilised for resetting a password.
     ## Acceptable options are as follows:
     ## - 'activedirectory' - For Microsoft Active Directory.
@@ -291,17 +291,17 @@ authentication_backend:
     ## Depending on the option here certain other values in this section have a default value, notably all of the
     ## attribute mappings have a default value that this config overrides, you can read more about these default values
     ## at https://www.authelia.com/c/ldap#defaults
-    # implementation: custom
+    implementation: custom
 
     ## The url to the ldap server. Format: <scheme>://<address>[:<port>].
     ## Scheme can be ldap or ldaps in the format (port optional).
-    # url: ldap://127.0.0.1
+    url: ldap://lldap_{{ item.network }}:3890
 
     ## The dial timeout for LDAP.
-    # timeout: 5s
+    timeout: 5s
 
     ## Use StartTLS with the LDAP connection.
-    # start_tls: false
+    start_tls: false
 
     # tls:
       ## The server subject name to check the servers certificate against during the validation process.
@@ -397,7 +397,7 @@ authentication_backend:
 
     ## The distinguished name of the container searched for objects in the directory information tree.
     ## See also: additional_users_dn, additional_groups_dn.
-    # base_dn: dc=example,dc=com
+    base_dn: "{{ ['dc='] | product(swag_network_domains[item.network] | split('.')) | map('join') | join(',') }}"
 
     ## The attribute holding the username of the user. This attribute is used to populate the username in the session
     ## information. For your information, Microsoft Active Directory usually uses 'sAMAccountName' and OpenLDAP usually
@@ -407,11 +407,11 @@ authentication_backend:
     ## non-unique attributes like 'mail' can also be used but we don't recommend using them, we instead advise to use
     ## a filter to perform alternative lookups and the attributes mentioned above (sAMAccountName and uid) to
     ## follow https://www.ietf.org/rfc/rfc2307.txt.
-    # username_attribute: uid
+    username_attribute: uid
 
     ## The additional_users_dn is prefixed to base_dn and delimited by a comma when searching for users.
     ## i.e. with this set to OU=Users and base_dn set to DC=a,DC=com; OU=Users,DC=a,DC=com is searched for users.
-    # additional_users_dn: ou=users
+    additional_users_dn: ou=people
 
     ## The users filter used in search queries to find the user profile based on input filled in login form.
     ## Various placeholders are available in the user filter which you can read about in the documentation which can
@@ -425,11 +425,11 @@ authentication_backend:
     ##
     ## To allow sign in both with username and email, one can use a filter like
     ## (&(|({username_attribute}={input})({mail_attribute}={input}))(objectClass=person))
-    # users_filter: (&({username_attribute}={input})(objectClass=person))
+    users_filter: (&({username_attribute}={input})(objectClass=person))
 
     ## The additional_groups_dn is prefixed to base_dn and delimited by a comma when searching for groups.
     ## i.e. with this set to OU=Groups and base_dn set to DC=a,DC=com; OU=Groups,DC=a,DC=com is searched for groups.
-    # additional_groups_dn: ou=groups
+    additional_groups_dn: ou=groups
 
     ## The groups filter used in search queries to find the groups based on relevant authenticated user.
     ## Various placeholders are available in the groups filter which you can read about in the documentation which can
@@ -437,24 +437,24 @@ authentication_backend:
     ##
     ## If your groups use the `groupOfUniqueNames` structure use this instead:
     ##    (&(uniqueMember={dn})(objectClass=groupOfUniqueNames))
-    # groups_filter: (&(member={dn})(objectClass=groupOfNames))
+    groups_filter: (member={dn})
 
     ## The attribute holding the name of the group.
-    # group_name_attribute: cn
+    group_name_attribute: cn
 
     ## The attribute holding the mail address of the user. If multiple email addresses are defined for a user, only the
     ## first one returned by the LDAP server is used.
-    # mail_attribute: mail
+    mail_attribute: mail
 
     ## The attribute holding the display name of the user. This will be used to greet an authenticated user.
-    # display_name_attribute: displayName
+    display_name_attribute: displayName
 
     ## Follow referrals returned by the server.
     ## This is especially useful for environments where read-only servers exist. Only implemented for write operations.
     # permit_referrals: false
 
     ## The username and password of the admin user.
-    # user: cn=admin,dc=example,dc=com
+    user: uid={{ lldap_ldap_user }},ou=people,{{ ['dc='] | product(swag_network_domains[item.network] | split('.')) | map('join') | join(',') }}
     ## Password can also be set using a secret: https://www.authelia.com/c/secrets
     # password: password
 
@@ -470,21 +470,21 @@ authentication_backend:
   ##
   ## Important: Kubernetes (or HA) users must read https://www.authelia.com/t/statelessness
   ##
-  file:
-    path: /config/users_database.yml
-    watch: false
-    search:
-      email: false
-      case_insensitive: false
-    password:
-      algorithm: argon2
-      argon2:
-        variant: argon2id
-        iterations: 3
-        memory: 65536
-        parallelism: 4
-        key_length: 32
-        salt_length: 16
+  # file:
+  #   path: /config/users_database.yml
+  #   watch: false
+  #   search:
+  #     email: false
+  #     case_insensitive: false
+  #   password:
+  #     algorithm: argon2
+  #     argon2:
+  #       variant: argon2id
+  #       iterations: 3
+  #       memory: 65536
+  #       parallelism: 4
+  #       key_length: 32
+  #       salt_length: 16
       # scrypt:
         # iterations: 16
         # block_size: 8
