@@ -52,4 +52,11 @@ authelia_oidc_issuer_private_key: |
 # Jellyfin <--> Authelia OIDC (not used as 05/03/2023)
 jellyfin_authelia_oidc_secret:
 
+# LLDAP
+lldap_jwt_secret: 
+lldap_ldap_user: 
+lldap_ldap_password: 
+lldap_mysql_user: 
+lldap_mysql_password: 
+
 ```

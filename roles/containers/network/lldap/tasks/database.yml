@@ -1,0 +1,30 @@
+- name: Create {{ container_root }} db user script
+  copy:
+    content: |
+      CREATE USER IF NOT EXISTS {{ lldap_mysql_user }}@`{{ (mariadb_network.base, '%') | join('.') }}` IDENTIFIED BY '{{ lldap_mysql_password }}';
+      GRANT USAGE, EXECUTE, SELECT, SHOW VIEW, ALTER, ALTER ROUTINE, CREATE, CREATE ROUTINE, CREATE TEMPORARY TABLES, CREATE VIEW, DELETE, DROP, EVENT, INDEX, INSERT, REFERENCES, TRIGGER, UPDATE  ON `{{ container_root }}_%`.* TO {{ lldap_mysql_user }}@`{{ (mariadb_network.base, '%') | join('.') }}`;
+    dest: "{{ docker_dir }}/{{ mariadb_container }}/{{ container_root }}_user.sql"
+
+- name: Execute {{ container_root }} db user script
+  community.docker.docker_container_exec:
+    container: "{{ mariadb_container }}"
+    argv:
+      - /bin/bash
+      - "-c"
+      - "mysql --user=root --password={{ mariadb_root_password }} < /{{ mariadb_script_directory }}/{{ container_root }}_user.sql"
+    chdir: /root
+
+- name: Remove {{ container_root }} db user script
+  file:
+    path: "{{ docker_dir }}/{{ mariadb_container }}/{{ container_root }}_user.sql"
+    state: absent
+
+- name: Create {{ container_root }} db
+  community.docker.docker_container_exec:
+    container: "{{ mariadb_container }}"
+    argv:
+      - /bin/bash
+      - "-c"
+      - "mysql --user=root --password={{ mariadb_root_password }} -e \"CREATE DATABASE IF NOT EXISTS {{ item.container }}\""
+    chdir: /root
+  loop: "{{ containers }}"

@@ -60,6 +60,11 @@
         - container
         - mariadb
 
+    - role: containers/network/lldap
+      tags:
+        - container
+        - lldap
+
     - role: containers/network/authelia
       tags:
         - container
@@ -108,6 +113,5 @@
       tags:
         - container
         - jellyfin
-
   tasks:
     - include_tasks: tasks/get_docker_container_state.yml

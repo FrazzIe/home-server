@@ -1,0 +1,8 @@
+---
+
+container_root: lldap
+
+containers:
+  - container: "lldap_{{ swag_network.public }}"
+    subdomain: lldap
+    network: "{{ swag_network.public }}"

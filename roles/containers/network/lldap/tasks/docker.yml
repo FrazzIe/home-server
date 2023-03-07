@@ -1,0 +1,32 @@
+- name: Create / Run {{ container_root }} container
+  docker_container:
+    name: "{{ item.container }}"
+    image: nitnelave/lldap:latest
+    networks:
+      - name: "{{ mariadb_network.name }}"
+      - name: "swag_{{ item.network }}_bridge"
+    pull: true
+    state: started
+    env:
+      UID: "{{ target_username_puid }}"
+      GID: "{{ target_username_pgid }}"
+      TZ: "{{ timezone }}"
+      LLDAP_JWT_SECRET: "{{ lldap_jwt_secret }}"
+      LLDAP_LDAP_USER_DN: "{{ lldap_ldap_user }}"
+      LLDAP_LDAP_USER_PASS: "{{ lldap_ldap_password }}"
+      LLDAP_LDAP_BASE_DN: "{{ ['dc='] | product(swag_network_domains[item.network] | split('.')) | map('join') | join(',') }}"
+      LLDAP_DATABASE_URL: "mysql://{{ lldap_mysql_user }}:{{ lldap_mysql_password }}@{{ mariadb_container }}/{{ item.container }}"
+    ports:
+      - "3890:3890"
+      - "17170:17170"
+    volumes:
+      - "{{ docker_dir }}/{{ item.container }}:/data"
+    restart_policy: unless-stopped
+  loop: "{{ containers }}"
+
+- name: Restart {{ container_root }} containers
+  docker_container:
+    name: "{{ item.container }}"
+    state: started
+    restart: true
+  loop: "{{ containers }}"

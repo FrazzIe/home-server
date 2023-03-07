@@ -1,0 +1,8 @@
+---
+
+- include_tasks: database.yml
+- include_tasks: docker.yml
+
+- include_tasks: get_docker_container_defaults.yml
+- debug:
+    var: container_defaults
