@@ -12,10 +12,10 @@ jellyfin_repositories: # name: manifest
 jellyfin_plugins: # guid: target version
   505ce9d1d91642fa86ca673ef241d7df: 3.4.0.0
 
-authelia_oidc_client:
-  id: jellyfin
-  description: My media server
-  secret: "{{ jellyfin_authelia_oidc_secret }}"
-  authorization_policy: one_factor
-  redirect_uris:
-    - https://_domain_/sso/OID/r/authelia
+# authelia_oidc_client:
+#   id: jellyfin
+#   description: My media server
+#   secret: "{{ jellyfin_authelia_oidc_secret }}"
+#   authorization_policy: one_factor
+#   redirect_uris:
+#     - https://_domain_/sso/OID/r/authelia

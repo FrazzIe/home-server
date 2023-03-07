@@ -1277,6 +1277,7 @@ notifier:
 ##
 ## Identity Providers
 ##
+{% if container_authelia_oidc_clients is defined %}
 identity_providers:
 
   ##
@@ -1467,4 +1468,5 @@ identity_providers:
 
         ## The algorithm used to sign userinfo endpoint responses for this client, either none or RS256.
         # userinfo_signing_algorithm: none
+{% endif %}
 ...
