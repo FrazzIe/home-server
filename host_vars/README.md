@@ -43,9 +43,13 @@ authelia_session_secret:
 # Authelia MariaDB
 authelia_storage_user: 
 authelia_storage_password: 
-# Authelia OIDC
+# Authelia OIDC (not used as 05/03/2023)
 authelia_oidc_hmac_secret: 
 authelia_oidc_issuer_private_key: |
     -----BEGIN RSA PRIVATE KEY-----
     -----END RSA PRIVATE KEY-----
+
+# Jellyfin <--> Authelia OIDC (not used as 05/03/2023)
+jellyfin_authelia_oidc_secret:
+
 ```
