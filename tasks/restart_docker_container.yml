@@ -1,11 +1,11 @@
 - name: Get container info
   docker_container_info:
-    name: "{{ item }}"
+    name: "{{ target_container }}"
   register: result
 
 - name: Restart container
   docker_container:
-    name: "{{ item }}"
+    name: "{{ target_container }}"
     state: started
     restart: true
   when: result.exists

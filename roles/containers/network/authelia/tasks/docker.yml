@@ -1,9 +1,9 @@
-- name: Create / Run {{ container_root }} container
+- name: Create / Run {{ container }} container
   docker_container:
-    name: "{{ item.container }}"
+    name: "{{ container }}"
     image: ghcr.io/authelia/authelia:latest
     networks:
-      - name: "swag_{{ item.network }}_bridge"
+      - name: "swag_{{ network }}_bridge"
       - name: "docker_macvlan"
         ipv4_address: "{{ (netplan_base, 23) | join('.') }}" # probably remove this
     pull: true
@@ -19,7 +19,6 @@
     ports:
       - "9091:9091"
     volumes:
-      - "{{ docker_dir }}/{{ item.container }}:/config"
+      - "{{ docker_dir }}/{{ container }}:/config"
       - "{{ mariadb_socket }}:/mysql"
     restart_policy: unless-stopped
-  loop: "{{ containers }}"

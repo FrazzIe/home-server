@@ -3,4 +3,4 @@
 container: lldap
 subdomain: lldap
 network: "{{ swag_network.public }}"
-database: lldap_main
+database: main

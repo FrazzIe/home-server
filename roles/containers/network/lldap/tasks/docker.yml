@@ -15,7 +15,7 @@
       LLDAP_LDAP_USER_DN: "{{ lldap_ldap_user }}"
       LLDAP_LDAP_USER_PASS: "{{ lldap_ldap_password }}"
       LLDAP_LDAP_BASE_DN: "{{ ['dc='] | product(swag_network_domains[network] | split('.')) | map('join') | join(',') }}"
-      LLDAP_DATABASE_URL: "mysql://{{ lldap_mysql_user }}:{{ lldap_mysql_password }}@{{ mariadb_container }}/{{ database }}"
+      LLDAP_DATABASE_URL: "mysql://{{ lldap_mysql_user }}:{{ lldap_mysql_password }}@{{ mariadb_container }}/{{ container }}_{{ database }}"
     ports:
       - "3890:3890"
       - "17170:17170"
@@ -23,7 +23,7 @@
       - "{{ docker_dir }}/{{ container }}:/data"
     restart_policy: unless-stopped
 
-- name: Restart {{ container_root }} containers
+- name: Restart {{ container }} containers
   docker_container:
     name: "{{ container }}"
     state: started

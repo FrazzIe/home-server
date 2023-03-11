@@ -1,21 +1,20 @@
-- name: Create {{ container_root }} swag data directory
+- name: Create {{ container }} swag data directory
   file:
-    path: "{{ docker_dir }}/swag/{{ item.network }}/nginx"
+    path: "{{ docker_dir }}/swag/{{ network }}/nginx"
     state: directory
-  loop: "{{ containers }}"
 
-- name: Install {{ container_root }} swag nginx location conf
+- name: Install {{ container }} swag nginx location conf
   template:
     src: authelia-location.conf.j2
-    dest: "{{ docker_dir }}/swag/{{ item.network }}/nginx/authelia-location.conf"
-  loop: "{{ containers }}"
+    dest: "{{ docker_dir }}/swag/{{ network }}/nginx/authelia-location.conf"
 
-- name: Install {{ container_root }} swag nginx server conf
+
+- name: Install {{ container }} swag nginx server conf
   template:
     src: authelia-server.conf.j2
-    dest: "{{ docker_dir }}/swag/{{ item.network }}/nginx/authelia-server.conf"
-  loop: "{{ containers }}"
+    dest: "{{ docker_dir }}/swag/{{ network }}/nginx/authelia-server.conf"
 
 - name: Restart swag containers
   include_tasks: "restart_docker_container.yml"
-  loop: "{{ ['swag_'] | product(containers | selectattr('network', 'defined') | map(attribute='network')) | map('join') }}"
+  vars:
+    target_container: swag_{{ network }}

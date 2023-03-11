@@ -1,5 +1,5 @@
 # https://www.authelia.com/integration/proxies/nginx/#authelia-locationconf
-set $upstream_authelia http://{{ item.container }}:9091/api/verify;
+set $upstream_authelia http://{{ container }}:9091/api/verify;
 
 ## Virtual endpoint created by nginx to forward auth requests.
 location /authelia {

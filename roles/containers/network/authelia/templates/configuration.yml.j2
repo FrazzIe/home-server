@@ -25,7 +25,7 @@ jwt_secret: a_very_important_secret
 ## in such a case.
 ##
 ## Note: this parameter is optional. If not provided, user won't be redirected upon successful authentication.
-default_redirection_url: "https://home.{{ swag_network_domains[item.network] }}/"
+default_redirection_url: "https://home.{{ swag_network_domains[network] }}/"
 
 ## Set the default 2FA method for new users and for when a user has a preferred method configured that has been
 ## disabled. This setting must be a method that is enabled.
@@ -295,7 +295,7 @@ authentication_backend:
 
     ## The url to the ldap server. Format: <scheme>://<address>[:<port>].
     ## Scheme can be ldap or ldaps in the format (port optional).
-    url: ldap://lldap_{{ item.network }}:3890
+    url: ldap://lldap:3890
 
     ## The dial timeout for LDAP.
     timeout: 5s
@@ -397,7 +397,7 @@ authentication_backend:
 
     ## The distinguished name of the container searched for objects in the directory information tree.
     ## See also: additional_users_dn, additional_groups_dn.
-    base_dn: "{{ ['dc='] | product(swag_network_domains[item.network] | split('.')) | map('join') | join(',') }}"
+    base_dn: "{{ ['dc='] | product(swag_network_domains[network] | split('.')) | map('join') | join(',') }}"
 
     ## The attribute holding the username of the user. This attribute is used to populate the username in the session
     ## information. For your information, Microsoft Active Directory usually uses 'sAMAccountName' and OpenLDAP usually
@@ -454,7 +454,7 @@ authentication_backend:
     # permit_referrals: false
 
     ## The username and password of the admin user.
-    user: uid={{ lldap_ldap_user }},ou=people,{{ ['dc='] | product(swag_network_domains[item.network] | split('.')) | map('join') | join(',') }}
+    user: uid={{ lldap_ldap_user }},ou=people,{{ ['dc='] | product(swag_network_domains[network] | split('.')) | map('join') | join(',') }}
     ## Password can also be set using a secret: https://www.authelia.com/c/secrets
     # password: password
 
@@ -594,8 +594,8 @@ access_control:
 {% endfor %}
 
     - domain:
-      - "{{ swag_network_domains[item.network] }}"
-      - "*.{{ swag_network_domains[item.network] }}"
+      - "{{ swag_network_domains[item] }}"
+      - "*.{{ swag_network_domains[item] }}"
       policy: two_factor
 
 ##
@@ -610,7 +610,7 @@ session:
   ## The domain to protect.
   ## Note: the authenticator must also be in that domain.
   ## If empty, the cookie is restricted to the subdomain of the issuer.
-  domain: "{{ swag_network_domains[item.network] }}"
+  domain: "{{ swag_network_domains[network] }}"
 
   ## Sets the Cookie SameSite value. Possible options are none, lax, or strict.
   ## Please read https://www.authelia.com/c/session#same_site
@@ -829,7 +829,7 @@ storage:
   mysql:
     host: /mysql/mysqld.sock
     # port: 3306
-    database: "{{ item.container }}"
+    database: "{{ container }}_{{ database }}"
     username: "{{ authelia_storage_user }}"
     ## Password can also be set using a secret: https://www.authelia.com/c/secrets
     # password: mypassword

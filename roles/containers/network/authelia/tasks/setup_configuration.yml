@@ -16,7 +16,7 @@
   loop: "{{ container_defaults }}"
   when: item.subdomain is defined and item.network is defined and item.authelia_oidc_client is defined
 
-- name: Enable {{ container_root }} public ip bypass
+- name: Enable {{ container }} public ip bypass
   set_fact:
     authelia_temporary_control: true
   notify:
