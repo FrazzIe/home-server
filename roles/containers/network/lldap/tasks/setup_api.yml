@@ -1,0 +1,30 @@
+
+- name: Set {{ container_root }} url
+  set_fact:
+    lldap_url: "{{ containers[0].subdomain }}.{{ swag_network_domains[containers[0].network] }}"
+
+- name: Wait until {{ container_root }} web portal is available
+  uri:
+    url: "https://{{ lldap_url }}"
+    method: GET
+    status_code: 200
+  register: result
+  until: result.status == 200
+  retries: 5
+  delay: 5
+
+- name: Wait until {{ container_root }} web portal is available
+  uri:
+    url: "https://{{ lldap_url }}/auth/simple/login"
+    method: POST
+    status_code: 200
+    body_format: json
+    body:
+      username: "{{ lldap_ldap_user }}"
+      password: "{{ lldap_ldap_password }}"
+  register: result
+
+- name: Create {{ container_root }} authentication headers
+  set_fact:
+    lldap_headers:
+      Authorization: Bearer {{ result.json.token }}
