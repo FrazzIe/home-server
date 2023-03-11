@@ -1,7 +1,7 @@
 - name: Get existing groups
   uri:
     url: https://{{ lldap_url }}/api/graphql
-    method: GET
+    method: POST
     status_code: 200
     headers: "{{ lldap_headers }}"
     body_format: json
@@ -16,4 +16,4 @@
 
 - name: Store existing groups
   set_fact:
-    lldap_groups_existing: "{{ result.json | selectattr('displayName', 'defined') | map(attribute='displayName') }}"
+    lldap_groups_existing: "{{ result.json.data.groups | selectattr('displayName', 'defined') | map(attribute='displayName') }}"
