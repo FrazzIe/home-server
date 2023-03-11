@@ -1,0 +1,10 @@
+- name: Get all defined {{ container_root }} rule subjects
+  set_fact:
+    authelia_subjects: "{{ authelia_subjects | default([]) + item.authelia_rules | selectattr('subject', 'defined') | map(attribute='subject') }}"
+  loop: "{{ container_authelia_rules }}"
+  when: item.authelia_rules is defined and item.authelia_rules | selectattr('subject', 'defined') | length > 0
+
+- name: Get all defined groups from {{ container_root }} rule subjects
+  set_fact:
+    authelia_groups: "{{ authelia_subjects | flatten | select('match', 'group:.*') | map('regex_replace', '(group:)', '') | unique }}"
+
