@@ -5,14 +5,12 @@
 - name: reinstall authelia configuration
   template:
     src: configuration.yml.j2
-    dest: "{{ docker_dir }}/{{ item.container }}/configuration.yml"
-  loop: "{{ containers }}"
+    dest: "{{ docker_dir }}/{{ container }}/configuration.yml"
   listen: "disable ansible network"
 
-- name: restart authelia containers
+- name: restart authelia container
   docker_container:
-    name: "{{ item.container }}"
+    name: "{{ container }}"
     state: started
     restart: true
-  loop: "{{ containers }}"
   listen: "disable ansible network"
