@@ -1,0 +1,26 @@
+- include_tasks: get_lldap_existing_groups.yml
+  when: lldap_groups_existing is not defined
+
+- name: Create {{ lldap_group }} group
+  uri:
+    url: https://{{ lldap_url }}/api/graphql
+    method: POST
+    status_code: 200
+    body_format: json
+    body:
+      operationName: CreateGroup
+      query: |
+        mutation CreateGroup($name: String!) {
+            createGroup(name: $name) {
+              id
+              displayName
+            }
+        }
+      variables:
+        name: "{{ lldap_group }}"
+  when: not (lldap_group in lldap_groups_existing)
+
+- name: Add {{ lldap_group }} group to existing groups
+  set_fact:
+    lldap_groups_existing: "{{ lldap_groups_existing + [ lldap_group ] }}"
+  when: not (lldap_group in lldap_groups_existing)
