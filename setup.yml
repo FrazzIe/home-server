@@ -60,6 +60,11 @@
         - container
         - mariadb
 
+    - role: containers/network/swag
+      tags:
+        - container
+        - swag
+
     - role: containers/network/lldap
       tags:
         - container
@@ -69,11 +74,6 @@
       tags:
         - container
         - authelia
-
-    - role: containers/network/swag
-      tags:
-        - container
-        - swag
 
     - role: containers/network/docker-socket-proxy
       tags:
