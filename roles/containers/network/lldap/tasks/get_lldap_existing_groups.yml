@@ -1,0 +1,18 @@
+- name: Get existing groups
+  uri:
+    url: https://{{ lldap_url }}/api/graphql
+    method: GET
+    status_code: 200
+    body_format: json
+    body:
+      query: |
+        {
+          groups {
+            displayName
+          }
+        }
+  register: result
+
+- name: Store existing groups
+  set_fact:
+    lldap_groups_existing: "{{ result.json | selectattr('displayName', 'defined') | map(attribute='displayName') }}"
