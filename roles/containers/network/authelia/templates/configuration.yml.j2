@@ -576,7 +576,7 @@ access_control:
 
   rules:
 {% for container in container_authelia_rules %}
-{% if container.network == item.network %}
+{% if container.network == network %}
 
 {% if container.authelia_rules is defined %}
 {% for rule in container.authelia_rules %}
@@ -594,8 +594,8 @@ access_control:
 {% endfor %}
 
     - domain:
-      - "{{ swag_network_domains[item] }}"
-      - "*.{{ swag_network_domains[item] }}"
+      - "{{ swag_network_domains[network] }}"
+      - "*.{{ swag_network_domains[network] }}"
       policy: two_factor
 
 ##
@@ -1319,7 +1319,7 @@ identity_providers:
     ## Clients is a list of known clients and their configuration.
     clients:
 {% for container in container_authelia_oidc_clients %}
-{% if container.network == item.network %}
+{% if container.network == network %}
       - {{ container.authelia_oidc_client | combine({ 'redirect_uris': container.authelia_oidc_client.redirect_uris | map('regex_replace', '(_domain_)', container.subdomain + '.' + swag_network_domains[container.network]) }) }}
 {% endif %}
 {% endfor %}
