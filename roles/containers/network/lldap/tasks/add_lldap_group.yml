@@ -1,4 +1,4 @@
-- include_tasks: get_lldap_existing_groups.yml
+- include_tasks: roles/containers/network/lldap/tasks/get_lldap_existing_groups.yml
   when: lldap_groups_existing is not defined
 
 - name: Create {{ lldap_group }} group
