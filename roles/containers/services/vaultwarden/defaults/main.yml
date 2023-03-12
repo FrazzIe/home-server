@@ -1,6 +1,5 @@
 ---
 container: vaultwarden
-subdomain: vault
-network: "{{ swag_network.public }}"
+swag_subdomain: vault
 homepage_group: Security
 homepage_description: Password management

@@ -1,5 +1,4 @@
 ---
 
 container: homepage
-subdomain: home
-network: "{{ swag_network.public }}"
+swag_subdomain: home

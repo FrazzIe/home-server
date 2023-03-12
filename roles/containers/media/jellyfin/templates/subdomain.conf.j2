@@ -10,7 +10,7 @@ server {
     listen 443 ssl;
     listen [::]:443 ssl;
 
-    server_name {{ item.subdomain }}.*;
+    server_name {{ item.swag_subdomain }}.*;
 
     {% include swag_template_dir + "/nginx/headers.j2" %}
     include /config/nginx/ssl.conf;

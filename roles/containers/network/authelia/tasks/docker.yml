@@ -3,8 +3,8 @@
     name: "{{ container }}"
     image: ghcr.io/authelia/authelia:latest
     networks:
-      - name: "swag_{{ network }}_bridge"
-      - name: "docker_macvlan"
+      - name: "{{ swag_network.name }}"
+      - name: docker_macvlan
         ipv4_address: "{{ (netplan_base, 23) | join('.') }}" # probably remove this
     pull: true
     state: started

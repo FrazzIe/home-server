@@ -1,6 +1,5 @@
 ---
 
 container: authelia
-subdomain: auth
-network: "{{ swag_network.public }}"
+swag_subdomain: auth
 database: main

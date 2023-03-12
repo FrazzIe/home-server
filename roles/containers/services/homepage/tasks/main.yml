@@ -22,7 +22,6 @@
     dest: "{{ docker_dir }}/{{ container }}/docker.yaml"
     mode: 0644
 
-
 - name: Install homepage widgets config
   template:
     src: "widgets.yaml.j2"
@@ -40,7 +39,7 @@
     name: "{{ container }}"
     image: ghcr.io/benphelps/homepage:latest
     networks:
-      - name: "swag_{{ network }}_bridge"
+      - name: "{{ swag_network.name }}"
     pull: true
     state: started
     env:

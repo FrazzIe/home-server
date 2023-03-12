@@ -1,14 +1,14 @@
 {% set service_groups_added = {} %}
 {% for group in service_groups %}
 {% for container in container_defaults %}
-{% if container.homepage_group is defined and container.homepage_group.lower() == group and (container.network is not defined or network == container.network) %}
+{% if container.homepage_group is defined and container.homepage_group.lower() == group %}
 {% if service_groups_added[group] is not defined %}
 {% set _ = service_groups_added.update({ group: true }) %}
 - {{ group | capitalize }}:
 {% endif %}
   - {{ container.container | capitalize }}:
-{% if container.subdomain is defined and container.network is defined and container.network in swag_network_domains %}
-      href: "https://{{ container.subdomain }}.{{ swag_network_domains[container.network] }}/"
+{% if container.swag_subdomain is defined %}
+      href: "https://{{ container.swag_subdomain }}.{{ swag_domain }}/"
 {% endif %}
 {% if container.homepage_description is defined %}
       description: "{{ container.homepage_description | capitalize }}"

@@ -1,7 +1,6 @@
 ---
 container: jackett
-subdomain: jackett
-network: "{{ swag_network.public }}"
+swag_subdomain: jackett
 homepage_group: media
 homepage_description: torrent index scraper
 

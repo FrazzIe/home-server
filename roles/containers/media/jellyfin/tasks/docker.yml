@@ -3,7 +3,7 @@
     name: "{{ container }}"
     image: lscr.io/linuxserver/jellyfin:latest
     networks:
-      - name: "swag_{{ network }}_bridge"
+      - name: "{{ swag_network.name }}"
       # - name: "docker_macvlan"
       #   ipv4_address: "{{ (netplan_base, 24) | join('.') }}"
     pull: true
@@ -31,7 +31,7 @@
 
 - name: Set {{ container }} url
   set_fact:
-    jellyfin_url: "{{ subdomain }}.{{ swag_network_domains[network] }}"
+    jellyfin_url: "{{ swag_subdomain }}.{{ swag_domain }}"
 
 - name: Wait until {{ container }} web portal is available
   uri:

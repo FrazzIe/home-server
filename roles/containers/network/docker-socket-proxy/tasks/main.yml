@@ -3,7 +3,8 @@
   docker_container:
     name: "{{ container }}"
     image: ghcr.io/tecnativa/docker-socket-proxy:latest
-    networks: "{{ swag_docker_networks }}"
+    networks:
+      - name: "{{ swag_network.name }}"
     pull: yes
     state: started
     env:

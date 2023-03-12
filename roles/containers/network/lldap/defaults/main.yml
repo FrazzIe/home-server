@@ -1,6 +1,5 @@
 ---
 
 container: lldap
-subdomain: lldap
-network: "{{ swag_network.public }}"
+swag_subdomain: lldap
 database: main

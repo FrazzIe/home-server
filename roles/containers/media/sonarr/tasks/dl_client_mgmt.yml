@@ -1,7 +1,7 @@
 ---
 - name: Fetch existing {{ container }} download clients
   uri:
-    url: "https://{{ subdomain }}.{{ swag_network_domains[network] }}/api/v3/downloadclient"
+    url: "https://{{ sonarr_url }}/api/v3/downloadclient"
     method: GET
     headers:
       X-Api-Key: "{{ sonarr_api_key }}"
@@ -13,7 +13,7 @@
 
 - name: Add download clients to {{ container }}
   uri:
-    url: "https://{{ subdomain }}.{{ swag_network_domains[network] }}/api/v3/downloadclient"
+    url: "https://{{ sonarr_url }}/api/v3/downloadclient"
     method: POST
     body_format: json
     status_code: [200, 201]

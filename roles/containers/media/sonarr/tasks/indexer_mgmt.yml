@@ -13,7 +13,7 @@
 
 - name: Retrieve {{ container }} indexers
   uri:
-    url: "https://{{ subdomain }}.{{ swag_network_domains[network] }}/api/v3/indexer"
+    url: "https://{{ sonarr_url }}/api/v3/indexer"
     method: GET
     headers:
       X-Api-Key: "{{ sonarr_api_key }}"
@@ -44,7 +44,7 @@
 
 - name: Add {{ container }} indexers
   uri:
-    url: "https://{{ subdomain }}.{{ swag_network_domains[network] }}/api/v3/indexer"
+    url: "https://{{ sonarr_url }}/api/v3/indexer"
     method: POST
     body_format: json
     status_code: [200, 201]

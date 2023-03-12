@@ -5,7 +5,7 @@
     name: "{{ container }}"
     image: lscr.io/linuxserver/jackett:latest
     networks:
-      - name: "swag_{{ network }}_bridge"
+      - name: "{{ swag_network.name }}"
     pull: true
     state: started
     env:
@@ -21,11 +21,14 @@
       - "{{ mergerfs_root }}/downloads:/downloads"
     restart_policy: unless-stopped
 
-- name: Set target_container to {{ container }}
-  set_fact:
+- include_tasks: get_single_docker_container_ready.yml
+  vars:
     target_container: "{{ container }}"
 
-- include_tasks: get_single_docker_container_ready.yml
+- name: Set {{ container }} url
+  set_fact:
+    jackett_url: "{{ swag_subdomain }}.{{ swag_domain }}"
+    jackett_indexer_prefix: "ansible-{{ container }}"
 
 - name: Wait until {{ container }} api key exists
   ansible.builtin.wait_for:
@@ -73,7 +76,7 @@
 
 - name: Wait until {{ container }} web portal is available
   uri:
-    url: "https://{{ subdomain }}.{{ swag_network_domains[network] }}"
+    url: "https://{{ jackett_url }}"
     method: GET
     status_code: 200
   register: result
@@ -83,7 +86,7 @@
 
 - name: Get {{ container }} auth cookie
   uri:
-    url: "https://{{ subdomain }}.{{ swag_network_domains[network] }}/UI/Login"
+    url: "https://{{ jackett_url }}/UI/Login"
     method: GET
     status_code: 200
     follow_redirects: true
@@ -95,15 +98,10 @@
 
 - name: Set {{ container }} admin password
   uri:
-    url: "https://{{ subdomain }}.{{ swag_network_domains[network] }}/api/v2.0/server/adminpassword"
+    url: "https://{{ jackett_url }}/api/v2.0/server/adminpassword"
     method: POST
     body_format: json
     status_code: [200, 204]
     headers:
       Cookie: "{{ jackett_cookie }}"
     body: "\"{{ jackett_admin_password }}\""
-
-- name: Set {{ container }} url
-  set_fact:
-    jackett_url: "{{ subdomain }}.{{ swag_network_domains[network] }}"
-    jackett_indexer_prefix: "ansible-{{ container }}"

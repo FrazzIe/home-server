@@ -1,7 +1,6 @@
 ---
 container: sonarr
-subdomain: sonarr
-network: "{{ swag_network.public }}"
+swag_subdomain: sonarr
 
 homepage_group: media
 homepage_description: tv scraper

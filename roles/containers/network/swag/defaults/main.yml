@@ -1,4 +1,1 @@
-container: "{{ ['swag_'] | product(swag_networks | map(attribute='name') | list) | map('join') | join(',') }}"
-
-internal_containers: "{{ ['swag_'] | product(swag_networks | selectattr('internal', 'defined') | selectattr('internal', 'equalto', true) | list | map(attribute='name') | list) | map('join') }}"
-external_containers: "{{ ['swag_'] | product(swag_networks | rejectattr('internal', 'defined') | list | union(swag_networks | selectattr('internal', 'defined') | selectattr('internal', 'equalto', false) | list) | map(attribute='name') | list) | map('join') }}"
+container: "{{ swag_container }}"

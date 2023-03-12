@@ -1,7 +1,7 @@
 
 - name: Set {{ container }} url
   set_fact:
-    lldap_url: "{{ subdomain }}.{{ swag_network_domains[network] }}"
+    lldap_url: "{{ swag_subdomain }}.{{ swag_domain }}"
 
 - name: Wait until {{ container }} web portal is available
   uri:

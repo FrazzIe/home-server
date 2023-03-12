@@ -1,62 +1,57 @@
 ---
-- name: Create the proxy-conf folders
+- name: Create {{ container }} proxy-conf folders
   file:
-    path: "{{ docker_dir }}/swag/{{ item.name }}/nginx/proxy-confs/"
+    path: "{{ docker_dir }}/{{ container }}/nginx/proxy-confs/"
     state: directory
     recurse: yes
     mode: 0755
-  with_items: "{{ swag_networks }}"
 
 - include_tasks: get_docker_container_defaults.yml
 
-- name: Get a list of containers with subdomain & network
+- name: Get a list of containers using a {{ container }} subdomain
   delegate_to: localhost
   become: false
   set_fact:
-    container_subdomains: "{{ container_subdomains | default([]) + [ item ] }}"
+    swag_container_subdomains: "{{ swag_container_subdomains | default([]) + [ item ] }}"
   with_items: "{{ container_defaults }}"
-  when: item.subdomain is defined and item.network is defined
+  when: item.swag_subdomain is defined
 
-- name: container subdomains debug
-  debug:
-    var: container_subdomains
-
-- name: Get swag templates path
+- name: Get path to {{ container }} templates
   delegate_to: localhost
   become: false
   find:
     paths: roles/containers
-    patterns: swag
+    patterns: "{{ container }}"
     file_type: directory
     recurse: yes
     depth: 3
   register: swag_template_dir
 
-- name: Set swag templates path
+- name: Store path to {{ container }} templates
   set_fact:
     swag_template_dir: "{{ (swag_template_dir.files[0].path, 'templates') | path_join }}"
 
-- name: Install the proxy subdomain config files
+- name: Install {{ container }} subdomain proxy config files
   template:
     src: "{{ (item.root, 'templates', 'subdomain.conf.j2') | path_join }}"
-    dest: "{{ docker_dir }}/swag/{{ item.network }}/nginx/proxy-confs/{{ item.container }}.subdomain.conf"
+    dest: "{{ docker_dir }}/{{ container }}/nginx/proxy-confs/{{ item.container }}.subdomain.conf"
     mode: 0644
-  with_items: "{{ container_subdomains }}"
+  with_items: "{{ swag_container_subdomains }}"
   notify:
     - restart swag
     - test nginx
 
-- name: Create the DNS conf folder
+- name: Create {{ container }} dns config folder
   file:
-    path: "{{ docker_dir }}/swag/dns-conf"
+    path: "{{ docker_dir }}/{{ container }}/dns-conf"
     state: directory
     recurse: yes
     mode: 0755
 
-- name: Install the dns config files
+- name: Install {{ container }} dns config files
   template:
     src: "{{ item }}"
-    dest: "{{ docker_dir }}/swag/dns-conf/{{ item | basename | regex_replace('.j2$', '') }}"
+    dest: "{{ docker_dir }}/{{ container }}/dns-conf/{{ item | basename | regex_replace('.j2$', '') }}"
     mode: 0644
   with_fileglob:
     - templates/dns/*.ini.j2

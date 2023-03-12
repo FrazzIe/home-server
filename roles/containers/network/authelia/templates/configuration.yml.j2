@@ -25,7 +25,7 @@ jwt_secret: a_very_important_secret
 ## in such a case.
 ##
 ## Note: this parameter is optional. If not provided, user won't be redirected upon successful authentication.
-default_redirection_url: "https://home.{{ swag_network_domains[network] }}/"
+default_redirection_url: "https://home.{{ swag_domain }}/"
 
 ## Set the default 2FA method for new users and for when a user has a preferred method configured that has been
 ## disabled. This setting must be a method that is enabled.
@@ -397,7 +397,7 @@ authentication_backend:
 
     ## The distinguished name of the container searched for objects in the directory information tree.
     ## See also: additional_users_dn, additional_groups_dn.
-    base_dn: "{{ ['dc='] | product(swag_network_domains[network] | split('.')) | map('join') | join(',') }}"
+    base_dn: "{{ ['dc='] | product(swag_domain | split('.')) | map('join') | join(',') }}"
 
     ## The attribute holding the username of the user. This attribute is used to populate the username in the session
     ## information. For your information, Microsoft Active Directory usually uses 'sAMAccountName' and OpenLDAP usually
@@ -454,7 +454,7 @@ authentication_backend:
     # permit_referrals: false
 
     ## The username and password of the admin user.
-    user: uid={{ lldap_ldap_user }},ou=people,{{ ['dc='] | product(swag_network_domains[network] | split('.')) | map('join') | join(',') }}
+    user: uid={{ lldap_ldap_user }},ou=people,{{ ['dc='] | product(swag_domain | split('.')) | map('join') | join(',') }}
     ## Password can also be set using a secret: https://www.authelia.com/c/secrets
     # password: password
 
@@ -576,7 +576,6 @@ access_control:
 
   rules:
 {% for container in container_authelia_rules %}
-{% if container.network == network %}
 
 {% if container.authelia_rules_temporary is defined and authelia_temporary_control == true %}
 {% for rule in container.authelia_rules_temporary %}
@@ -590,12 +589,11 @@ access_control:
 {% endfor %}
 {% endif %}
 
-{% endif %}
 {% endfor %}
 
     - domain:
-      - "{{ swag_network_domains[network] }}"
-      - "*.{{ swag_network_domains[network] }}"
+      - "{{ swag_domain }}"
+      - "*.{{ swag_domain }}"
       policy: two_factor
 
 ##
@@ -610,7 +608,7 @@ session:
   ## The domain to protect.
   ## Note: the authenticator must also be in that domain.
   ## If empty, the cookie is restricted to the subdomain of the issuer.
-  domain: "{{ swag_network_domains[network] }}"
+  domain: "{{ swag_domain }}"
 
   ## Sets the Cookie SameSite value. Possible options are none, lax, or strict.
   ## Please read https://www.authelia.com/c/session#same_site
@@ -1319,9 +1317,7 @@ identity_providers:
     ## Clients is a list of known clients and their configuration.
     clients:
 {% for container in container_authelia_oidc_clients %}
-{% if container.network == network %}
-      - {{ container.authelia_oidc_client | combine({ 'redirect_uris': container.authelia_oidc_client.redirect_uris | map('regex_replace', '(_domain_)', container.subdomain + '.' + swag_network_domains[container.network]) }) }}
-{% endif %}
+      - {{ container.authelia_oidc_client | combine({ 'redirect_uris': container.authelia_oidc_client.redirect_uris | map('regex_replace', '(_domain_)', (container.subdomain, swag_domain) | join('.') ) }) }}
 {% endfor %}
       # -
         ## The ID is the OpenID Connect ClientID which is used to link an application to a configuration.

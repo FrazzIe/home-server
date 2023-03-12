@@ -34,7 +34,7 @@
 
 - name: Wait until {{ container }} web portal is available
   uri:
-    url: "https://{{ subdomain }}.{{ swag_network_domains[network] }}/ping"
+    url: "https://{{ sonarr_url }}/ping"
     method: GET
     status_code: 200
   register: result

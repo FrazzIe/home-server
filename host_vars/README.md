@@ -17,11 +17,12 @@ snapraid_sender_smtp_port:
 target_email:
 
 # Cloudflare API tokens
+cloudflare_zone:
 cloudflare_firewall_token:
 cloudflare_dns_token:
 
-# Web domain
-web_domain: 
+# SWAG
+swag_domain: 
 
 # VPN
 vpn_username: 

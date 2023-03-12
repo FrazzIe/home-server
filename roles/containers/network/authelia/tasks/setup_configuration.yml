@@ -4,9 +4,9 @@
   delegate_to: localhost
   become: false
   set_fact:
-    container_authelia_rules: "{{ container_authelia_rules | default([]) + [ item | combine({ 'authelia_rules': item.authelia_rules | default([]) | map('combine', { 'domain': item.subdomain + '.' + swag_network_domains[item.network] }), 'authelia_rules_temporary': item.authelia_rules_temporary | default([]) | map('combine', { 'domain': item.subdomain + '.' + swag_network_domains[item.network] }) }) ] }}"
+    container_authelia_rules: "{{ container_authelia_rules | default([]) + [ item | combine({ 'authelia_rules': item.authelia_rules | default([]) | map('combine', { 'domain': (item.swag_subdomain, swag_domain) | join('.') }), 'authelia_rules_temporary': item.authelia_rules_temporary | default([]) | map('combine', { 'domain': (item.swag_subdomain, swag_domain) | join('.') }) }) ] }}"
   loop: "{{ container_defaults }}"
-  when: item.subdomain is defined and item.network is defined and (item.authelia_rules is defined or item.authelia_rules_temporary is defined)
+  when: item.swag_subdomain is defined and (item.authelia_rules is defined or item.authelia_rules_temporary is defined)
 
 - name: Get a list of container specific authelia oidc clients
   delegate_to: localhost
@@ -14,7 +14,7 @@
   set_fact:
     container_authelia_oidc_clients: "{{ container_authelia_oidc_clients | default([]) + [ item ] }}"
   loop: "{{ container_defaults }}"
-  when: item.subdomain is defined and item.network is defined and item.authelia_oidc_client is defined
+  when: item.swag_subdomain is defined and item.authelia_oidc_client is defined
 
 - name: Enable {{ container }} public ip bypass
   set_fact:

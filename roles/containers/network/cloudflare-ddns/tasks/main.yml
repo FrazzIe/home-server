@@ -10,7 +10,7 @@
       PGID: "{{ target_username_pgid }}"
       TZ: "{{ timezone }}"
       API_KEY: "{{ cloudflare_dns_token }}"
-      ZONE: "{{ web_domain }}"
+      ZONE: "{{ cloudflare_ddns_zone }}"
       PROXIED: "true"
-      SUBDOMAIN: "{{ subdomain }}"
+      SUBDOMAIN: "{{ cloudflare_ddns_subdomain }}"
     restart_policy: unless-stopped
