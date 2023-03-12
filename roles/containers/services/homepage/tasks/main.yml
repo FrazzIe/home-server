@@ -7,52 +7,46 @@
 
 - name: Create homepage config directories
   file:
-    path: "{{ docker_dir }}/{{ item.container }}"
+    path: "{{ docker_dir }}/{{ container }}"
     state: directory
-  loop: "{{ containers }}"
 
 - name: Install homepage services layout
   template:
     src: "services.yaml.j2"
-    dest: "{{ docker_dir }}/{{ item.container }}/services.yaml"
+    dest: "{{ docker_dir }}/{{ container }}/services.yaml"
     mode: 0644
-  loop: "{{ containers }}"
 
 - name: Install homepage docker config
   template:
     src: "docker.yaml.j2"
-    dest: "{{ docker_dir }}/{{ item.container }}/docker.yaml"
+    dest: "{{ docker_dir }}/{{ container }}/docker.yaml"
     mode: 0644
-  loop: "{{ containers }}"
+
 
 - name: Install homepage widgets config
   template:
     src: "widgets.yaml.j2"
-    dest: "{{ docker_dir }}/{{ item.container }}/widgets.yaml"
+    dest: "{{ docker_dir }}/{{ container }}/widgets.yaml"
     mode: 0644
-  loop: "{{ containers }}"
 
 - name: Install homepage bookmarks config
   template:
     src: "bookmarks.yaml.j2"
-    dest: "{{ docker_dir }}/{{ item.container }}/bookmarks.yaml"
+    dest: "{{ docker_dir }}/{{ container }}/bookmarks.yaml"
     mode: 0644
-  loop: "{{ containers }}"
 
 - name: Create / Run homepage containers
   docker_container:
-    name: "{{ item.container }}"
+    name: "{{ container }}"
     image: ghcr.io/benphelps/homepage:latest
     networks:
-      - name: "swag_{{ item.network }}_bridge"
+      - name: "swag_{{ network }}_bridge"
     pull: true
     state: started
     env:
       PUID: "{{ target_username_puid }}"
       PGID: "{{ target_username_pgid }}"
     volumes:
-      - "{{ docker_dir }}/{{ item.container }}:/app/config"
+      - "{{ docker_dir }}/{{ container }}:/app/config"
       - "{{ mergerfs_root }}:{{ mergerfs_root }}"
-
     restart_policy: unless-stopped
-  loop: "{{ containers }}"

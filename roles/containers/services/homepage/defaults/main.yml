@@ -1,9 +1,5 @@
 ---
 
-containers:
-  - container: "homepage_{{ swag_network.public }}"
-    subdomain: home
-    network: "{{ swag_network.public }}"
-  - container: "homepage_{{ swag_network.private }}"
-    subdomain: home
-    network: "{{ swag_network.private }}"
+container: homepage
+subdomain: home
+network: "{{ swag_network.public }}"
