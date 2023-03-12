@@ -1,0 +1,21 @@
+- include_tasks: get_docker_container_defaults.yml
+
+- name: Get a list of container specific lldap groups
+  delegate_to: localhost
+  become: false
+  set_fact:
+    container_lldap_groups: "{{ container_lldap_groups | default([]) + [ item.lldap_groups ] }}"
+  loop: "{{ container_defaults }}"
+  when: item.lldap_groups is defined
+
+- name: Flatten container specific lldap groups
+  set_fact:
+    container_lldap_groups: "{{ container_lldap_groups | flatten | unique }}"
+  when: container_lldap_groups is defined
+
+- name: Create container specific lldap groups
+  include_tasks: add_lldap_group.yml
+  loop: "{{ container_lldap_groups }}"
+  loop_control:
+    loop_var: lldap_group
+  when: container_lldap_groups is defined and container_lldap_groups | length > 0
