@@ -578,14 +578,14 @@ access_control:
 {% for container in container_authelia_rules %}
 {% if container.network == network %}
 
-{% if container.authelia_rules is defined %}
-{% for rule in container.authelia_rules %}
+{% if container.authelia_rules_temporary is defined and authelia_temporary_control == true %}
+{% for rule in container.authelia_rules_temporary %}
     - {{ rule }}
 {% endfor %}
 {% endif %}
 
-{% if container.authelia_rules_temporary is defined and authelia_temporary_control == true %}
-{% for rule in container.authelia_rules_temporary %}
+{% if container.authelia_rules is defined %}
+{% for rule in container.authelia_rules %}
     - {{ rule }}
 {% endfor %}
 {% endif %}
