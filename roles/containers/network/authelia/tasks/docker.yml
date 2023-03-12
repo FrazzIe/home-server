@@ -22,3 +22,8 @@
       - "{{ docker_dir }}/{{ container }}:/config"
       - "{{ mariadb_socket }}:/mysql"
     restart_policy: unless-stopped
+
+- name: Restart {{ container }}
+  include_tasks: restart_docker_container.yml
+  vars:
+    target_container: "{{ container }}"
