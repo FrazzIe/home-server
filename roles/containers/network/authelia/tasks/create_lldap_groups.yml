@@ -8,13 +8,8 @@
   set_fact:
     authelia_groups: "{{ authelia_subjects | flatten | select('match', 'group:.*') | map('regex_replace', '(group:)', '') | unique }}"
 
-# - include_tasks: containers/network/lldap/get_lldap_existing_groups.yml
-
-# - debug:
-#     var: lldap_groups_existing
-
-# - name: Create LLDAP groups
-#   include_tasks: containers/network/lldap/add_lldap_group.yml
-#   loop: "{{ authelia_groups | unique }}"
-#   loop_control:
-#     loop_var: lldap_group
+- name: Create LLDAP groups
+  include_tasks: roles/containers/network/lldap/tasks/add_lldap_group.yml
+  loop: "{{ authelia_groups | unique }}"
+  loop_control:
+    loop_var: lldap_group
