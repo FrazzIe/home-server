@@ -29,8 +29,8 @@
       # VPN_OUTPUT_PORTS: <port number(s)>
       DEBUG: "true"
       UMASK: "000"
-      PUID: "{{ target_username_puid }}"
-      PGID: "{{ target_username_pgid }}"
+      PUID: "{{ sudo_user_uid }}"
+      PGID: "{{ sudo_user_gid }}"
     ports:
       - "{{ deluge_port }}:8112"
       - "{{ privoxy_port }}:8118"

@@ -1,15 +1,13 @@
 ---
 - include_tasks: passwordless.yml
 
-- include_tasks: user.yml
-
 - name: Suppress login messages
   file:
-    name: /home/{{ target_username }}/.hushlogin
+    name: /home/{{ sudo_user }}/.hushlogin
     mode: 0644
     state: touch
-    owner: "{{ target_username }}"
-    group: "{{ target_username }}"
+    owner: "{{ sudo_user }}"
+    group: "{{ sudo_user }}"
     modification_time: preserve
     access_time: preserve
 

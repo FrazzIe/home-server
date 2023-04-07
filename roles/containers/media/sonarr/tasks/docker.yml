@@ -7,8 +7,8 @@
     pull: true
     state: started
     env:
-      PUID: "{{ target_username_puid }}"
-      PGID: "{{ target_username_pgid }}"
+      PUID: "{{ sudo_user_uid }}"
+      PGID: "{{ sudo_user_gid }}"
       TZ: "{{ timezone }}"
     ports:
       - 8989:8989

@@ -34,7 +34,7 @@ snapraid_config_excludes:
 snapraid_runner_email_address: "{{ snapraid_sender_email }}"
 snapraid_runner_email_pass: "{{ snapraid_sender_password }}"
 snapraid_runner_email_address_from: "{{ snapraid_sender_email }}"
-snapraid_runner_email_address_to: "{{ target_email }}"
+snapraid_runner_email_address_to: "{{ mail_to_email }}"
 snapraid_runner_smtp_host: "{{ snapraid_sender_smtp_host }}"
 snapraid_runner_smtp_port: "{{ snapraid_sender_smtp_port }}"
 snapraid_runner_use_ssl: true

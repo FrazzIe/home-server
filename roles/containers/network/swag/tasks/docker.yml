@@ -17,14 +17,14 @@
       - net_admin
     state: started
     env:
-      PUID: "{{ target_username_puid }}"
-      PGID: "{{ target_username_pgid }}"
+      PUID: "{{ sudo_user_uid }}"
+      PGID: "{{ sudo_user_gid }}"
       TZ: "{{ timezone }}"
       URL: "{{ swag_domain }}"
       SUBDOMAINS: wildcard
       VALIDATION: dns
       DNSPLUGIN: cloudflare
-      EMAIL: "{{ target_email }}"
+      EMAIL: "{{ mail_to_email }}"
     ports:
       - 443:443
     volumes:

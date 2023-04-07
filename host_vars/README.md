@@ -14,7 +14,7 @@ snapraid_sender_smtp_host:
 snapraid_sender_smtp_port:
 
 # Email address that receives the email
-target_email:
+mail_to_email:
 
 # Cloudflare API tokens
 cloudflare_zone:

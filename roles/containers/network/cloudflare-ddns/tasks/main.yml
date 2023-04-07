@@ -6,8 +6,8 @@
     pull: yes
     state: started
     env:
-      PUID: "{{ target_username_puid }}"
-      PGID: "{{ target_username_pgid }}"
+      PUID: "{{ sudo_user_uid }}"
+      PGID: "{{ sudo_user_gid }}"
       TZ: "{{ timezone }}"
       API_KEY: "{{ cloudflare_dns_token }}"
       ZONE: "{{ cloudflare_ddns_zone }}"

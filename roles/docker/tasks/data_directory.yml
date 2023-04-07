@@ -15,7 +15,7 @@
   file:
     dest: "{{ docker_dir }}"
     state: directory
-    owner: "{{ target_username }}"
+    owner: "{{ sudo_user }}"
     group: users
     mode: ug=rwx,o=rx,g+s
     recurse: yes
@@ -39,7 +39,7 @@
   file:
     dest: "{{ docker_dir }}"
     state: directory
-    owner: "{{ target_username }}"
+    owner: "{{ sudo_user }}"
     mode: 0775
     group: users
     recurse: yes

@@ -1,11 +1,11 @@
-- hosts: target
+- hosts: alicanto
   gather_facts: false
   pre_tasks:
     - import_tasks: tasks/ssh_juggle_port.yml
       tags:
         - port
 
-- hosts: target
+- hosts: alicanto
   become: true
   # Init submodules
   roles:
