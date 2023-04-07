@@ -1,0 +1,9 @@
+lldap_user_attribute: uid
+lldap_group_attribute: cn
+lldap_mail_attribute: mail
+lldap_name_attribute: displayName
+lldap_users_dn: ou=people
+lldap_groups_dn: ou=groups
+lldap_base_dn: "{{ ['dc='] | product(swag_domain | split('.')) | map('join') | join(',') }}"
+lldap_user_dn: "{{ (lldap_users_dn, lldap_base_dn) | join(',')}}"
+lldap_group_dn: "{{ (lldap_groups_dn, lldap_base_dn) | join(',')}}"

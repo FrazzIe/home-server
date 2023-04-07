@@ -55,8 +55,12 @@ jellyfin_authelia_oidc_secret:
 
 # LLDAP
 lldap_jwt_secret: 
-lldap_ldap_user: 
-lldap_ldap_password: 
+lldap_admin_user: 
+lldap_admin_password: 
+lldap_admin_ro_user: 
+lldap_admin_ro_password: 
+lldap_admin_pm_user: 
+lldap_admin_pm_password: 
 lldap_mysql_user: 
 lldap_mysql_password: 
 

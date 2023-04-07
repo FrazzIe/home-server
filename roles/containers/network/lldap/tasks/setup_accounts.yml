@@ -1,0 +1,10 @@
+- include_tasks: add_lldap_user_group.yml
+- include_tasks: add_lldap_user.yml
+- name: Create system accounts
+  loop:
+    - { id: "{{ lldap_admin_user }}"
+
+lldap_admin_ro_user
+lldap_admin_ro_password
+lldap_admin_pm_user
+lldap_admin_pm_password
