@@ -1,0 +1,44 @@
+- name: Set ldap {{ container }} plugin id
+  set_fact:
+    jellyfin_ldap_plugin_id: 958aad6637844d2ab89aa7b6fab6e25c
+
+- name: Get ldap {{ container }} plugin configuration
+  uri:
+    url: "https://{{ jellyfin_url }}/Plugins/{{ jellyfin_ldap_plugin_id }}/Configuration"
+    method: GET
+    status_code: 200
+    headers: "{{ jellyfin_headers }}"
+  register: result
+
+- name: Store ldap {{ container }} plugin configuration
+  set_fact:
+    jellyfin_ldap_plugin_config: "{{ result.json }}"
+    jellyfin_ldap_plugin_config_options:
+      LdapServer: lldap
+      LdapPort: 3890
+      UseSsl: false
+      LdapBindUser: "{{ lldap_user_attribute }}={{ lldap_admin_ro_user }},{{ lldap_user_dn }}"
+      LdapBindPassword: "{{ lldap_admin_ro_password }}"
+      LdapBaseDn: "{{ lldap_user_dn }}"
+      LdapSearchFilter: "(memberOf={{ lldap_group_attribute }}={{ ldap_user_group }},{{ lldap_group_dn }})"
+      LdapAdminBaseDn: "{{ lldap_group_attribute }}={{ ldap_admin_group }},{{ lldap_group_dn }}"
+      LdapAdminFilter: "(memberOf={{ lldap_group_attribute }}={{ ldap_admin_group }},{{ lldap_group_dn }})"
+      EnableLdapAdminFilterMemberUid: false
+      LdapSearchAttributes: "{{ lldap_user_attribute }}, {{ lldap_name_attribute }}, {{ lldap_name_attribute }}"
+      CreateUsersFromLdap: true
+      LdapUsernameAttribute: "{{ lldap_user_attribute }}"
+      EnableAllFolders: true
+      AllowPassChange: false
+- debug:
+    var: jellyfin_ldap_plugin_config
+
+- debug:
+    msg: "{{ jellyfin_ldap_plugin_config | combine(jellyfin_ldap_plugin_config_options) }}"
+- name: Set ldap {{ container }} plugin configuration
+  uri:
+    url: "https://{{ jellyfin_url }}/Plugins/{{ jellyfin_ldap_plugin_id }}/Configuration"
+    method: POST
+    status_code: 204
+    headers: "{{ jellyfin_headers }}"
+    body_format: json
+    body: "{{ jellyfin_ldap_plugin_config | combine(jellyfin_ldap_plugin_config_options) }}"

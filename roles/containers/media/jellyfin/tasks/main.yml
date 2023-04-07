@@ -6,3 +6,4 @@
 - include_tasks: plugin_repo_mgmt.yml
 - include_tasks: plugin_mgmt.yml
 # - include_tasks: sso_plugin.yml
+- include_tasks: ldap_plugin.yml

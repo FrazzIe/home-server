@@ -8,7 +8,7 @@
 
 - name: Store installed {{ container }} plugin ids
   set_fact:
-    jellyfin_plugins_installed: "{{ result.json | selectattr('Id', 'defined') | map(attribute='Id') }}"
+    plugins_installed: "{{ result.json | selectattr('Id', 'defined') | map(attribute='Id') }}"
 
 - name: Get available {{ container }} packages
   uri:
@@ -20,7 +20,7 @@
 
 - name: Store available {{ container }} plugins
   set_fact:
-    jellyfin_plugins_available: "{{ jellyfin_plugins_available | default({}) | combine({ item['guid']: value }) }}"
+    plugins_available: "{{ plugins_available | default({}) | combine({ item['guid']: value }) }}"
   loop: "{{ result.json }}"
   vars:
     keys: "{{ item.keys() | difference(['guid']) }}"
@@ -29,12 +29,12 @@
 
 - name: Add external {{ container }} plugins
   set_fact:
-    jellyfin_plugins_new: "{{ jellyfin_plugins_new | default([]) + [ item | combine({ 'name': jellyfin_plugins_available[item.guid].name }) ] }}"
-  loop: "{{ jellyfin_plugins | dict2items(key_name='guid', value_name='version') }}"
-  when: not (item.guid in jellyfin_plugins_installed)
+    plugins_new: "{{ plugins_new | default([]) + [ item | combine({ 'name': plugins_available[item.guid].name }) ] }}"
+  loop: "{{ plugins | dict2items(key_name='guid', value_name='version') }}"
+  when: not (item.guid in plugins_installed)
   failed_when: 
-    - jellyfin_plugins_available[item.guid] is not defined
-    - not (item.version in jellyfin_plugins_available[item.guid].versions | map(attribute='VersionNumber'))
+    - plugins_available[item.guid] is not defined
+    - not (item.version in plugins_available[item.guid].versions | map(attribute='VersionNumber'))
 
 - name: Install {{ container }} plugins
   uri:
@@ -42,8 +42,8 @@
     method: POST
     status_code: 204
     headers: "{{ jellyfin_headers }}"
-  loop: "{{ jellyfin_plugins_new }}"
-  when: jellyfin_plugins_new is defined
+  loop: "{{ plugins_new }}"
+  when: plugins_new is defined
 
 - name: Restart {{ container }}
   uri:
@@ -51,6 +51,6 @@
     method: POST
     status_code: 204
     headers: "{{ jellyfin_headers }}"
-  when: jellyfin_plugins_new is defined
+  when: plugins_new is defined
 
   
