@@ -1,0 +1,26 @@
+- hosts: phoenix
+  gather_facts: false
+  pre_tasks:
+    - import_tasks: tasks/ssh_juggle_port.yml
+      tags:
+        - port
+
+- hosts: phoenix
+  become: true
+  # Init submodules
+  roles:
+    - role: system
+      tags:
+        - system
+
+    - role: docker
+      tags: 
+        - docker
+
+    - role: geerlingguy.security
+      tags:
+        - security
+
+    - role: geerlingguy.ntp
+      tags:
+        - ntp

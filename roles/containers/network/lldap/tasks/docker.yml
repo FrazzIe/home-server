@@ -8,8 +8,8 @@
     pull: true
     state: started
     env:
-      UID: "{{ target_username_puid }}"
-      GID: "{{ target_username_pgid }}"
+      UID: "{{ sudo_user_uid }}"
+      GID: "{{ sudo_user_gid }}"
       TZ: "{{ timezone }}"
       LLDAP_JWT_SECRET: "{{ lldap_jwt_secret }}"
       LLDAP_LDAP_USER_DN: "{{ lldap_ldap_user }}"
