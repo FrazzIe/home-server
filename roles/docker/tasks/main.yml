@@ -1,28 +1,43 @@
 ---
-- include_tasks: repo_arch.yml
 
-- name: Include OS-specific variables
-  include_vars: "{{ ansible_facts['distribution'] | lower }}.yml"
+- name: Install aptitude
+  apt:
+    name: aptitude
+    state: latest
+    update_cache: true
 
 - name: Install required system packages
-  package:
+  apt:
+    pkg:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - software-properties-common
+      - python3-pip
+      - virtualenv
+      - python3-setuptools
+    state: latest
+    update_cache: true
+
+- name: Add Docker GPG apt Key
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
     state: present
-    name: "{{ docker_deps }}"
 
-- name: Install Docker (Ubuntu)
-  include_tasks: ubuntu.yml
-  when: ansible_facts["distribution"] == "Ubuntu"
-
-- name: Install Docker (Raspbian)
-  include_tasks: raspbian.yml
-  when: ansible_facts["distribution"] == "Debian"
+- name: Add Docker Repository
+  apt_repository:
+    repo: deb https://download.docker.com/linux/ubuntu focal stable
+    state: present
 
 - name: Update apt and install docker-ce
-  when: ansible_facts["os_family"] == "Debian"
   apt:
-    update_cache: yes
-    name: "{{ docker_packages }}"
-    state: present
+    name: docker-ce
+    state: latest
+    update_cache: true
+
+- name: Install Docker Module for Python
+  pip:
+    name: docker
 
 - name: Ensure group docker exists
   group:
@@ -35,10 +50,6 @@
     groups:
       - docker
     append: yes
-
-- name: Install Docker Module for Python
-  pip:
-    name: docker
 
 - name: Make sure Docker is running and enabled
   service:
@@ -54,3 +65,4 @@
 
 - name: Create macvlan network
   include_tasks: macvlan.yml
+  when: macvlan_host_bridge_enabled

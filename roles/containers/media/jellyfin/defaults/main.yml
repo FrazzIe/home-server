@@ -12,17 +12,14 @@ plugins: # guid: target version
   505ce9d1d91642fa86ca673ef241d7df: 3.4.0.0
   958aad6637844d2ab89aa7b6fab6e25c: 17.0.0.0
 
-ldap_user_group: media
-ldap_admin_group: media_admin
-
 lldap_groups: 
-  - "{{ ldap_user_group }}"
-  - "{{ ldap_admin_group }}"
+  - "{{ jellyfin_ldap_user_group }}"
+  - "{{ jellyfin_ldap_admin_group }}"
 
 # authelia_oidc_client:
 #   id: jellyfin
-#   description: My media server
-#   secret: "{{ jellyfin_authelia_oidc_secret }}"
+#  description: My media server
+#   secret: "jellyfin_authelia_oidc_secret"
 #   authorization_policy: one_factor
-#   redirect_uris:
-#     - https://_domain_/sso/OID/r/authelia
+#  redirect_uris:
+#    - https://_domain_/sso/OID/r/authelia

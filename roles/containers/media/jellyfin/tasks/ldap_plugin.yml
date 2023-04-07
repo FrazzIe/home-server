@@ -20,9 +20,9 @@
       LdapBindUser: "{{ lldap_user_attribute }}={{ lldap_admin_ro_user }},{{ lldap_user_dn }}"
       LdapBindPassword: "{{ lldap_admin_ro_password }}"
       LdapBaseDn: "{{ lldap_user_dn }}"
-      LdapSearchFilter: "(memberOf={{ lldap_group_attribute }}={{ ldap_user_group }},{{ lldap_group_dn }})"
-      LdapAdminBaseDn: "{{ lldap_group_attribute }}={{ ldap_admin_group }},{{ lldap_group_dn }}"
-      LdapAdminFilter: "(memberOf={{ lldap_group_attribute }}={{ ldap_admin_group }},{{ lldap_group_dn }})"
+      LdapSearchFilter: "(memberOf={{ lldap_group_attribute }}={{ jellyfin_ldap_user_group }},{{ lldap_group_dn }})"
+      LdapAdminBaseDn: "{{ lldap_group_attribute }}={{ jellyfin_ldap_admin_group }},{{ lldap_group_dn }}"
+      LdapAdminFilter: "(memberOf={{ lldap_group_attribute }}={{ jellyfin_ldap_admin_group }},{{ lldap_group_dn }})"
       EnableLdapAdminFilterMemberUid: false
       LdapSearchAttributes: "{{ lldap_user_attribute }}, {{ lldap_name_attribute }}, {{ lldap_name_attribute }}"
       CreateUsersFromLdap: true
