@@ -1,6 +1,6 @@
 swag_container: swag
 swag_network: 
   name: "{{ swag_container }}_bridge"
-  address: 28
+  address: 60
 swag_cloudflare_zone: "{{ cloudflare_zone }}"
 swag_cloudflare_cname_target: "{{ cloudflare_ddns_subdomain }}"
