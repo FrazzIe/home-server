@@ -1,5 +1,5 @@
-netplan_interface: &netplan_interface enp1s0f1
-netplan_address: 62
+netplan_interface: &netplan_interface eth0
+netplan_address: 60
 
 netplan_config:
   network:
