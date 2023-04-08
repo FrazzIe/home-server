@@ -47,8 +47,8 @@
         include /config/nginx/cloudflare_real_ips.conf;
     insertafter: "^.*include /config/nginx/resolver.conf.*$"
   notify:
-    - restart swag external
-    - test nginx external
+    - restart swag
+    - test nginx
 
 - name: Cleanup tmp cloudflare folder
   file:
