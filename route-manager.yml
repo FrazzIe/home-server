@@ -1,0 +1,54 @@
+- hosts: vermilion
+  gather_facts: false
+  pre_tasks:
+    - import_tasks: tasks/ssh_juggle_port.yml
+      tags:
+        - port
+
+- hosts: vermilion
+  become: true
+  # Init submodules
+  roles:
+    - role: system
+      tags:
+        - system
+
+    - role: docker
+      tags: 
+        - docker
+
+    - role: geerlingguy.security
+      tags:
+        - security
+
+    - role: geerlingguy.ntp
+      tags:
+        - ntp
+
+    - role: containers/network/cloudflare-ddns
+      tags:
+        - container
+        - cloudflare
+        - ddns
+
+    - role: containers/network/mariadb
+      tags:
+        - container
+        - mariadb
+
+    - role: containers/network/swag
+      tags:
+        - container
+        - swag
+
+    - role: containers/network/lldap
+      tags:
+        - container
+        - lldap
+
+    - role: containers/network/authelia
+      tags:
+        - container
+        - authelia
+  tasks:
+    - include_tasks: tasks/get_docker_container_state.yml

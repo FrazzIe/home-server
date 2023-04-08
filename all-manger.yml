@@ -29,10 +29,6 @@
       tags:
         - fail2ban
 
-    - role: security/iptables
-      tags:
-        - iptables
-
     - role: security/endlessh
       tags:
         - endlessh
@@ -49,32 +45,6 @@
       tags:
         - snapraid
 
-    - role: containers/network/cloudflare-ddns
-      tags:
-        - container
-        - cloudflare
-        - ddns
-
-    - role: containers/network/mariadb
-      tags:
-        - container
-        - mariadb
-
-    - role: containers/network/swag
-      tags:
-        - container
-        - swag
-
-    - role: containers/network/lldap
-      tags:
-        - container
-        - lldap
-
-    - role: containers/network/authelia
-      tags:
-        - container
-        - authelia
-
     - role: containers/network/docker-socket-proxy
       tags:
         - container
@@ -85,13 +55,11 @@
     - role: containers/services/vaultwarden
       tags:
         - container
-        - swag
         - vaultwarden
 
     - role: containers/services/homepage
       tags:
         - container
-        - swag
         - homepage
 
     - role: containers/services/deluge
