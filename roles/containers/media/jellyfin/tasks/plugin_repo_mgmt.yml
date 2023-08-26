@@ -1,6 +1,6 @@
 - name: Get {{ container }} plugin repositories
   uri:
-    url: "https://{{ jellyfin_url }}/Repositories"
+    url: "https://{{ jellyfin_domain }}/Repositories"
     method: GET
     status_code: 200
     headers: "{{ jellyfin_headers }}"
@@ -19,7 +19,7 @@
 
 - name: Set {{ container }} plugin repositories
   uri:
-    url: "https://{{ jellyfin_url }}/Repositories"
+    url: "https://{{ jellyfin_domain }}/Repositories"
     method: POST
     status_code: 204
     headers: "{{ jellyfin_headers }}"

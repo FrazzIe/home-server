@@ -4,7 +4,7 @@
 
 - name: Get ldap {{ container }} plugin configuration
   uri:
-    url: "https://{{ jellyfin_url }}/Plugins/{{ jellyfin_ldap_plugin_id }}/Configuration"
+    url: "https://{{ jellyfin_domain }}/Plugins/{{ jellyfin_ldap_plugin_id }}/Configuration"
     method: GET
     status_code: 200
     headers: "{{ jellyfin_headers }}"
@@ -14,8 +14,8 @@
   set_fact:
     jellyfin_ldap_plugin_config: "{{ result.json }}"
     jellyfin_ldap_plugin_config_options:
-      LdapServer: lldap
-      LdapPort: 3890
+      LdapServer: "{{ lldap_address }}"
+      LdapPort: "{{ lldap_port }}"
       UseSsl: false
       LdapBindUser: "{{ lldap_user_attribute }}={{ lldap_admin_ro_user }},{{ lldap_user_dn }}"
       LdapBindPassword: "{{ lldap_admin_ro_password }}"
@@ -36,7 +36,7 @@
     msg: "{{ jellyfin_ldap_plugin_config | combine(jellyfin_ldap_plugin_config_options) }}"
 - name: Set ldap {{ container }} plugin configuration
   uri:
-    url: "https://{{ jellyfin_url }}/Plugins/{{ jellyfin_ldap_plugin_id }}/Configuration"
+    url: "https://{{ jellyfin_domain }}/Plugins/{{ jellyfin_ldap_plugin_id }}/Configuration"
     method: POST
     status_code: 204
     headers: "{{ jellyfin_headers }}"

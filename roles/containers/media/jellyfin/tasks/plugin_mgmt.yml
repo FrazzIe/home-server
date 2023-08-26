@@ -1,6 +1,6 @@
 - name: Get installed {{ container }} plugins
   uri:
-    url: "https://{{ jellyfin_url }}/Plugins"
+    url: "https://{{ jellyfin_domain }}/Plugins"
     method: GET
     status_code: 200
     headers: "{{ jellyfin_headers }}"
@@ -12,7 +12,7 @@
 
 - name: Get available {{ container }} packages
   uri:
-    url: "https://{{ jellyfin_url }}/Packages?PackageType=UserInstalled"
+    url: "https://{{ jellyfin_domain }}/Packages?PackageType=UserInstalled"
     method: GET
     status_code: 200
     headers: "{{ jellyfin_headers }}"
@@ -38,7 +38,7 @@
 
 - name: Install {{ container }} plugins
   uri:
-    url: "https://{{ jellyfin_url }}/Packages/Installed/{{ item.name | urlencode }}?AssemblyGuid={{ item.guid }}&version={{ item.version }}"
+    url: "https://{{ jellyfin_domain }}/Packages/Installed/{{ item.name | urlencode }}?AssemblyGuid={{ item.guid }}&version={{ item.version }}"
     method: POST
     status_code: 204
     headers: "{{ jellyfin_headers }}"
@@ -47,7 +47,7 @@
 
 - name: Restart {{ container }}
   uri:
-    url: "https://{{ jellyfin_url }}/System/Shutdown"
+    url: "https://{{ jellyfin_domain }}/System/Shutdown"
     method: POST
     status_code: 204
     headers: "{{ jellyfin_headers }}"

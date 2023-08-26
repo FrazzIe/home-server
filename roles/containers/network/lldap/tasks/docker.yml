@@ -3,10 +3,8 @@
     name: "{{ container }}"
     image: nitnelave/lldap:latest
     networks:
-      - name: "{{ mariadb_network.name }}"
-      - name: "{{ swag_network.name }}"
       - name: "docker_macvlan"
-        ipv4_address: "{{ (netplan_base, 20) | join('.') }}" # probably remove this
+        ipv4_address: "{{ lldap_address }}" # probably remove this
     pull: true
     state: started
     env:

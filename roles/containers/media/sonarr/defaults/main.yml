@@ -24,7 +24,7 @@ download_client_defaults:
 download_clients:
   - name: deluge
     fields:
-      host: "{{ deluge_url }}"
+      host: "{{ deluge_address }}"
       port: "{{ deluge_port }}"
       password: "{{ deluge_password | default('') }}"
     implementationName: Deluge

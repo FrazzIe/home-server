@@ -4,7 +4,7 @@
 
 - name: Get single sign-on {{ container }} plugin configuration
   uri:
-    url: "https://{{ jellyfin_url }}/Plugins/{{ jellyfin_sso_plugin_id }}/Configuration"
+    url: "https://{{ jellyfin_domain }}/Plugins/{{ jellyfin_sso_plugin_id }}/Configuration"
     method: GET
     status_code: 200
     headers: "{{ jellyfin_headers }}"
@@ -49,7 +49,7 @@
 
 - name: Set single sign-on {{ container }} plugin configuration
   uri:
-    url: "https://{{ jellyfin_url }}/Plugins/{{ jellyfin_sso_plugin_id }}/Configuration"
+    url: "https://{{ jellyfin_address }}/Plugins/{{ jellyfin_sso_plugin_id }}/Configuration"
     method: POST
     status_code: 204
     headers: "{{ jellyfin_headers }}"

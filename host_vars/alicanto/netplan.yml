@@ -1,5 +1,5 @@
 netplan_interface: &netplan_interface enp1s0f1
-netplan_address: 62
+netplan_endpoint: 62
 
 netplan_config:
   network:
@@ -8,7 +8,7 @@ netplan_config:
         dhcp4: false
         dhcp6: false
         addresses: 
-          - "{{ (netplan_base, netplan_address) | join('.') }}/24"
+          - "{{ (netplan_base, netplan_endpoint) | join('.') }}/24"
         routes:
           - to: default
             via: "{{ (netplan_base, netplan_gateway) | join('.') }}"

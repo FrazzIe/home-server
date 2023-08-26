@@ -1,5 +1,5 @@
 netplan_interface: invalid
-netplan_address: -1
+netplan_endpoint: -1
 
 netplan_base: 192.168.0
 netplan_gateway: 1

@@ -31,11 +31,11 @@
 
 - name: Set {{ container }} url
   set_fact:
-    jellyfin_url: "{{ swag_subdomain }}.{{ swag_domain }}"
+    jellyfin_domain: "{{ swag_subdomain }}.{{ swag_domain }}"
 
 - name: Wait until {{ container }} web portal is available
   uri:
-    url: "https://{{ jellyfin_url }}"
+    url: "https://{{ jellyfin_domain }}"
     method: GET
     status_code: 200
   register: result

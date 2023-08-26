@@ -1,5 +1,5 @@
 ---
-- name: Create {{ container }} proxy-conf folders
+- name: Create swag nginx proxy-configuration folder
   file:
     path: "{{ docker_dir }}/{{ container }}/nginx/proxy-confs/"
     state: directory
@@ -8,7 +8,7 @@
 
 - include_tasks: get_docker_container_defaults.yml
 
-- name: Get a list of containers using a {{ container }} subdomain
+- name: Get a list of all containers with swag_subdomain defined
   delegate_to: localhost
   become: false
   set_fact:
@@ -16,7 +16,7 @@
   with_items: "{{ container_defaults }}"
   when: item.swag_subdomain is defined
 
-- name: Get path to {{ container }} templates
+- name: Get swag role directory
   delegate_to: localhost
   become: false
   find:
@@ -25,13 +25,13 @@
     file_type: directory
     recurse: yes
     depth: 3
-  register: swag_template_dir
+  register: swag_role_dir
 
-- name: Store path to {{ container }} templates
+- name: Store reference to swag role templates directory
   set_fact:
-    swag_template_dir: "{{ (swag_template_dir.files[0].path, 'templates') | path_join }}"
+    swag_template_dir: "{{ (swag_role_dir.files[0].path, 'templates') | path_join }}"
 
-- name: Install {{ container }} subdomain proxy config files
+- name: Install swag_subdomain proxy configuration files
   template:
     src: "{{ (item.root, 'templates', 'subdomain.conf.j2') | path_join }}"
     dest: "{{ docker_dir }}/{{ container }}/nginx/proxy-confs/{{ item.container }}.subdomain.conf"
@@ -41,14 +41,14 @@
     - restart swag
     - test nginx
 
-- name: Create {{ container }} dns config folder
+- name: Create swag DNS configuration folder
   file:
     path: "{{ docker_dir }}/{{ container }}/dns-conf"
     state: directory
     recurse: yes
     mode: 0755
 
-- name: Install {{ container }} dns config files
+- name: Copy swag DNS configuration templates into DNS configuration folder
   template:
     src: "{{ item }}"
     dest: "{{ docker_dir }}/{{ container }}/dns-conf/{{ item | basename | regex_replace('.j2$', '') }}"

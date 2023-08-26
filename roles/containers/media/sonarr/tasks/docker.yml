@@ -25,4 +25,4 @@
 
 - name: Set {{ container }} url
   set_fact:
-    sonarr_url: "{{ swag_subdomain }}.{{ swag_domain }}"
+    sonarr_domain: "{{ swag_subdomain }}.{{ swag_domain }}"

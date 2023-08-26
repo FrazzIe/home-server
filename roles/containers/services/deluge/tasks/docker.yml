@@ -4,7 +4,7 @@
     image: ghcr.io/binhex/arch-delugevpn:latest
     networks:
       - name: "docker_macvlan"
-        ipv4_address: "{{ (netplan_base, deluge_address) | join('.') }}"
+        ipv4_address: "{{ deluge_address }}"
     pull: true
     privileged: true
     sysctls:

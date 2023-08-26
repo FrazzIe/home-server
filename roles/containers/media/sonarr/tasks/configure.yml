@@ -34,7 +34,7 @@
 
 - name: Wait until {{ container }} web portal is available
   uri:
-    url: "https://{{ sonarr_url }}/ping"
+    url: "https://{{ sonarr_domain }}/ping"
     method: GET
     status_code: 200
   register: result

@@ -27,7 +27,7 @@
 
 - name: Set {{ container }} url
   set_fact:
-    jackett_url: "{{ swag_subdomain }}.{{ swag_domain }}"
+    jackett_domain: "{{ swag_subdomain }}.{{ swag_domain }}"
     jackett_indexer_prefix: "ansible-{{ container }}"
 
 - name: Wait until {{ container }} api key exists
@@ -56,7 +56,7 @@
 
 - name: Set {{ container }} proxy
   set_fact:
-    jackett_config: "{{ jackett_config | combine({ 'ProxyUrl': privoxy_url, 'ProxyPort': privoxy_port, 'ProxyType': 0 }) }}"
+    jackett_config: "{{ jackett_config | combine({ 'ProxyUrl': privoxy_address, 'ProxyPort': privoxy_port, 'ProxyType': 0 }) }}"
 
 - name: Remove {{ container }} admin password from configuration
   set_fact:
@@ -76,7 +76,7 @@
 
 - name: Wait until {{ container }} web portal is available
   uri:
-    url: "https://{{ jackett_url }}"
+    url: "https://{{ jackett_address }}"
     method: GET
     status_code: 200
   register: result
@@ -86,7 +86,7 @@
 
 - name: Get {{ container }} auth cookie
   uri:
-    url: "https://{{ jackett_url }}/UI/Login"
+    url: "https://{{ jackett_address }}/UI/Login"
     method: GET
     status_code: 200
     follow_redirects: true
@@ -98,7 +98,7 @@
 
 - name: Set {{ container }} admin password
   uri:
-    url: "https://{{ jackett_url }}/api/v2.0/server/adminpassword"
+    url: "https://{{ jackett_address }}/api/v2.0/server/adminpassword"
     method: POST
     body_format: json
     status_code: [200, 204]

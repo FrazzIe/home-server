@@ -1,11 +1,11 @@
 
 - name: Set {{ container }} url
   set_fact:
-    lldap_url: "{{ swag_subdomain }}.{{ swag_domain }}"
+    lldap_domain: "{{ swag_subdomain }}.{{ swag_domain }}"
 
 - name: Wait until {{ container }} web portal is available
   uri:
-    url: "https://{{ lldap_url }}"
+    url: "https://{{ lldap_domain }}"
     method: GET
     status_code: 200
   register: result
@@ -15,7 +15,7 @@
 
 - name: Wait until {{ container }} web portal is available
   uri:
-    url: "https://{{ lldap_url }}/auth/simple/login"
+    url: "https://{{ lldap_domain }}/auth/simple/login"
     method: POST
     status_code: 200
     body_format: json

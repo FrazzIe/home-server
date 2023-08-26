@@ -1,6 +1,6 @@
 - name: Fetch startup wizard status
   uri:
-    url: "https://{{ jellyfin_url }}/System/Info/Public"
+    url: "https://{{ jellyfin_domain }}/System/Info/Public"
     method: GET
     status_code: 200
   register: result
@@ -11,7 +11,7 @@
 
 - name: Set {{ container }} localisation options
   uri:
-    url: "https://{{ jellyfin_url }}/Startup/Configuration"
+    url: "https://{{ jellyfin_domain }}/Startup/Configuration"
     method: POST
     status_code: 204
     body_format: json
@@ -23,14 +23,14 @@
 
 - name: Get {{ container }} root user
   uri:
-    url: "https://{{ jellyfin_url }}/Startup/User"
+    url: "https://{{ jellyfin_domain }}/Startup/User"
     method: GET
     status_code: 200
   when: jellyfin_setup == false
 
 - name: Set {{ container }} root user
   uri:
-    url: "https://{{ jellyfin_url }}/Startup/User"
+    url: "https://{{ jellyfin_domain }}/Startup/User"
     method: POST
     status_code: 204
     body_format: json
@@ -41,7 +41,7 @@
 
 - name: Set {{ container }} access
   uri:
-    url: "https://{{ jellyfin_url }}/Startup/RemoteAccess"
+    url: "https://{{ jellyfin_domain }}/Startup/RemoteAccess"
     method: POST
     status_code: 204
     body_format: json
@@ -52,7 +52,7 @@
 
 - name: Complete {{ container }} startup wizard
   uri:
-    url: "https://{{ jellyfin_url }}/Startup/Complete"
+    url: "https://{{ jellyfin_domain }}/Startup/Complete"
     method: POST
     status_code: 204
   when: jellyfin_setup == false
