@@ -17,7 +17,7 @@
       LLDAP_LDAP_USER_DN: "{{ lldap_admin_user }}"
       LLDAP_LDAP_USER_PASS: "{{ lldap_admin_password }}"
       LLDAP_LDAP_BASE_DN: "{{ lldap_base_dn }}"
-      LLDAP_DATABASE_URL: "mysql://{{ lldap_mysql_user }}:{{ lldap_mysql_password }}@{{ mariadb_container }}/{{ container }}_{{ database }}"
+      LLDAP_DATABASE_URL: "mysql://{{ lldap_mysql_user }}:{{ lldap_mysql_password }}@{{ mariadb_address }}/{{ container }}_{{ database }}"
     ports:
       - "3890:3890"
       - "17170:17170"

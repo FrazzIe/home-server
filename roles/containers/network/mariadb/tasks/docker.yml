@@ -1,24 +1,13 @@
-- name: Create mariadb network bridge
-  docker_network:
-    name: "{{ mariadb_network.name }}"
-    driver: bridge
-    ipam_config:
-      - subnet: "{{ (mariadb_network.base, mariadb_network.subnet) | join('.') }}"
-        gateway: "{{ (mariadb_network.base, mariadb_network.gateway) | join('.') }}"
-
 - name: Create mariadb socket volume
   docker_volume:
     volume_name: "{{ mariadb_socket }}"
-
 - name: Create / Run {{ container }} container
   docker_container:
     name: "{{ container }}"
     image: mariadb:latest
     networks:
-      - name: "{{ mariadb_network.name }}"
-        ipv4_address: "{{ mariadb_network_address }}"
       - name: "docker_macvlan"
-        ipv4_address: "{{ (netplan_base, 25) | join('.') }}" # probably remove this
+        ipv4_address: "{{ mariadb_address }}"
     pull: true
     state: started
     env:

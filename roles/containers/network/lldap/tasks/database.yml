@@ -1,8 +1,6 @@
 - name: Create {{ container }} db user script
   copy:
     content: |
-      CREATE USER IF NOT EXISTS {{ lldap_mysql_user }}@`{{ (mariadb_network.base, '%') | join('.') }}` IDENTIFIED BY '{{ lldap_mysql_password }}';
-      GRANT USAGE, EXECUTE, SELECT, SHOW VIEW, ALTER, ALTER ROUTINE, CREATE, CREATE ROUTINE, CREATE TEMPORARY TABLES, CREATE VIEW, DELETE, DROP, EVENT, INDEX, INSERT, REFERENCES, TRIGGER, UPDATE  ON `{{ container }}_%`.* TO {{ lldap_mysql_user }}@`{{ (mariadb_network.base, '%') | join('.') }}`;
       CREATE USER IF NOT EXISTS {{ lldap_mysql_user }}@`{{ (netplan_base, '%') | join('.') }}` IDENTIFIED BY '{{ lldap_mysql_password }}';
       GRANT USAGE, EXECUTE, SELECT, SHOW VIEW, ALTER, ALTER ROUTINE, CREATE, CREATE ROUTINE, CREATE TEMPORARY TABLES, CREATE VIEW, DELETE, DROP, EVENT, INDEX, INSERT, REFERENCES, TRIGGER, UPDATE  ON `{{ container }}_%`.* TO {{ lldap_mysql_user }}@`{{ (netplan_base, '%') | join('.') }}`;
     dest: "{{ docker_dir }}/{{ mariadb_container }}/{{ container }}_user.sql"
