@@ -1,10 +1,12 @@
+- debug:
+    msg: "{{ lldap_jwt_secret }} / {{ lldap_admin_user }} / {{ lldap_admin_password }} / {{ container_address }}"
 - name: Create / Run {{ container }} container
   docker_container:
     name: "{{ container }}"
     image: nitnelave/lldap:latest
     networks:
       - name: "docker_macvlan"
-        ipv4_address: "{{ lldap_address }}" # probably remove this
+        ipv4_address: "{{ container_address }}" # probably remove this
     pull: true
     state: started
     env:
@@ -23,8 +25,8 @@
       - "{{ docker_dir }}/{{ container }}:/data"
     restart_policy: unless-stopped
 
-- name: Restart {{ container }} containers
-  docker_container:
-    name: "{{ container }}"
-    state: started
-    restart: true
+# - name: Restart {{ container }} containers
+#   docker_container:
+#     name: "{{ container }}"
+#     state: started
+#     restart: true

@@ -30,3 +30,5 @@
 - name: Get public ip address
   community.general.ipify_facts:
   failed_when: ipify_public_ip is not defined
+
+- include_tasks: python3.yml

@@ -20,8 +20,8 @@
     status_code: 200
     body_format: json
     body:
-      username: "{{ lldap_ldap_user }}"
-      password: "{{ lldap_ldap_password }}"
+      username: "{{ lldap_admin_user }}"
+      password: "{{ lldap_admin_password }}"
   register: result
 
 - name: Create {{ container }} authentication headers

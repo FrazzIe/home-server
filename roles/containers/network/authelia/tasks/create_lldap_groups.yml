@@ -7,9 +7,11 @@
 - name: Get all defined groups from {{ container }} rule subjects
   set_fact:
     authelia_groups: "{{ authelia_subjects | flatten | select('match', 'group:.*') | map('regex_replace', '(group:)', '') | unique }}"
+  when: authelia_subjects is defined and authelia_subjects | length > 0
 
 - name: Create LLDAP groups
   include_tasks: roles/containers/network/lldap/tasks/add_lldap_group.yml
   loop: "{{ authelia_groups | unique }}"
   loop_control:
     loop_var: lldap_group
+  when: authelia_groups is defined and authelia_groups | length > 0

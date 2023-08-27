@@ -3,7 +3,7 @@
     name: "{{ container }}"
     state: started
     restart: yes
-  when: container_state[item] is defined and container_state[item].Running == true
+  when: container_state[container] is defined and container_state[container].Running == true
 
 - name: test nginx
   command:
@@ -12,4 +12,3 @@
   when: container_state[container] is defined and container_state[container].Running == true
   changed_when: swag_nginx_test is not search("test is successful")
   failed_when: swag_nginx_test is not search("test is successful")
-  loop: "{{ container }}"

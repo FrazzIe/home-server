@@ -17,7 +17,6 @@
     ports:
       - "3306:3306"
     volumes:
-      - "{{ docker_dir }}/{{ container }}:/{{ mariadb_script_directory }}"
       - "{{ mariadb_socket }}:/var/run/mysqld"
     restart_policy: unless-stopped
 
@@ -26,16 +25,3 @@
     target_container: "{{ container }}"
 
 - include_tasks: get_single_docker_container_ready.yml
-
-- name: Create {{ container }} scripts directory
-  community.docker.docker_container_exec:
-    container: "{{ container }}"
-    argv:
-      - /bin/bash
-      - "-c"
-      - "mkdir {{ mariadb_script_directory }} > /dev/stderr"
-    chdir: /root
-  failed_when: 
-    - result.stderr.find("File exists") == -1
-    - result.rc != 0
-  register: result
