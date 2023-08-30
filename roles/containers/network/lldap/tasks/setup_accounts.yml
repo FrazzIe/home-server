@@ -1,10 +1,15 @@
-- include_tasks: add_lldap_user_group.yml
-- include_tasks: add_lldap_user.yml
-- name: Create system accounts
-  loop:
-    - { id: "{{ lldap_admin_user }}"
+- name: Move lldap_set_password binary into tools dir
+  community.docker.docker_container_exec:
+    container: "{{ lldap_container }}"
+    argv:
+      - cp
+      - /app/lldap_set_password
+      - /tools/lldap_set_password
 
-lldap_admin_ro_user
-lldap_admin_ro_password
-lldap_admin_pm_user
-lldap_admin_pm_password
+- name: Create system accounts
+  include_tasks: add_lldap_user.yml
+  loop:
+    - { id: "{{ lldap_admin_ro_user }}", email: "ro", password: "{{ lldap_admin_ro_password }}", groups: [ lldap_strict_readonly ] }
+    - { id: "{{ lldap_admin_pm_user }}", email: "pm", password: "{{ lldap_admin_pm_password }}", groups: [ lldap_password_manager ] }
+  loop_control:
+    loop_var: lldap_user

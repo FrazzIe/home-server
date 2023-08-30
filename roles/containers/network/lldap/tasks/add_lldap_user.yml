@@ -3,7 +3,7 @@
 
 - name: Create user {{ lldap_user.id }}
   uri:
-    url: https://{{ lldap_domain }}/api/graphql
+    url: http://{{ lldap_address }}:{{ lldap_ui_port }}/api/graphql
     method: POST
     status_code: 200
     headers: "{{ lldap_headers }}"
@@ -18,7 +18,23 @@
           }
         }
       variables:
-        user: "{{ lldap_user }}"
+        user: "{{ lldap_user | combine({ 'password': omit, 'groups': omit }) }}"
+  when: not (lldap_user.id in lldap_users_existing)
+
+- name: Set user password for {{ lldap_user.id }}
+  command:    
+    argv:
+      - "{{ lldap_tools_dir }}/lldap_set_password"
+      - --base-url
+      - "http://{{ lldap_address }}:{{ lldap_ui_port }}/"
+      - --admin-username
+      - "{{ lldap_admin_user }}"
+      - --admin-password
+      - "{{ lldap_admin_password }}"
+      - --username
+      - "{{ lldap_user.id }}"
+      - --password
+      - "{{ lldap_user.password }}"
   when: not (lldap_user.id in lldap_users_existing)
 
 - name: Add user {{ lldap_user.id }} to existing users
@@ -26,18 +42,54 @@
     lldap_users_existing: "{{ lldap_users_existing + [ lldap_user.id ] }}"
   when: not (lldap_user.id in lldap_users_existing)
 
-- name: Create user ldif
-  copy:
-    content: |
-      dn: {{ lldap_user_attribute }}={{ user.id }},{{ lldap_user_dn }}
-      objectclass: inetOrgPerson
-      objectclass: posixAccount
-      objectclass: mailAccount
-      objectclass: person
-      uid: {{ user.id }}
-      mail: {{ user.email }}
-      cn: Administrator
-    dest: "/tmp/account.ldif"
+- name: Add user {{ lldap_user.id }} to groups
+  include_tasks: add_lldap_user_group.yml
+  loop: "{{ lldap_user.groups | map('combine') }}"
+  vars:
+    lldap_group:
+      user: "{{ lldap_user.id }}"
+      group: "{{ item }}"
 
-# sudo apt install ldap-utils
-# ldapadd -H lldap://lldap:3890 -x -D "{{ lldap_user_attribute }}={{ lldap_admin_user }},{{ lldap_user_dn }}" -w "{{ lldap_admin_password }}" -f "/tmp/account.ldif"
+# Another way to create a user using ldap-utils
+# - name: Install ldap-utils
+#   apt:
+#     name: ldap-utils
+#     state: latest
+#     update_cache: true
+# 
+# - name: Create temp user ldif
+#   copy:
+#     content: |
+#       dn: {{ lldap_user_attribute }}={{ lldap_user.id }},{{ lldap_user_dn }}
+#       objectclass: inetOrgPerson
+#       objectclass: posixAccount
+#       objectclass: mailAccount
+#       objectclass: person
+#       uid: {{ lldap_user.id }}
+#       mail: {{ lldap_user.email }}
+#       {% if lldap_user.display_name is defined %}
+#         cn: {{ lldap_user.display_name }}
+#       {% endif %}
+#       {% if lldap_user.first_name is defined %}
+#         givenname: {{ lldap_user.first_name }}
+#       {% endif %}
+#       {% if lldap_user.last_name is defined %}
+#         sn: {{ lldap_user.last_name }}
+#       {% endif %}
+#       {% if lldap_user.avatar is defined %}
+#         jpegPhoto: {{ lldap_user.avatar }}
+#       {% endif %}
+#     dest: /tmp/account.ldif
+
+# - name: Create user {{ lldap_user.id }}
+#   command:
+#     cmd: ldapadd -H "ldap://{{ lldap_address }}:{{ lldap_ldap_port }}" -x -D "{{ lldap_user_attribute }}={{ lldap_admin_user }},{{ lldap_user_dn }}" -w "{{ lldap_admin_password }}" -f "/tmp/account.ldif"
+
+# - name: Cleanup tmp user ldif
+#   file:
+#     path: /tmp/account.ldif
+#     state: absent
+
+# - name: Set user password
+#   command:
+#     cmd: ldappasswd -H "ldap://{{ lldap_address }}:{{ lldap_ldap_port }}" -x -D "{{ lldap_user_attribute }}={{ lldap_admin_user }},{{ lldap_user_dn }}" -w "{{ lldap_admin_password }}" -a "" -s "{{ lldap_user.password }}" "{{ lldap_user_attribute }}={{ lldap_user.id }},{{ lldap_user_dn }}"

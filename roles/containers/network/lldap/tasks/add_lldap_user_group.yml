@@ -1,34 +1,36 @@
 - name: Get lldap groups
   uri:
-    url: https://{{ lldap_domain }}/api/graphql
+    url: http://{{ lldap_address }}:{{ lldap_ui_port }}/api/graphql
     method: POST
     status_code: 200
     headers: "{{ lldap_headers }}"
     body_format: json
     body:
       query: |
-        groups {
-          id
-          displayName
-          users {
+        {
+          groups {
             id
+            displayName
+            users {
+              id
+            }
           }
         }
   register: result
 
-- name: Get group {{ lldap_group }} information
+- name: Get group {{ lldap_group.group }} information
   set_fact:
-    lldap_group_info: result.json.data.groups | selectattr('displayName', 'defined') | selectattr('displayName', '==', lldap_group) | first
+    lldap_group_info: "{{ result.json.data.groups | selectattr('displayName', 'defined') | selectattr('displayName', '==', lldap_group.group) | first }}"
 
-- name: Add user {{ lldap_user }} to group {{ lldap_group }}
+- name: Add user {{ lldap_group.user }} to group {{ lldap_group.group }}
   uri:
-    url: https://{{ lldap_domain }}/api/graphql
+    url: http://{{ lldap_address }}:{{ lldap_ui_port }}/api/graphql
     method: POST
     status_code: 200
     headers: "{{ lldap_headers }}"
     body_format: json
     body:
-      operationName: CreateUser
+      operationName: addUserToGroup
       query: |
         mutation addUserToGroup($userId: String!, $groupId: Int!) {
           addUserToGroup(userId: $userId, groupId: $groupId) {
@@ -36,6 +38,6 @@
           }
         }
       variables:
-        userId: "{{ lldap_user }}"
-        groupId: "{{ lldap_group_info.id }}"
-  when: lldap_group_info is defined and not (lldap_user in lldap_group_info.users)
+        userId: "{{ lldap_group.user }}"
+        groupId: "{{ lldap_group_info.id | int }}"
+  when: lldap_group_info is defined and not (lldap_group.user in lldap_group_info.users)

@@ -1,10 +1,10 @@
 ---
-- name: Create {{ container }} bridge network
+- name: Create swag docker bridge network
   docker_network:
     name: "{{ swag_network.name }}"
     driver: bridge
 
-- name: Create / Run {{ container }} container
+- name: Create / Run swag container
   docker_container:
     name: "{{ container }}"
     image: ghcr.io/linuxserver/swag
