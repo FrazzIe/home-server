@@ -295,7 +295,7 @@ authentication_backend:
 
     ## The url to the ldap server. Format: <scheme>://<address>[:<port>].
     ## Scheme can be ldap or ldaps in the format (port optional).
-    url: ldap://lldap:3890
+    url: ldap://{{ lldap_address }}:{{ lldap_ldap_port }}
 
     ## The dial timeout for LDAP.
     timeout: 5s
