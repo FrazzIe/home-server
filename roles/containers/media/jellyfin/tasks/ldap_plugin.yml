@@ -15,7 +15,7 @@
     jellyfin_ldap_plugin_config: "{{ result.json }}"
     jellyfin_ldap_plugin_config_options:
       LdapServer: "{{ lldap_address }}"
-      LdapPort: "{{ lldap_port }}"
+      LdapPort: "{{ lldap_ldap_port }}"
       UseSsl: false
       LdapBindUser: "{{ lldap_user_attribute }}={{ lldap_admin_ro_user }},{{ lldap_user_dn }}"
       LdapBindPassword: "{{ lldap_admin_ro_password }}"
