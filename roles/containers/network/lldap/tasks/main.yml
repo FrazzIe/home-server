@@ -1,7 +1,0 @@
----
-
-- include_tasks: database.yml
-- include_tasks: docker.yml
-- include_tasks: setup_api.yml
-- include_tasks: create_lldap_groups.yml
-- include_tasks: setup_accounts.yml

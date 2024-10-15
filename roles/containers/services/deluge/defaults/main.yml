@@ -1,6 +1,0 @@
----
-
-container: deluge
-swag_subdomain: deluge
-homepage_group: media
-homepage_description: Torrent client

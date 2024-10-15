@@ -1,6 +1,0 @@
-macvlan_name: docker_macvlan
-macvlan_interface: "dm_host_bridge"
-macvlan_subnet: 0/24 # available: [ 0 - 255 ] usable: [ 1 - 253 ]
-macvlan_gateway: "{{ netplan_gateway }}"
-macvlan_range: 0/26 # available: [ 0 - 31 ] usable: [ 1 - 62 ]
-macvlan_host: 61

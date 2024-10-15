@@ -1,6 +1,0 @@
----
-
-- include_tasks: docker.yml
-- include_tasks: configure.yml
-- include_tasks: dl_client_mgmt.yml
-- include_tasks: indexer_mgmt.yml

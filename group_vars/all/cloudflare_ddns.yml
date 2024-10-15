@@ -1,2 +1,0 @@
-cloudflare_ddns_subdomain: ddns
-cloudflare_ddns_zone: "{{ cloudflare_zone }}"

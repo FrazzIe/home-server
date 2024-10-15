@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-
-ip link add {{ macvlan_interface }} link {{ netplan_interface }} type macvlan mode bridge
-ip addr add {{ (netplan_base, macvlan_host) | join('.') }}/{{ macvlan_range | split('/') | last }} dev {{ macvlan_interface }}
-ip link set {{ macvlan_interface }} up

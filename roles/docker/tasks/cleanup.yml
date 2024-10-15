@@ -1,9 +1,0 @@
-- include_tasks: get_playbook_container_list.yml
-- include_tasks: get_docker_container_list.yml
-
-- name: Remove inactive containers
-  docker_container:
-    name: "{{ item }}"
-    state: absent
-  when: not item in playbook_container_list
-  loop: "{{ container_list.stdout_lines }}"

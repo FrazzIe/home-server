@@ -1,9 +1,0 @@
----
-container: jackett
-swag_subdomain: jackett
-homepage_group: media
-homepage_description: torrent index scraper
-
-authelia_rules_temporary:
-  - policy: bypass
-    networks: ansible

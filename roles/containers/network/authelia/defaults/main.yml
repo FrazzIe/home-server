@@ -1,5 +1,0 @@
----
-
-container: authelia
-swag_subdomain: auth
-database: main

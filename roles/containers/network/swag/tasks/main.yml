@@ -1,6 +1,0 @@
----
-
-- include_tasks: install_configs.yml
-- include_tasks: docker.yml
-- include_tasks: cloudflare_real_ips.yml
-- include_tasks: cloudflare_dns_records.yml

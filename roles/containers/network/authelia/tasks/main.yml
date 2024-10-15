@@ -1,8 +1,0 @@
----
-
-- include_tasks: database.yml
-- include_tasks: setup_configuration.yml
-- include_tasks: create_lldap_groups.yml
-- include_tasks: install_configuration.yml
-- include_tasks: install_swag_config.yml
-- include_tasks: docker.yml

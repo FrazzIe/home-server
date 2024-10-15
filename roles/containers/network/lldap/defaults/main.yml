@@ -1,6 +1,0 @@
----
-
-container: "{{ lldap_container }}"
-container_address: "{{ lldap_address }}"
-swag_subdomain: lldap
-database: main

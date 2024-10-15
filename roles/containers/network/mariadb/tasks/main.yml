@@ -1,4 +1,0 @@
----
-
-- include_tasks: docker.yml
-- include_tasks: setup_backup.yml
