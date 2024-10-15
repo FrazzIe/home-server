@@ -1,0 +1,22 @@
+- name: Wait for mariadb crontabs to be available
+  ansible.builtin.wait_for:
+    path: "{{ docker_dir }}/{{ container }}/crontabs/root"
+    state: present
+
+- name: Add daily database backup cron job
+  copy:
+    content: |
+      # min hour day month weekday command
+      0	3	*	*	*	bash /config/run_backup.sh
+    dest: "{{ docker_dir }}/{{ container }}/crontabs/root"
+
+- name: Install backup script
+  copy:
+    src: "files/run_backup.sh"
+    dest: "{{ docker_dir }}/{{ container }}/run_backup.sh"
+
+- name: Restart mariadb container to apply cron changes
+  docker_container:
+    name: "{{ container }}"
+    state: started
+    restart: true

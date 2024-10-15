@@ -1,0 +1,15 @@
+- name: Install {{ container }} swag nginx location conf
+  template:
+    src: authelia-location.conf.j2
+    dest: "{{ docker_dir }}/{{ swag_container }}/nginx/authelia-location.conf"
+
+
+- name: Install {{ container }} swag nginx server conf
+  template:
+    src: authelia-server.conf.j2
+    dest: "{{ docker_dir }}/{{ swag_container }}/nginx/authelia-server.conf"
+
+- name: Restart swag container
+  include_tasks: "restart_docker_container.yml"
+  vars:
+    target_container: "{{ swag_container }}"

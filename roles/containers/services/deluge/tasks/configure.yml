@@ -41,7 +41,7 @@
 
 - name: Wait until {{ container }} web portal is available
   uri:
-    url: "http://{{ deluge_url }}:{{ deluge_port }}/"
+    url: "http://{{ deluge_address }}:{{ deluge_port }}/"
     method: GET
     status_code: 200
   register: result

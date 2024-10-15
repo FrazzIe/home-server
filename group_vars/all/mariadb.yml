@@ -1,0 +1,4 @@
+mariadb_endpoint: 27
+mariadb_address: "{{ (netplan_base, mariadb_endpoint) | join('.') }}"
+mariadb_container: mariadb
+mariadb_socket: "{{ mariadb_container }}_socket"

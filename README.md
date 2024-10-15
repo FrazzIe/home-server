@@ -15,7 +15,7 @@ ansible-galaxy install -r requirements.yml
 
 First run:
 ```
-ansible-playbook setup.yml -l your-inventory-file -Kk
+ansible-playbook -i hosts_inventory.yml route-manager.yml --vault-password-file ~/vault_pwd.txt
 ```
 
 Afterward:

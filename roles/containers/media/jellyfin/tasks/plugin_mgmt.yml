@@ -1,0 +1,56 @@
+- name: Get installed {{ container }} plugins
+  uri:
+    url: "https://{{ jellyfin_domain }}/Plugins"
+    method: GET
+    status_code: 200
+    headers: "{{ jellyfin_headers }}"
+  register: result
+
+- name: Store installed {{ container }} plugin ids
+  set_fact:
+    plugins_installed: "{{ result.json | selectattr('Id', 'defined') | map(attribute='Id') }}"
+
+- name: Get available {{ container }} packages
+  uri:
+    url: "https://{{ jellyfin_domain }}/Packages?PackageType=UserInstalled"
+    method: GET
+    status_code: 200
+    headers: "{{ jellyfin_headers }}"
+  register: result
+
+- name: Store available {{ container }} plugins
+  set_fact:
+    plugins_available: "{{ plugins_available | default({}) | combine({ item['guid']: value }) }}"
+  loop: "{{ result.json }}"
+  vars:
+    keys: "{{ item.keys() | difference(['guid']) }}"
+    values: "{{ keys | map('extract', item) | list }}"
+    value: "{{ dict(keys | zip(values)) }}"
+
+- name: Add external {{ container }} plugins
+  set_fact:
+    plugins_new: "{{ plugins_new | default([]) + [ item | combine({ 'name': plugins_available[item.guid].name }) ] }}"
+  loop: "{{ plugins | dict2items(key_name='guid', value_name='version') }}"
+  when: not (item.guid in plugins_installed)
+  failed_when: 
+    - plugins_available[item.guid] is not defined
+    - not (item.version in plugins_available[item.guid].versions | map(attribute='VersionNumber'))
+
+- name: Install {{ container }} plugins
+  uri:
+    url: "https://{{ jellyfin_domain }}/Packages/Installed/{{ item.name | urlencode }}?AssemblyGuid={{ item.guid }}&version={{ item.version }}"
+    method: POST
+    status_code: 204
+    headers: "{{ jellyfin_headers }}"
+  loop: "{{ plugins_new }}"
+  when: plugins_new is defined
+
+- name: Restart {{ container }}
+  uri:
+    url: "https://{{ jellyfin_domain }}/System/Shutdown"
+    method: POST
+    status_code: 204
+    headers: "{{ jellyfin_headers }}"
+  when: plugins_new is defined
+
+  

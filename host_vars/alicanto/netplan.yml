@@ -1,0 +1,20 @@
+netplan_interface: &netplan_interface enp1s0f1
+netplan_endpoint: 62
+
+netplan_config:
+  network:
+    ethernets:
+      *netplan_interface :
+        dhcp4: false
+        dhcp6: false
+        addresses: 
+          - "{{ (netplan_base, netplan_endpoint) | join('.') }}/24"
+        routes:
+          - to: default
+            via: "{{ (netplan_base, netplan_gateway) | join('.') }}"
+        nameservers:
+          addresses:
+            - "{{ (netplan_base, netplan_gateway) | join('.') }}"
+            - 1.1.1.1
+            - 1.1.0.0
+    version: 2

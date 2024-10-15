@@ -35,3 +35,5 @@
         seconds: 5
 
     - include_tasks: get_single_docker_container_ready.yml
+      vars:
+        target_container: "{{ target_container }}"

@@ -30,6 +30,6 @@
 - name: Change ownership of data drive mounts
   file:
     path: "/mnt/{{ item.label }}"
-    owner: "{{ target_username_puid }}"
-    group: "{{ target_username_pgid }}"
+    owner: "{{ sudo_user_uid }}"
+    group: "{{ sudo_user_gid }}"
   loop: "{{ data_disks }}"

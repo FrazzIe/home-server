@@ -1,0 +1,25 @@
+---
+
+container: jellyfin
+swag_subdomain: jellyfin
+homepage_group: media
+homepage_description: Media streaming
+
+plugin_repositories: # name: manifest
+  sso: https://raw.githubusercontent.com/9p4/jellyfin-plugin-sso/manifest-release/manifest.json
+
+plugins: # guid: target version
+  505ce9d1d91642fa86ca673ef241d7df: 3.4.0.0
+  958aad6637844d2ab89aa7b6fab6e25c: 17.0.0.0
+
+lldap_groups: 
+  - "{{ jellyfin_ldap_user_group }}"
+  - "{{ jellyfin_ldap_admin_group }}"
+
+# authelia_oidc_client:
+#   id: jellyfin
+#  description: My media server
+#   secret: "jellyfin_authelia_oidc_secret"
+#   authorization_policy: one_factor
+#  redirect_uris:
+#    - https://_domain_/sso/OID/r/authelia

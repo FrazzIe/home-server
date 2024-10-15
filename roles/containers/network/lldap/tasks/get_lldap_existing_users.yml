@@ -1,0 +1,19 @@
+- name: Get existing users
+  uri:
+    url: http://{{ lldap_address }}:{{ lldap_ui_port }}/api/graphql
+    method: POST
+    status_code: 200
+    headers: "{{ lldap_headers }}"
+    body_format: json
+    body:
+      query: |
+        {
+          users {
+            id
+          }
+        }
+  register: result
+
+- name: Store existing users
+  set_fact:
+    lldap_users_existing: "{{ result.json.data.users | selectattr('id', 'defined') | map(attribute='id') }}"

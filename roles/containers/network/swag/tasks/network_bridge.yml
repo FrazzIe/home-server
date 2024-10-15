@@ -1,5 +1,0 @@
-- name: Create swag network bridge
-  docker_network:
-    name: "swag_{{ item.name }}_bridge"
-    driver: bridge
-  loop: "{{ swag_networks }}"

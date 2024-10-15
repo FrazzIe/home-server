@@ -1,0 +1,85 @@
+- hosts: alicanto
+  gather_facts: false
+  pre_tasks:
+    - import_tasks: tasks/ssh_juggle_port.yml
+      tags:
+        - port
+
+- hosts: alicanto
+  become: true
+  # Init submodules
+  roles:
+    - role: system
+      tags:
+        - system
+  
+    - role: docker
+      tags: 
+        - docker
+
+    - role: geerlingguy.security
+      tags:
+        - security
+
+    - role: geerlingguy.ntp
+      tags:
+        - ntp
+
+    - role: security/fail2ban
+      tags:
+        - fail2ban
+
+    - role: security/endlessh
+      tags:
+        - endlessh
+
+    - role: filesystems/mounts
+      tags:
+        - mounts
+    
+    - role: filesystems/mergerfs
+      tags:
+        - mergerfs
+
+    - role: filesystems/snapraid
+      tags:
+        - snapraid
+
+    - role: containers/network/docker-socket-proxy
+      tags:
+        - container
+        - docker-socket-proxy
+        - docker-socket
+        - socket-proxy
+
+    - role: containers/services/vaultwarden
+      tags:
+        - container
+        - vaultwarden
+
+    - role: containers/services/homepage
+      tags:
+        - container
+        - homepage
+
+    - role: containers/services/deluge
+      tags:
+        - container
+        - deluge
+
+    - role: containers/media/jackett
+      tags:
+        - container
+        - jackett
+
+    - role: containers/media/sonarr
+      tags:
+        - container
+        - sonarr
+
+    - role: containers/media/jellyfin
+      tags:
+        - container
+        - jellyfin
+  tasks:
+    - include_tasks: tasks/get_docker_container_state.yml

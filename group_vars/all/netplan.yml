@@ -1,22 +1,10 @@
-netplan_interface: &netplan_interface enp1s0f1 #enp1s0f1,eth0
+netplan_interface: invalid
+netplan_endpoint: -1
+
 netplan_base: 192.168.0
 netplan_gateway: 1
-netplan_address: 30 #30,31
 
-netplan_config:
-  network:
-    ethernets:
-      *netplan_interface :
-        dhcp4: false
-        dhcp6: false
-        addresses: 
-          - "{{ (netplan_base, netplan_address) | join('.') }}/24"
-        routes:
-          - to: default
-            via: "{{ (netplan_base, netplan_gateway) | join('.') }}"
-        nameservers:
-          addresses:
-            - "{{ (netplan_base, netplan_gateway) | join('.') }}"
-            - 1.1.1.1
-            - 1.1.0.0
-    version: 2
+# netplan_config:
+#   network:
+#     ethernets:
+#     version: 2

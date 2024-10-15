@@ -5,18 +5,10 @@
     playbook_container_list: []
   when: playbook_container_list is defined
 
-- name: Get a list of container names from defaults (string)
+- name: Get a list of container names from defaults
   delegate_to: localhost
   become: false
   set_fact:
-    playbook_container_list: "{{ playbook_container_list | default([]) + (item.container | split(',')) }}"
-  when: item.container is defined and (item.container | type_debug) != "list"
-  with_items: "{{ container_defaults }}"
-
-- name: Get a list of container names from defaults (list)
-  delegate_to: localhost
-  become: false
-  set_fact:
-    playbook_container_list: "{{ playbook_container_list | default([]) + item.container }}"
-  when: item.container is defined and (item.container | type_debug) == "list"
+    playbook_container_list: "{{ playbook_container_list | default([]) + [ item.container ] }}"
+  when: item.container is defined
   with_items: "{{ container_defaults }}"

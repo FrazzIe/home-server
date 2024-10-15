@@ -1,0 +1,28 @@
+- name: Create / Run {{ container }} container
+  docker_container:
+    name: "{{ container }}"
+    image: lscr.io/linuxserver/sonarr:latest
+    networks:
+      - name: "{{ swag_network.name}}"
+    pull: true
+    state: started
+    env:
+      PUID: "{{ sudo_user_uid }}"
+      PGID: "{{ sudo_user_gid }}"
+      TZ: "{{ timezone }}"
+    ports:
+      - 8989:8989
+    volumes:
+      - "{{ docker_dir }}/{{ container }}:/config"
+      - "{{ mergerfs_root }}/downloads:/downloads"
+      - "{{ mergerfs_root }}/media/tv:/tv"
+    restart_policy: unless-stopped
+   
+
+- include_tasks: get_single_docker_container_ready.yml
+  vars:
+    target_container: "{{ container }}"
+
+- name: Set {{ container }} url
+  set_fact:
+    sonarr_domain: "{{ swag_subdomain }}.{{ swag_domain }}"

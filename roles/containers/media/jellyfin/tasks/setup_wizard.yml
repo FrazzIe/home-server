@@ -1,0 +1,58 @@
+- name: Fetch startup wizard status
+  uri:
+    url: "https://{{ jellyfin_domain }}/System/Info/Public"
+    method: GET
+    status_code: 200
+  register: result
+
+- name: Store startup wizard status
+  set_fact:
+    jellyfin_setup: "{{ result.json.StartupWizardCompleted }}"
+
+- name: Set {{ container }} localisation options
+  uri:
+    url: "https://{{ jellyfin_domain }}/Startup/Configuration"
+    method: POST
+    status_code: 204
+    body_format: json
+    body: 
+      UICulture: en-GB              # GET /Localization/Options
+      MetadataCountryCode: GB       # GET /Localization/countries
+      PreferredMetadataLanguage: en # GET /Localization/cultures
+  when: jellyfin_setup == false
+
+- name: Get {{ container }} root user
+  uri:
+    url: "https://{{ jellyfin_domain }}/Startup/User"
+    method: GET
+    status_code: 200
+  when: jellyfin_setup == false
+
+- name: Set {{ container }} root user
+  uri:
+    url: "https://{{ jellyfin_domain }}/Startup/User"
+    method: POST
+    status_code: 204
+    body_format: json
+    body: 
+      Name: admin
+      Password: admin
+  when: jellyfin_setup == false
+
+- name: Set {{ container }} access
+  uri:
+    url: "https://{{ jellyfin_domain }}/Startup/RemoteAccess"
+    method: POST
+    status_code: 204
+    body_format: json
+    body: 
+      EnableAutomaticPortMapping: false
+      EnableRemoteAccess: true
+  when: jellyfin_setup == false
+
+- name: Complete {{ container }} startup wizard
+  uri:
+    url: "https://{{ jellyfin_domain }}/Startup/Complete"
+    method: POST
+    status_code: 204
+  when: jellyfin_setup == false

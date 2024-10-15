@@ -1,0 +1,26 @@
+# - name: Create mariadb socket volume
+#   docker_volume:
+#     volume_name: "{{ mariadb_socket }}"
+
+- name: Create / Run {{ container }} container
+  docker_container:
+    name: "{{ container }}"
+    image: lscr.io/linuxserver/mariadb:latest
+    networks:
+      - name: "docker_macvlan"
+        ipv4_address: "{{ mariadb_address }}"
+    pull: true
+    state: started
+    env:
+      PUID: "{{ sudo_user_uid | string }}"
+      PGID: "{{ sudo_user_gid | string }}"
+      TZ: "{{ timezone }}"
+      MYSQL_USER: "{{ mariadb_user }}"
+      MYSQL_PASSWORD: "{{ mariadb_user_password }}"
+      MYSQL_ROOT_PASSWORD: "{{ mariadb_root_password }}"
+      DOCKER_MODS: linuxserver/mods:universal-cron
+    ports:
+      - "3306:3306"
+    volumes:
+      - "{{ docker_dir }}/{{ container }}:/config"
+    restart_policy: unless-stopped

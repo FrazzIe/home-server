@@ -15,7 +15,7 @@
   file:
     dest: "{{ docker_dir }}"
     state: directory
-    owner: "{{ target_username }}"
+    owner: "{{ sudo_user }}"
     group: users
     mode: ug=rwx,o=rx,g+s
     recurse: yes
@@ -26,20 +26,20 @@
     path: "{{ mergerfs_root }}/docker_data"
   register: mergerfs_docker_data_info
 
-- name: Restore the "{{ docker_dir }}" folder from the MergerFS array
-  synchronize:
-    src: "{{ mergerfs_root }}/docker_data"
-    dest: "{{ docker_dir }}/"
-    delete: true
-    recursive: yes
-  delegate_to: "{{ inventory_hostname }}"
-  when: (docker_data_files.matched < 20 or not docker_data_info.stat.exists) and mergerfs_docker_data_info.stat.exists
+# - name: Restore the "{{ docker_dir }}" folder from the MergerFS array
+#   ansible.posix.synchronize:
+#     src: "{{ mergerfs_root }}/docker_data"
+#     dest: "{{ docker_dir }}/"
+#     delete: true
+#     recursive: yes
+#   delegate_to: "{{ inventory_hostname }}"
+#   when: (docker_data_files.matched < 20 or not docker_data_info.stat.exists) and mergerfs_docker_data_info.stat.exists
 
 - name: Chmod the data folder
   file:
     dest: "{{ docker_dir }}"
     state: directory
-    owner: "{{ target_username }}"
+    owner: "{{ sudo_user }}"
     mode: 0775
     group: users
     recurse: yes

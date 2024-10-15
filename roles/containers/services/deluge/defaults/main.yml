@@ -1,7 +1,6 @@
 ---
 
 container: deluge
-subdomain: deluge
-network: "{{ swag_network.public }}"
+swag_subdomain: deluge
 homepage_group: media
 homepage_description: Torrent client

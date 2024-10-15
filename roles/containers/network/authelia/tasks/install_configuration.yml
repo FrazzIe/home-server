@@ -1,0 +1,9 @@
+- name: Create {{ container }} data directory
+  file:
+    path: "{{ docker_dir }}/{{ container }}"
+    state: directory
+
+- name: Install {{ container }} configuration
+  template:
+    src: configuration.yml.j2
+    dest: "{{ docker_dir }}/{{ container }}/configuration.yml"

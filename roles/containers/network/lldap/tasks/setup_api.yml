@@ -1,0 +1,25 @@
+- name: Wait until {{ container }} web portal is available
+  uri:
+    url: "http://{{ lldap_address }}:{{ lldap_ui_port }}"
+    method: GET
+    status_code: 200
+  register: result
+  until: result.status == 200
+  retries: 5
+  delay: 5
+
+- name: Login to {{ container }} web portal
+  uri:
+    url: "http://{{ lldap_address }}:{{ lldap_ui_port }}/auth/simple/login"
+    method: POST
+    status_code: 200
+    body_format: json
+    body:
+      username: "{{ lldap_admin_user }}"
+      password: "{{ lldap_admin_password }}"
+  register: result
+
+- name: Create {{ container }} authentication headers
+  set_fact:
+    lldap_headers:
+      Authorization: Bearer {{ result.json.token }}

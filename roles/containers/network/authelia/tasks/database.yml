@@ -1,0 +1,20 @@
+- name: Create authelia database user
+  community.mysql.mysql_query:
+    login_host: "{{ mariadb_address }}"
+    login_user: root
+    login_password: "{{ mariadb_root_password }}"
+    query:
+      - CREATE USER IF NOT EXISTS %(user)s@%(target)s IDENTIFIED BY %(password)s;
+      - GRANT USAGE, EXECUTE, SELECT, SHOW VIEW, ALTER, ALTER ROUTINE, CREATE, CREATE ROUTINE, CREATE TEMPORARY TABLES, CREATE VIEW, DELETE, DROP, EVENT, INDEX, INSERT, REFERENCES, TRIGGER, UPDATE  ON `{{ container }}_%%`.* TO %(user)s@%(target)s;
+    named_args:
+      user: "{{ authelia_storage_user }}"
+      target: "{{ (netplan_base, '%') | join('.') }}"
+      password: "{{ authelia_storage_password }}"
+
+- name: Create authelia database
+  community.mysql.mysql_db:
+    login_host: "{{ mariadb_address }}"
+    login_user: root
+    login_password: "{{ mariadb_root_password }}"
+    name: "{{ container }}_{{ database }}"
+    state: present

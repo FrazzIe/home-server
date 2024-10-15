@@ -1,0 +1,69 @@
+---
+container: sonarr
+swag_subdomain: sonarr
+
+homepage_group: media
+homepage_description: tv scraper
+
+authelia_rules_temporary:
+  - policy: bypass
+    networks: ansible
+
+download_client_defaults:
+  enable: true
+  protocol: torrent
+  priority: 1
+  removeCompletedDownloads: true
+  removeFailedDownloads: true
+  fields:
+    tvCategory: "tv-sonarr"
+    recentTvPriority: 0
+    olderTvPriority: 0
+    addPaused: false
+
+download_clients:
+  - name: deluge
+    fields:
+      host: "{{ deluge_address }}"
+      port: "{{ deluge_port }}"
+      password: "{{ deluge_password | default('') }}"
+    implementationName: Deluge
+    implementation: Deluge
+    configContract: DelugeSettings
+
+indexer_defaults:
+  enableRss: true
+  enableAutomaticSearch: true
+  enableInteractiveSearch: true
+  supportsRss: true
+  protocol: torrent
+  priority: 25
+  downloadClientId: 0 # any
+  implementationName: Torznab
+  implementation: Torznab
+  configContract: TorznabSettings
+  fields:
+    apiPath: /api
+    animeStandardFormatSearch: false
+    minimumSeeders: 5
+
+# (?=.*word) for each word
+# '|' OR for each array
+# Partial matching of each word (be careful)
+# e.g. 'subtitle' would match 'subtitled' and so forth
+tv_categories:
+  include:
+    - [ tv, hd ]
+    - [ tv, doc ]
+  exclude: []
+
+# (?=.*word) for each word
+# '|' OR for each array
+# Partial matching of each word (be careful)
+# e.g. 'subtitle' would match 'subtitled' and so forth
+anime_categories:
+  include:
+    - [ english, subtitle, anime ]
+    - [ english, subbed, anime ]
+  exclude:
+    - [ non-english ]

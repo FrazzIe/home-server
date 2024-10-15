@@ -1,32 +1,34 @@
 ---
+- name: Create swag docker bridge network
+  docker_network:
+    name: "{{ swag_network.name }}"
+    driver: bridge
 
-- name: Create / Run swag containers
+- name: Create / Run swag container
   docker_container:
-    name: "swag_{{ item.name }}"
+    name: "{{ container }}"
     image: ghcr.io/linuxserver/swag
     pull: yes
     networks:
-      - name: "docker_macvlan"
-        ipv4_address: "{{ (netplan_base, item.container) | join('.') }}"
-      - name: "swag_{{ item.name }}_bridge"
+      - name: docker_macvlan
+        ipv4_address: "{{ (netplan_base, swag_network.address) | join('.') }}"
+      - name: "{{ swag_network.name }}"
     capabilities:
       - net_admin
     state: started
     env:
-      PUID: "{{ target_username_puid }}"
-      PGID: "{{ target_username_pgid }}"
+      PUID: "{{ sudo_user_uid }}"
+      PGID: "{{ sudo_user_gid }}"
       TZ: "{{ timezone }}"
-      URL: "{{ item.domain }}"
+      URL: "{{ swag_domain }}"
       SUBDOMAINS: wildcard
       VALIDATION: dns
       DNSPLUGIN: cloudflare
-      EMAIL: "{{ target_email }}"
+      EMAIL: "{{ mail_to_email }}"
     ports:
       - 443:443
     volumes:
-      - "{{ docker_dir }}/swag/{{ item.name }}/nginx:/config/nginx"
-      - "{% if 'internal' in item %}{{ docker_dir }}/swag/{{ item.name }}/www:/config/www{% else %}omit{% endif %}"
-      - "{{ docker_dir }}/swag/dns-conf:/config/dns-conf"
-      - "{{ docker_dir }}/swag/letsencrypt:/config/etc/letsencrypt"
+      - "{{ docker_dir }}/{{ container }}/nginx:/config/nginx"
+      - "{{ docker_dir }}/{{ container }}/dns-conf:/config/dns-conf"
+      - "{{ docker_dir }}/{{ container }}/letsencrypt:/config/etc/letsencrypt"
     restart_policy: unless-stopped
-  loop: "{{ swag_networks }}"

@@ -1,0 +1,43 @@
+- name: Wait until {{ container }} api key exists
+  ansible.builtin.wait_for:
+    path: "{{ docker_dir }}/{{ container }}/config.xml"
+    search_regex: "ApiKey"
+
+- name: pip install lxml for xml module 
+  pip:
+    name: lxml>=2.3.0
+
+- name: Search {{ container }} config for api key
+  xml:
+    path: "{{ docker_dir }}/{{ container }}/config.xml"
+    xpath: /Config/ApiKey
+    content: "text"
+  register: sonarr_api_key_xml
+
+- name: Retrieve {{ container }} api key
+  set_fact:
+    sonarr_api_key: "{{ sonarr_api_key_xml.matches[0].ApiKey }}"
+  failed_when: sonarr_api_key_xml is not defined or sonarr_api_key_xml.count == 0
+
+- name: Disable {{ container }} analytics
+  xml:
+    path: "{{ docker_dir }}/{{ container }}/config.xml"
+    xpath: /Config/AnalyticsEnabled
+    value: "False"
+
+- name: Restart {{ container }} container
+  docker_container:
+    name: "{{ container }}"
+    image: lscr.io/linuxserver/sonarr:latest
+    state: started
+    restart: true
+
+- name: Wait until {{ container }} web portal is available
+  uri:
+    url: "https://{{ sonarr_domain }}/ping"
+    method: GET
+    status_code: 200
+  register: result
+  until: result.status == 200
+  retries: 5
+  delay: 5

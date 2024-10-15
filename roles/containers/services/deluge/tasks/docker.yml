@@ -4,7 +4,7 @@
     image: ghcr.io/binhex/arch-delugevpn:latest
     networks:
       - name: "docker_macvlan"
-        ipv4_address: "{{ (netplan_base, deluge_address) | join('.') }}"
+        ipv4_address: "{{ deluge_address }}"
     pull: true
     privileged: true
     sysctls:
@@ -29,8 +29,8 @@
       # VPN_OUTPUT_PORTS: <port number(s)>
       DEBUG: "true"
       UMASK: "000"
-      PUID: "{{ target_username_puid }}"
-      PGID: "{{ target_username_pgid }}"
+      PUID: "{{ sudo_user_uid }}"
+      PGID: "{{ sudo_user_gid }}"
     ports:
       - "{{ deluge_port }}:8112"
       - "{{ privoxy_port }}:8118"

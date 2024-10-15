@@ -31,10 +31,10 @@ snapraid_config_excludes:
   - "/download/*"
 
 # don't touch
-snapraid_runner_email_address: "{{ sender_email }}"
-snapraid_runner_email_pass: "{{ sender_password }}"
-snapraid_runner_email_address_from: "{{ sender_email }}"
-snapraid_runner_email_address_to: "{{ target_email }}"
-snapraid_runner_smtp_host: "{{ sender_smtp_host }}"
-snapraid_runner_smtp_port: "{{ sender_smtp_port }}"
+snapraid_runner_email_address: "{{ container_sender_email }}"
+snapraid_runner_email_pass: "{{ container_sender_password }}"
+snapraid_runner_email_address_from: "{{ container_sender_email }}"
+snapraid_runner_email_address_to: "{{ mail_to_email }}"
+snapraid_runner_smtp_host: "{{ container_sender_smtp_host }}"
+snapraid_runner_smtp_port: "{{ container_sender_smtp_port }}"
 snapraid_runner_use_ssl: true
