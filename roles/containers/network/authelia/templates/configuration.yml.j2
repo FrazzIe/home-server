@@ -825,8 +825,8 @@ storage:
   ## MySQL / MariaDB (Storage Provider)
   ##
   mysql:
-    host: /mysql/mysqld.sock
-    # port: 3306
+    host: "{{ mariadb_address }}"
+    port: 3306
     database: "{{ container }}_{{ database }}"
     username: "{{ authelia_storage_user }}"
     ## Password can also be set using a secret: https://www.authelia.com/c/secrets

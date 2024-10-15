@@ -20,7 +20,7 @@
       - "9091:9091"
     volumes:
       - "{{ docker_dir }}/{{ container }}:/config"
-      - "{{ mariadb_socket }}:/mysql"
+      # - "{{ mariadb_socket }}:/mysql"
     restart_policy: unless-stopped
 
 - name: Restart {{ container }}

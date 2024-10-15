@@ -1,0 +1,52 @@
+- name: Wait until prowlarr api key exists
+  ansible.builtin.wait_for:
+    path: "{{ docker_dir }}/{{ container }}/config.xml"
+    search_regex: "ApiKey"
+
+- name: Stop prowlarr container
+  docker_container:
+    name: "{{ container }}"
+    state: stopped
+
+- name: pip install lxml for xml module 
+  pip:
+    name: lxml>=2.3.0
+
+- name: Search prowlarr config for api key
+  xml:
+    path: "{{ docker_dir }}/{{ container }}/config.xml"
+    xpath: /Config/ApiKey
+    content: "text"
+  register: prowlarr_api_key_xml
+
+- name: Retrieve prowlarr api key
+  set_fact:
+    prowlarr_api_key: "{{ prowlarr_api_key_xml.matches[0].ApiKey }}"
+  failed_when: prowlarr_api_key_xml is not defined or prowlarr_api_key_xml.count == 0
+
+- name: Disable {{ container }} analytics
+  xml:
+    path: "{{ docker_dir }}/{{ container }}/config.xml"
+    xpath: /Config/AnalyticsEnabled
+    value: "False"
+
+- name: Set prowlarr authentication method to external
+  xml:
+    path: "{{ docker_dir }}/{{ container }}/config.xml"
+    xpath: /Config/AuthenticationMethod
+    value: "External"
+
+- name: Start prowlarr container
+  docker_container:
+    name: "{{ container }}"
+    state: started
+
+# - name: Wait until {{ container }} web portal is available
+#   uri:
+#     url: "https://{{ sonarr_domain }}/ping"
+#     method: GET
+#     status_code: 200
+#   register: result
+#   until: result.status == 200
+#   retries: 5
+#   delay: 5

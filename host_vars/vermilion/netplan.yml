@@ -1,4 +1,4 @@
-netplan_interface: &netplan_interface eth0
+netplan_interface: &netplan_interface enp5s0
 netplan_endpoint: 60
 
 netplan_config:

@@ -8,7 +8,7 @@
       - GRANT USAGE, EXECUTE, SELECT, SHOW VIEW, ALTER, ALTER ROUTINE, CREATE, CREATE ROUTINE, CREATE TEMPORARY TABLES, CREATE VIEW, DELETE, DROP, EVENT, INDEX, INSERT, REFERENCES, TRIGGER, UPDATE  ON `{{ container }}_%%`.* TO %(user)s@%(target)s;
     named_args:
       user: "{{ authelia_storage_user }}"
-      target: "localhost"
+      target: "{{ (netplan_base, '%') | join('.') }}"
       password: "{{ authelia_storage_password }}"
 
 - name: Create authelia database

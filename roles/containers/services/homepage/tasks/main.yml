@@ -34,7 +34,7 @@
     dest: "{{ docker_dir }}/{{ container }}/bookmarks.yaml"
     mode: 0644
 
-- name: Create / Run homepage containers
+- name: Create / Run homepage container
   docker_container:
     name: "{{ container }}"
     image: ghcr.io/benphelps/homepage:latest
