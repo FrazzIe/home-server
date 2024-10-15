@@ -1,0 +1,38 @@
+version: "3.8"
+services:
+  jellyfin:
+    image: lscr.io/linuxserver/jellyfin:10.9.11
+    container_name: jellyfin
+    environment:
+      - PUID=568
+      - GUID=568
+      - TZ=Europe/London
+      - JELLYFIN_PublishedServerUrl=$JELLY_URL
+    ports:
+      - 8096:8096
+    volumes:
+      - $DATA_DIR/jellyfin:/config
+      - /mnt/hdd-pool/media:/media
+    restart: unless-stopped
+    networks:
+      - gw_default
+  jellyseerr:
+    image: fallenbagel/jellyseerr:latest
+    container_name: jellyseerr
+    environment:
+      - LOG_LEVEL=debug
+      - TZ=Europe/London
+      - PORT=5055
+    ports:
+      - 5055:5055
+    volumes:
+      - $DATA_DIR/jellyseerr:/app/config
+    restart: unless-stopped
+    networks:
+      - gw_default
+      - arr_default
+networks:
+  arr_default:
+    external: true
+  gw_default:
+    external: true

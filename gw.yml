@@ -1,0 +1,172 @@
+version: "3.8"
+services:
+  nginx-proxy-manager:
+    image: jc21/nginx-proxy-manager:2.11.3
+    container_name: nginx-proxy-manager
+    environment:
+      - PUID=568
+      - PGID=568
+      - DISABLE_IPV6=true
+    ports:
+      - 80:80
+      - 8080:81
+      - 443:443
+    volumes:
+      - $DATA_DIR/nginx-proxy-manager/data:/data
+      - $DATA_DIR/nginx-proxy-manager/letsencrypt:/etc/letsencrypt
+      - $DATA_DIR/nginx-proxy-manager/snippets:/snippets
+    healthcheck:
+      test:
+        - CMD
+        - /usr/bin/check-health
+      interval: 10s
+      timeout: 3s
+    restart: unless-stopped
+  lldap:
+    image: lldap/lldap:stable
+    container_name: lldap
+    environment:
+      - UID=568
+      - GID=568
+      - TZ=Europe/London
+      - LLDAP_JWT_SECRET_FILE=/run/secrets/lldap_jwt_secret
+      - LLDAP_LDAP_USER_DN_FILE=/run/secrets/lldap_ldap_user_dn
+      - LLDAP_LDAP_BASE_DN_FILE=/run/secrets/lldap_ldap_base_dn
+      - LLDAP_LDAP_USER_PASS_FILE=/run/secrets/lldap_ldap_user_pass
+      - LLDAP_LDAP_USER_EMAIL=ro
+      - LLDAP_DATABASE_URL_FILE=/run/secrets/lldap_database_url
+    ports:
+      - 3890:3890
+      - 17170:17170
+    volumes:
+      - $DATA_DIR/lldap:/data
+    secrets:
+      - lldap_jwt_secret
+      - lldap_ldap_user_dn
+      - lldap_ldap_base_dn
+      - lldap_ldap_user_pass
+      - lldap_database_url
+    restart: unless-stopped
+  postgres:
+    image: postgres:17.0
+    container_name: postgres
+    environment:
+      - POSTGRES_DB_FILE=/run/secrets/postgres_db
+      - POSTGRES_USER_FILE=/run/secrets/postgres_user
+      - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password
+    ports:
+      - 5432:5432
+    volumes:
+      - $DATA_DIR/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -d `cat $$POSTGRES_DB_FILE` -U `cat $$POSTGRES_USER_FILE`
+      interval: 1s
+      timeout: 5s
+      retries: 10
+    secrets:
+      - postgres_db
+      - postgres_user
+      - postgres_password
+    restart: unless-stopped
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=$DEFAULT_EMAIL
+      - PGADMIN_DEFAULT_PASSWORD_FILE=/run/secrets/pgadmin_password
+      - PGADMIN_CONFIG_LOGIN_BANNER="<h4>Authorised users only!</h4>"
+    ports:
+      - 5050:80
+    volumes:
+      - $DATA_DIR/pgadmin:/var/lib/pgadmin
+    secrets:
+      - pgadmin_password
+    restart: unless-stopped
+  authelia:
+    image: authelia/authelia:4.38.16
+    container_name: authelia
+    environment:
+      - PUID=568
+      - PGID=568
+      - TZ=Europe/London
+      - AUTHELIA_IDENTITY_VALIDATION_RESET_PASSWORD_JWT_SECRET_FILE=/run/secrets/authelia_reset_jwt
+      - AUTHELIA_SESSION_SECRET_FILE=/run/secrets/authelia_session_secret
+      - AUTHELIA_STORAGE_POSTGRES_PASSWORD_FILE=/run/secrets/authelia_postgres_password
+      - AUTHELIA_STORAGE_ENCRYPTION_KEY_FILE=/run/secrets/authelia_encryption_key
+      - AUTHELIA_AUTHENTICATION_BACKEND_LDAP_PASSWORD_FILE=/run/secrets/authelia_ldap_password
+      - AUTHELIA_NOTIFIER_SMTP_PASSWORD_FILE=/run/secrets/authelia_smtp_password
+    ports:
+      - 9091:9091
+    volumes:
+      - $DATA_DIR/authelia:/config
+    secrets:
+      - authelia_reset_jwt
+      - authelia_session_secret
+      - authelia_postgres_password
+      - authelia_encryption_key
+      - authelia_ldap_password
+      - authelia_smtp_password
+    restart: unless-stopped
+  cloudflareddns:
+    image: hotio/cloudflareddns:latest
+    container_name: cloudflareddns
+    environment:
+      - PUID=568
+      - PGID=568
+      - TZ=Europe/London
+      - CF_ZONES_FILE=/run/secrets/cf_zones
+      - CF_HOSTS_FILE=/run/secrets/cf_hosts
+      - CF_RECORDTYPES=A;A
+      - CF_USER_FILE=/run/secrets/cf_user
+      - CF_APITOKEN_ZONE_FILE=/run/secrets/cf_api_key
+      - CF_APITOKEN_FILE=/run/secrets/cf_api_key
+    volumes:
+      - $DATA_DIR/cloudflareddns:/config
+    secrets:
+      - cf_user
+      - cf_api_key
+      - cf_zones
+      - cf_hosts
+    restart: unless-stopped
+secrets:
+  lldap_jwt_secret:
+    file: $SECRET_DIR/LLDAP_JWT_SECRET
+  lldap_ldap_user_dn:
+    file: $SECRET_DIR/LLDAP_LDAP_USER_DN
+  lldap_ldap_base_dn:
+    file: $SECRET_DIR/LLDAP_LDAP_BASE_DN
+  lldap_ldap_user_pass:
+    file: $SECRET_DIR/LLDAP_LDAP_USER_PASS
+  lldap_database_url:
+    file: $SECRET_DIR/LLDAP_DATABASE_URL
+  postgres_db:
+    file: $SECRET_DIR/POSTGRES_DB
+  postgres_user:
+    file: $SECRET_DIR/POSTGRES_USER
+  postgres_password:
+    file: $SECRET_DIR/POSTGRES_PASSWORD
+  pgadmin_password:
+    file: $SECRET_DIR/PGADMIN_PASSWORD
+  authelia_reset_jwt:
+    file: $SECRET_DIR/AUTHELIA_RESET_JWT
+  authelia_session_secret:
+    file: $SECRET_DIR/AUTHELIA_SESSION_SECRET
+  authelia_postgres_password:
+    file: $SECRET_DIR/AUTHELIA_POSTGRES_PASSWORD
+  authelia_encryption_key:
+    file: $SECRET_DIR/AUTHELIA_ENCRYPTION_KEY
+  authelia_ldap_password:
+    file: $SECRET_DIR/AUTHELIA_LDAP_PASSWORD
+  authelia_smtp_password:
+    file: $SECRET_DIR/AUTHELIA_SMTP_PASSWORD
+  cf_user:
+    file: $SECRET_DIR/CLOUDFLARE_USER
+  cf_api_key:
+    file: $SECRET_DIR/CLOUDFLARE_API_KEY
+  cf_zones:
+    file: $SECRET_DIR/CLOUDFLARE_ZONES
+  cf_hosts:
+    file: $SECRET_DIR/CLOUDFLARE_HOSTS
+networks: {}

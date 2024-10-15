@@ -1,24 +1,16 @@
 # Home Server
 
-Ansible IaC setup for home server
+TrueNAS-SCALE-24.10-RC.2 with docker
 
-# References
+- `arr`: arr setup
+- `gw`: gateway (db, auth, ldap, reverse proxy, ddns)
+- `jelly`: jelly (fin, seerr)
 
-- https://github.com/notthebee/infra
+## .env
 
-# Usage
-
-Install the dependencies:
 ```
-ansible-galaxy install -r requirements.yml
-```
-
-First run:
-```
-ansible-playbook -i hosts_inventory.yml route-manager.yml --vault-password-file ~/vault_pwd.txt
-```
-
-Afterward:
-```
-ansible-playbook setup.yml -l your-inventory-file
+DATA_DIR=
+SECRET_DIR=
+DEFAULT_EMAIL=
+JELLY_URL=
 ```

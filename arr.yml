@@ -1,0 +1,150 @@
+version: "3.8"
+services:
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:1.24.3
+    container_name: prowlarr
+    environment:
+      - PUID=568
+      - PGID=568
+      - TZ=Europe/London
+    volumes:
+      - $DATA_DIR/prowlarr:/config
+    ports:
+      - 9696:9696
+    restart: unless-stopped
+    networks:
+      - arr_default
+      - gw_default
+  radarr:
+    image: lscr.io/linuxserver/radarr:5.11.0
+    container_name: radarr
+    environment:
+      - PUID=568
+      - PGID=568
+      - TZ=Europe/London
+    volumes:
+      - $DATA_DIR/radarr:/config
+      - /mnt/hdd-pool/media:/media
+      - /mnt/nvme-pool/qbit-data:/qbit-data
+      - /mnt/nvme-pool/nzb-data:/nzb-data
+    ports:
+      - 7878:7878
+    restart: unless-stopped
+    networks:
+      - arr_default
+      - gw_default
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:4.0.9
+    container_name: sonarr
+    environment:
+      - PUID=568
+      - PGID=568
+      - TZ=Europe/London
+    volumes:
+      - $DATA_DIR/sonarr:/config
+      - /mnt/hdd-pool/media:/media
+      - /mnt/nvme-pool/qbit-data:/qbit-data
+      - /mnt/nvme-pool/nzb-data:/nzb-data
+    ports:
+      - 8989:8989
+    restart: unless-stopped
+    networks:
+      - arr_default
+      - gw_default
+  bazarr:
+    image: lscr.io/linuxserver/bazarr:1.4.5
+    container_name: bazarr
+    environment:
+      - PUID=568
+      - PGID=568
+      - TZ=Europe/London
+    volumes:
+      - $DATA_DIR/bazarr:/config
+      - /mnt/hdd-pool/media:/media
+    ports:
+      - 6767:6767
+    restart: unless-stopped
+    networks:
+      - arr_default
+      - gw_default
+  sabnzbd:
+    image: lscr.io/linuxserver/sabnzbd:4.3.3
+    container_name: sabnzbd
+    environment:
+      - PUID=568
+      - PGID=568
+      - TZ=Europe/London
+    volumes:
+      - $DATA_DIR/sabnzbd:/config
+      - /mnt/nvme-pool/nzb-data:/nzb-data
+    ports:
+      - 8081:8080
+    restart: unless-stopped
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:5.0.0
+    container_name: qbittorrent
+    environment:
+      - PUID=568
+      - PGID=568
+      - TZ=Europe/London
+      - WEBUI_PORT=8081
+      - TORRENTING_PORT=6881
+    volumes:
+      - $DATA_DIR/qbittorrent:/config
+      - /mnt/nvme-pool/qbit-data:/qbit-data
+    network_mode: service:gluetun
+    restart: unless-stopped
+  gluetun:
+    image: qmcgaw/gluetun:v3.39.1
+    container_name: gluetun
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    ports:
+      - 8888:8888/tcp # HTTP proxy
+      - 8388:8388/tcp # Shadowsocks
+      - 8388:8388/udp # Shadowsocks
+      - 8082:8081 # Qbittorrent
+      - 6881:6881
+      - 6881:6881/udp
+    volumes:
+      - $DATA_DIR/gluetun:/gluetun
+    environment:
+      - TZ=Europe/London
+      - VPN_SERVICE_PROVIDER=private internet access
+      - VPN_TYPE=openvpn
+      - OPENVPN_USER_SECRETFILE=/run/secrets/openvpn_user
+      - OPENVPN_PASSWORD_SECRETFILE=/run/secrets/openvpn_password
+      - SERVER_REGIONS=Netherlands
+      - HTTPPROXY=on
+      - HTTPPROXY_LOG=on
+      - HTTPPROXY_USER_SECRETFILE=/run/secrets/httpproxy_user
+      - HTTPPROXY_PASSWORD_SECRETFILE=/run/secrets/httpproxy_password
+    secrets:
+      - openvpn_user
+      - openvpn_password
+      - httpproxy_user
+      - httpproxy_password
+  flaresolverr:
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    container_name: flaresolverr
+    environment:
+      - LOG_LEVEL=info
+    ports:
+      - 8191:8191
+    restart: unless-stopped
+secrets:
+  openvpn_user:
+    file: $SECRET_DIR/OPENVPN_USER
+  openvpn_password:
+    file: $SECRET_DIR/OPENVPN_PASSWORD
+  httpproxy_user:
+    file: $SECRET_DIR/HTTPPROXY_USER
+  httpproxy_password:
+    file: $SECRET_DIR/HTTPPROXY_PASSWORD
+networks:
+  arr_default:
+    external: true
+  gw_default:
+    external: true
