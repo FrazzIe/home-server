@@ -4,15 +4,15 @@ services:
     image: lscr.io/linuxserver/jellyfin:10.9.11
     container_name: jellyfin
     environment:
-      - PUID=568
-      - GUID=568
-      - TZ=Europe/London
+      - PUID=$PUID
+      - PGID=$PGID
+      - TZ=$TZ
       - JELLYFIN_PublishedServerUrl=$JELLY_URL
     ports:
       - 8096:8096
     volumes:
       - $DATA_DIR/jellyfin:/config
-      - /mnt/hdd-pool/media:/media
+      - $MEDIA_DIR:/media
     restart: unless-stopped
     networks:
       - gw_default
@@ -21,7 +21,7 @@ services:
     container_name: jellyseerr
     environment:
       - LOG_LEVEL=debug
-      - TZ=Europe/London
+      - TZ=$TZ
       - PORT=5055
     ports:
       - 5055:5055

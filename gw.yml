@@ -4,8 +4,8 @@ services:
     image: jc21/nginx-proxy-manager:2.11.3
     container_name: nginx-proxy-manager
     environment:
-      - PUID=568
-      - PGID=568
+      - PUID=$PUID
+      - PGID=$PGID
       - DISABLE_IPV6=true
     ports:
       - 80:80
@@ -26,9 +26,9 @@ services:
     image: lldap/lldap:stable
     container_name: lldap
     environment:
-      - UID=568
-      - GID=568
-      - TZ=Europe/London
+      - UID=$PUID
+      - GID=$PGID
+      - TZ=$TZ
       - LLDAP_JWT_SECRET_FILE=/run/secrets/lldap_jwt_secret
       - LLDAP_LDAP_USER_DN_FILE=/run/secrets/lldap_ldap_user_dn
       - LLDAP_LDAP_BASE_DN_FILE=/run/secrets/lldap_ldap_base_dn
@@ -88,9 +88,9 @@ services:
     image: authelia/authelia:4.38.16
     container_name: authelia
     environment:
-      - PUID=568
-      - PGID=568
-      - TZ=Europe/London
+      - PUID=$PUID
+      - PGID=$PGID
+      - TZ=$TZ
       - AUTHELIA_IDENTITY_VALIDATION_RESET_PASSWORD_JWT_SECRET_FILE=/run/secrets/authelia_reset_jwt
       - AUTHELIA_SESSION_SECRET_FILE=/run/secrets/authelia_session_secret
       - AUTHELIA_STORAGE_POSTGRES_PASSWORD_FILE=/run/secrets/authelia_postgres_password
@@ -113,9 +113,9 @@ services:
     image: hotio/cloudflareddns:latest
     container_name: cloudflareddns
     environment:
-      - PUID=568
-      - PGID=568
-      - TZ=Europe/London
+      - PUID=$PUID
+      - PGID=$PGID
+      - TZ=$TZ
       - CF_ZONES_FILE=/run/secrets/cf_zones
       - CF_HOSTS_FILE=/run/secrets/cf_hosts
       - CF_RECORDTYPES=A;A

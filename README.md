@@ -9,8 +9,14 @@ TrueNAS-SCALE-24.10-RC.2 with docker
 ## .env
 
 ```
+PUID=
+PGID=
+TZ=
 DATA_DIR=
 SECRET_DIR=
+MEDIA_DIR=
+TORRENT_DIR=
+NZB_DIR=
 DEFAULT_EMAIL=
 JELLY_URL=
 ```
