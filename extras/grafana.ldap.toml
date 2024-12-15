@@ -1,0 +1,45 @@
+[[servers]]
+host = "${GF_LDAP_HOST}"
+port = ${GF_LDAP_PORT}
+use_ssl = false
+start_tls = false
+tls_ciphers = []
+min_tls_version = ""
+ssl_skip_verify = false
+
+bind_dn = "$__file{/run/secrets/gf_ldap_user}"
+bind_password = "$__file{/run/secrets/gf_ldap_pass}"
+
+timeout = 10
+
+search_filter = "(&(uid=%s)(memberOf=cn=grafana,ou=groups,dc=example,dc=com))"
+
+# An array of base dns to search through
+search_base_dns = ["dc=example,dc=com"]
+
+
+# Specify names of the LDAP attributes your LDAP uses
+[servers.attributes]
+member_of = "memberOf"
+email =  "mail"
+name = "displayName"
+surname = "sn"
+username = "uid"
+
+[[servers.group_mappings]]
+group_dn = "cn=lldap_admin,ou=groups,dc=example,dc=com"
+org_role = "Admin"
+grafana_admin = true
+
+[[servers.group_mappings]]
+group_dn = "cn=grafana_admin,ou=groups,dc=example,dc=com"
+org_role = "Admin"
+grafana_admin = true
+
+[[servers.group_mappings]]
+group_dn = "cn=grafana_editor,ou=groups,dc=example,dc=com"
+org_role = "Editor"
+
+[[servers.group_mappings]]
+group_dn = "cn=grafana,ou=groups,dc=example,dc=com"
+org_role = "Viewer"

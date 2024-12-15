@@ -1,0 +1,64 @@
+version: "3.8"
+services:
+  grafana:
+    image: grafana/grafana-oss:main-ubuntu
+    container_name: grafana
+    ports:
+      - 3000:3000
+    volumes:
+      - $DATA_DIR/grafana:/var/lib/grafana
+      - $DATA_DIR/grafana/ldap.toml:/etc/grafana/ldap.toml
+    environment:
+      # GF_<SectionName>_<KeyName>
+      - GF_SERVER_ROOT_URL=$GRAFANA_URL
+      - GF_DATABASE_TYPE=postgres
+      - GF_DATABASE_HOST=postgres:5432
+      - GF_DATABASE_USER__FILE=/run/secrets/gf_db_user
+      - GF_DATABASE_PASSWORD__FILE=/run/secrets/gf_db_pass
+      - GF_DATABASE_SSL_MODE=disable
+      - GF_ANALYTICS_REPORTING_ENABLED=false
+      - GF_SECURITY_ADMIN_USER__FILE=/run/secrets/gf_admin_user
+      - GF_SECURITY_ADMIN_PASSWORD__FILE=/run/secrets/gf_admin_pass
+      - GF_SECURITY_ADMIN_EMAIL__FILE=/run/secrets/gf_admin_mail
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_AUTH_LDAP_ENABLED=true
+      - GF_AUTH_LDAP_ALLOW_SIGN_UP=true
+      - GF_LDAP_HOST=lldap
+      - GF_LDAP_PORT=3890
+    networks:
+      - gw_default
+    secrets:
+      - gf_db_user
+      - gf_db_pass
+      - gf_admin_user
+      - gf_admin_pass
+      - gf_admin_mail
+      - gf_ldap_user
+      - gf_ldap_pass
+  loki:
+    image: grafana/loki:3.0.0
+    container_name: loki
+    ports:
+      - 3100:3100
+      #- 9093
+      #- 9096
+    volumes:
+      - $DATA_DIR/loki:/mnt/config:ro
+secrets:
+  gf_db_user:
+    file: $SECRET_DIR/GF_POSTGRES_USER
+  gf_db_pass:
+    file: $SECRET_DIR/GF_POSTGRES_PASS
+  gf_admin_user:
+    file: $SECRET_DIR/GF_ADMIN_USER
+  gf_admin_pass:
+    file: $SECRET_DIR/GF_ADMIN_PASS
+  gf_admin_mail:
+    file: $SECRET_DIR/GF_ADMIN_MAIL
+  gf_ldap_user:
+    file: $SECRET_DIR/GF_LDAP_USER
+  gf_ldap_pass:
+    file: $SECRET_DIR/GF_LDAP_PASS
+networks:
+  gw_default:
+    external: true
