@@ -1,0 +1,43 @@
+constants:
+  smtp_host: "${SMTP_HOST}"
+  smtp_user: "${SMTP_USER}"
+  smtp_pass: "${SMTP_PASS}"
+  smtp_target: "${SMTP_TARGET}"
+  discord_webhook: "${DISCORD_WEBHOOK}"
+
+keep_daily: 14
+
+apprise:
+  states:
+    - start
+    - finish
+    - fail
+  services:
+    - url: "mailtos://{smtp_host}:587?user={smtp_user}&pass={smtp_pass}&from={smtp_user}&to={smtp_target}"
+      label: mail
+    - url: "{discord_webhook}"
+      label: discord
+  start:
+    title: 'Backup: Started ⚙️'
+    body: Starting backup process.
+  finish:
+    title: 'Backup: Successful ✅'
+    body: Backups successfully made.
+  fail:
+    title: 'Backup: Failed ❌'
+    body: Your backups have failed.
+
+before_everything:
+  - echo Starting actions.
+
+before_backup:
+  - echo Starting a backup.
+
+after_backup:
+  - echo Finished a backup.
+
+on_error:
+  - echo Error during create/prune/compact/check.
+
+after_everything:
+  - echo Completed actions.

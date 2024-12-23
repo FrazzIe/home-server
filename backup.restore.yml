@@ -1,0 +1,15 @@
+services:
+  borgmatic:
+    container_name: borgmatic-restore
+    cap_add:
+      - SYS_ADMIN
+    security_opt:
+      - apparmor:unconfined
+      - label:disable
+    devices:
+      - /dev/fuse:/dev/fuse
+    command: /bin/sh
+    volumes:
+      - $BACKUP_DIR/restore:/mnt/archive
+      - $RESTORE_DIR:/mnt/restore
+networks: {}

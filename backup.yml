@@ -1,0 +1,45 @@
+services:
+  borgmatic:
+    image: ghcr.io/borgmatic-collective/borgmatic:latest
+    container_name: borgmatic
+    environment:
+      - TZ=$TZ
+      - DOCKERCLI=true
+      - FILE__BORG_PASSPHRASE=/run/secrets/borg_pp
+      - FILE__PG_USER=/run/secrets/pg_user
+      - FILE__PG_PASS=/run/secrets/pg_pass
+      - SMTP_HOST=$SMTP_HOST
+      - SMTP_USER=$SMTP_USER
+      - FILE__SMTP_PASS=/run/secrets/smtp_pass
+      - SMTP_TARGET=$SMTP_TARGET
+      - DISCORD_WEBHOOK=$BACKUP_DISCORD_WEBHOOK
+      - EXTRA_PKGS=rclone
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - $DATA_DIR:/mnt/source/docker:ro
+      - $BACKUP_DIR/repository:/mnt/backup
+      - $BACKUP_DIR/borgmatic:/etc/borgmatic.d/
+      - $BACKUP_DIR/borg:/root/.config/borg
+      - $BACKUP_DIR/cache:/root/.cache/borg
+      - $BACKUP_DIR/state:/root/.local/state/borgmatic
+      - $BACKUP_DIR/rclone:/root/.config/rclone
+    networks:
+      - gw_default
+    secrets:
+      - borg_pp
+      - pg_user
+      - pg_pass
+      - smtp_pass
+    restart: always
+networks:
+  gw_default:
+    external: true
+secrets:
+  borg_pp:
+    file: $SECRET_DIR/BORG_PASSPHRASE
+  pg_user:
+    file: $SECRET_DIR/POSTGRES_USER
+  pg_pass:
+    file: $SECRET_DIR/POSTGRES_PASSWORD
+  smtp_pass:
+    file: $SECRET_DIR/SMTP_PASSWORD

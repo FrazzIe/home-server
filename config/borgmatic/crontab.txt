@@ -1,0 +1,1 @@
+0 */12 * * * PATH=$PATH:/usr/local/bin export BORG_PASSPHRASE=$(cat /run/secrets/borg_pp) && export PG_USER=$(cat /run/secrets/pg_user) && export PG_PASS=$(cat /run/secrets/pg_pass) && export SMTP_PASS=$(cat /run/secrets/smtp_pass) && /usr/local/bin/borgmatic --monitoring-verbosity 0 2>&1

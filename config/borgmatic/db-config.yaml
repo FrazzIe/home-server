@@ -1,0 +1,63 @@
+constants:
+  pg_user: "${PG_USER}"
+  pg_password: "${PG_PASS}"
+
+source_directories: []
+
+repositories:
+  - path: /mnt/backup/db
+    label: local
+
+archive_name_format: 'db-backup-{now:%Y-%m-%d-%H%M%S}'
+
+sqlite_databases:
+  # arr
+  - name: prowlarr
+    path: /mnt/source/docker/prowlarr/prowlarr.db
+    restore_path: /mnt/restore/prowlarr/prowlarr.db
+  - name: sonarr
+    path: /mnt/source/docker/sonarr/sonarr.db
+    restore_path: /mnt/restore/sonarr/sonarr.db
+  - name: radarr
+    path: /mnt/source/docker/radarr/radarr.db
+    restore_path: /mnt/restore/radarr/radarr.db
+  - name: bazarr
+    path: /mnt/source/docker/bazarr/db/bazarr.db
+    restore_path: /mnt/restore/bazarr/db/bazarr.db
+  # gw
+  - name: pgadmin
+    path: /mnt/source/docker/pgadmin/pgadmin4.db
+    restore_path: /mnt/restore/pgadmin/pgadmin4.db
+  - name: nginx-proxy-manager
+    path: /mnt/source/docker/nginx-proxy-manager/data/database.sqlite
+    restore_path: /mnt/restore/nginx-proxy-manager/data/database.sqlite
+  # jelly
+  - name: jellyfin_main
+    path: /mnt/source/docker/jellyfin/data/data/jellyfin.db
+    restore_path: /mnt/restore/jellyfin/data/data/jellyfin.db
+  - name: jellyfin_library
+    path: /mnt/source/docker/jellyfin/data/data/library.db
+    restore_path: /mnt/restore/jellyfin/data/data/library.db
+  - name: jellyseerr
+    path: /mnt/source/docker/jellyseerr/db/db.sqlite3
+    restore_path: /mnt/restore/jellyseerr/db/db.sqlite3
+
+postgresql_databases:
+  - name: all
+    hostname: postgres
+    port: 5432
+    username: "{pg_user}"
+    password: "{pg_password}"
+    no_owner: true
+    # custom?
+    format: directory
+    #ssl_mode: disable
+
+after_backup:
+  - echo Syncing backups
+  - rclone sync /mnt/backup/db bb:phoenix0/db --progress --stats-one-line --stats 1s
+  - rclone sync /mnt/backup/db koofr:/db --progress --stats-one-line --stats 1s
+  - rclone sync /mnt/backup/db gdrive:/db --progress --stats-one-line --stats 1s
+  - echo Finished backup sync
+
+<<: !include /etc/borgmatic.d/shared/shared-config.yaml

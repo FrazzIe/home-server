@@ -1,0 +1,50 @@
+source_directories:
+  - /mnt/source/docker/
+
+patterns:
+  - R /
+  # ignore all sqlite dbs
+  - '- **/*.db*'
+  - '- **/*.sqlite*'
+  # dockge
+  - '+ /mnt/source/docker/dockge/stacks/**'
+  # arr
+  - '+ /mnt/source/docker/bazarr/config/config.yaml'
+  - '+ /mnt/source/docker/*arr/config.xml'
+  - '+ /mnt/source/docker/qbittorrent/qBittorrent/*.json'
+  - '+ /mnt/source/docker/qbittorrent/qBittorrent/*.conf'
+  - '+ /mnt/source/docker/sabnzbd/*.ini'
+  # gw
+  - '+ /mnt/source/docker/authelia/*.yml'
+  - '+ /mnt/source/docker/authelia/*.yaml'
+  - '+ /mnt/source/docker/lldap/**'
+  - '- /mnt/source/docker/nginx-proxy-manager/data/logs'
+  - '+ /mnt/source/docker/nginx-proxy-manager/**'
+  # jelly
+  - '- /mnt/source/docker/jellyfin/cache'
+  - '- /mnt/source/docker/jellyfin/log'
+  - '- /mnt/source/docker/jellyfin/data/log'
+  - '+ /mnt/source/docker/jellyfin/**'
+  - '+ /mnt/source/docker/jellyseerr/*.json'
+  # logs
+  - '+ /mnt/source/docker/grafana/*.toml'
+  - '+ /mnt/source/docker/loki/*.yaml'
+  # borgmatic config
+  - '+ /etc/borgmatic.d/*.yaml'
+  # ignore rest
+  - '- **'
+
+repositories:
+  - path: /mnt/backup/docker
+    label: local
+
+archive_name_format: 'docker-backup-{now:%Y-%m-%d-%H%M%S}'
+
+after_backup:
+  - echo Syncing backups
+  - rclone sync /mnt/backup/docker bb:phoenix0/docker --progress --stats-one-line --stats 1s
+  - rclone sync /mnt/backup/docker koofr:/docker --progress --stats-one-line --stats 1s
+  - rclone sync /mnt/backup/docker gdrive:/docker --progress --stats-one-line --stats 1s
+  - echo Finished backup sync
+
+<<: !include /etc/borgmatic.d/shared/shared-config.yaml
