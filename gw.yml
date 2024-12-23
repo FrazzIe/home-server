@@ -74,7 +74,7 @@ services:
     image: dpage/pgadmin4:latest
     container_name: pgadmin
     environment:
-      - PGADMIN_DEFAULT_EMAIL=$DEFAULT_EMAIL
+      - PGADMIN_DEFAULT_EMAIL=$SMTP_USER
       - PGADMIN_DEFAULT_PASSWORD_FILE=/run/secrets/pgadmin_password
       - PGADMIN_CONFIG_LOGIN_BANNER="<h4>Authorised users only!</h4>"
     ports:
@@ -96,7 +96,7 @@ services:
       - AUTHELIA_STORAGE_POSTGRES_PASSWORD_FILE=/run/secrets/authelia_postgres_password
       - AUTHELIA_STORAGE_ENCRYPTION_KEY_FILE=/run/secrets/authelia_encryption_key
       - AUTHELIA_AUTHENTICATION_BACKEND_LDAP_PASSWORD_FILE=/run/secrets/authelia_ldap_password
-      - AUTHELIA_NOTIFIER_SMTP_PASSWORD_FILE=/run/secrets/authelia_smtp_password
+      - AUTHELIA_NOTIFIER_SMTP_PASSWORD_FILE=/run/secrets/smtp_password
     ports:
       - 9091:9091
     volumes:
@@ -107,7 +107,7 @@ services:
       - authelia_postgres_password
       - authelia_encryption_key
       - authelia_ldap_password
-      - authelia_smtp_password
+      - smtp_password
     restart: unless-stopped
   cloudflareddns:
     image: hotio/cloudflareddns:latest
@@ -159,8 +159,8 @@ secrets:
     file: $SECRET_DIR/AUTHELIA_ENCRYPTION_KEY
   authelia_ldap_password:
     file: $SECRET_DIR/AUTHELIA_LDAP_PASSWORD
-  authelia_smtp_password:
-    file: $SECRET_DIR/AUTHELIA_SMTP_PASSWORD
+  smtp_password:
+    file: $SECRET_DIR/SMTP_PASSWORD
   cf_user:
     file: $SECRET_DIR/CLOUDFLARE_USER
   cf_api_key:
