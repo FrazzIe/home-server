@@ -30,8 +30,8 @@ patterns:
   - '+ /mnt/source/docker/jellyfin/**'
   - '+ /mnt/source/docker/jellyseerr/*.json'
   # logs
-  - '+ /mnt/source/docker/grafana/*.toml'
-  - '+ /mnt/source/docker/loki/*.yaml'
+  - '+ /mnt/source/docker/grafana/**'
+  - '+ /mnt/source/docker/loki/**'
   # borgmatic config
   - '+ /etc/borgmatic.d/*.yaml'
   # ignore rest
