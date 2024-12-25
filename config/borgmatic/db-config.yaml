@@ -11,6 +11,8 @@ repositories:
 
 archive_name_format: 'db-backup-{now:%Y-%m-%d-%H%M%S}'
 
+read_special: true
+
 sqlite_databases:
   # arr
   - name: prowlarr
