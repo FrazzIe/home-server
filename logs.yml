@@ -44,6 +44,7 @@ services:
       #- 9096
     volumes:
       - $DATA_DIR/loki/loki-config.yaml:/etc/loki/loki-config.yaml
+      - $DATA_DIR/loki:/var/loki
     command: -config.file=/etc/loki/loki-config.yaml
 secrets:
   gf_db_user:
