@@ -1,3 +1,6 @@
+constants:
+  name: "docker-backup"
+
 source_directories:
   - /mnt/source/docker/
 

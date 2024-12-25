@@ -1,4 +1,5 @@
 constants:
+  name: "db-backup"
   pg_user: "${PG_USER}"
   pg_password: "${PG_PASS}"
 

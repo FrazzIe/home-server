@@ -1,4 +1,5 @@
 constants:
+  name: "unamed-backup"
   smtp_host: "${SMTP_HOST}"
   smtp_user: "${SMTP_USER}"
   smtp_pass: "${SMTP_PASS}"
@@ -19,25 +20,25 @@ apprise:
       label: discord
   start:
     title: 'Backup: Started ⚙️'
-    body: Starting backup process.
+    body: Starting {name} backup process.
   finish:
     title: 'Backup: Successful ✅'
-    body: Backups successfully made.
+    body: Backup {name} successfully made.
   fail:
     title: 'Backup: Failed ❌'
-    body: Your backups have failed.
+    body: Your backup {name} has failed.
 
 before_everything:
-  - echo Starting actions.
+  - echo Starting {name} actions.
 
 before_backup:
-  - echo Starting a backup.
+  - echo Starting a {name} backup.
 
 after_backup:
-  - echo Finished a backup.
+  - echo Finished a {name} backup.
 
 on_error:
-  - echo Error during create/prune/compact/check.
+  - echo Error during create/prune/compact/check for {name}.
 
 after_everything:
-  - echo Completed actions.
+  - echo Completed {name} actions.
