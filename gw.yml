@@ -85,7 +85,7 @@ services:
       - pgadmin_password
     restart: unless-stopped
   authelia:
-    image: authelia/authelia:4.38.16
+    image: authelia/authelia:4.39.4
     container_name: authelia
     environment:
       - PUID=$PUID

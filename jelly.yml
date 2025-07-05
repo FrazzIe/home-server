@@ -1,7 +1,7 @@
 version: "3.8"
 services:
   jellyfin:
-    image: lscr.io/linuxserver/jellyfin:10.10.2
+    image: lscr.io/linuxserver/jellyfin:10.10.7
     container_name: jellyfin
     environment:
       - PUID=$PUID
@@ -17,7 +17,7 @@ services:
     networks:
       - gw_default
   jellyseerr:
-    image: fallenbagel/jellyseerr:latest
+    image: fallenbagel/jellyseerr:2.7.0
     container_name: jellyseerr
     environment:
       - LOG_LEVEL=debug
