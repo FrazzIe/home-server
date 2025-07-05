@@ -1,0 +1,91 @@
+x-solid: &a1
+  restart: always
+  image: solidtime/solidtime:0.8
+  user: 1000:1000
+  networks:
+    - solidtime_internal
+    - gw_default
+  volumes:
+    - $DATA_DIR/solidtime/app-storage:/var/www/html/storage
+    - $DATA_DIR/solidtime/logs:/var/www/html/storage/logs
+    - $DATA_DIR/solidtime/app-storage:/var/www/html/storage/app
+x-solid-environment: &a2
+  APP_NAME: solidtime
+  VITE_APP_NAME: solidtime
+  APP_ENV: production
+  APP_DEBUG: false
+  APP_URL: $SOLIDTIME_APP_URL
+  APP_FORCE_HTTPS: true
+  TRUSTED_PROXIES: 0.0.0.0/0,2000:0:0:0:0:0:0:0/3
+  APP_KEY: $SOLIDTIME_APP_KEY
+  PASSPORT_PRIVATE_KEY: $SOLIDTIME_PASSPORT_PRIVATE_KEY
+  PASSPORT_PUBLIC_KEY: $SOLIDTIME_PASSPORT_PUBLIC_KEY
+  SUPER_ADMINS: $SOLIDTIME_SUPER_ADMINS
+  LOG_CHANNEL: stderr_daily
+  LOG_LEVEL: debug
+  DB_CONNECTION: pgsql
+  DB_HOST: postgres
+  DB_PORT: 5432
+  DB_SSLMODE: require
+  DB_DATABASE: solidtime
+  DB_USERNAME: solidtime
+  DB_PASSWORD: $SOLIDTIME_DB_PASSWORD
+  MAIL_MAILER: smtp
+  MAIL_HOST: $SMTP_HOST
+  MAIL_PORT: $SMTP_PORT
+  MAIL_ENCRYPTION: tls
+  MAIL_FROM_ADDRESS: no-reply@time.fwatt.dev
+  MAIL_FROM_NAME: Solidtime mailer
+  MAIL_USERNAME: $SMTP_USER
+  MAIL_PASSWORD: $SMTP_PASS
+  QUEUE_CONNECTION: database
+  FILESYSTEM_DISK: local
+  PUBLIC_FILESYSTEM_DISK: public
+  GOTENBERG_URL: http://solidtime-gotenberg:3000
+  AUTO_DB_MIGRATE: "true"
+services:
+  solidtime-app:
+    <<: *a1
+    ports:
+      - 8000:8000
+    environment:
+      <<: *a2
+      CONTAINER_MODE: http
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - curl --fail http://localhost:8000/health-check/up || exit 1
+  solidtime-scheduler:
+    <<: *a1
+    environment:
+      <<: *a2
+      CONTAINER_MODE: scheduler
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - supervisorctl status scheduler:scheduler_00
+  solidtime-queue:
+    <<: *a1
+    environment:
+      <<: *a2
+      CONTAINER_MODE: worker
+      WORKER_COMMAND: php /var/www/html/artisan queue:work
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - supervisorctl status worker:worker_00
+  solidtime-gotenberg:
+    image: gotenberg/gotenberg:8
+    networks:
+      - solidtime_internal
+    healthcheck:
+      test:
+        - CMD
+        - curl
+        - --silent
+        - --fail
+        - http://localhost:3000/health
+networks:
+  solidtime_internal: null
+  gw_default:
+    external: true
