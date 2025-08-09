@@ -1,0 +1,62 @@
+services:
+  affine:
+    image: ghcr.io/toeverything/affine:${AFFINE_REVISION:-stable}
+    container_name: affine_server
+    ports:
+      - 3010:3010
+    depends_on:
+      affine_redis:
+        condition: service_healthy
+      affine_migration:
+        condition: service_completed_successfully
+    volumes:
+      - $DATA_DIR/affine/storage:/root/.affine/storage
+      - $DATA_DIR/affine/config:/root/.affine/config
+    environment:
+      - REDIS_SERVER_HOST=affine_redis
+      - DATABASE_URL=$AFFINE_DATABASE_URL
+      - AFFINE_INDEXER_ENABLED=false
+    restart: unless-stopped
+    networks:
+      - whiteboard_internal
+      - gw_default
+  affine_migration:
+    image: ghcr.io/toeverything/affine:${AFFINE_REVISION:-stable}
+    container_name: affine_migration_job
+    volumes:
+      - $DATA_DIR/affine/storage:/root/.affine/storage
+      - $DATA_DIR/affine/config:/root/.affine/config
+    command:
+      - sh
+      - -c
+      - node ./scripts/self-host-predeploy.js
+    environment:
+      - REDIS_SERVER_HOST=affine_redis
+      - DATABASE_URL=$AFFINE_DATABASE_URL
+      - AFFINE_INDEXER_ENABLED=false
+    depends_on:
+      affine_redis:
+        condition: service_healthy
+    networks:
+      - whiteboard_internal
+      - gw_default
+  affine_redis:
+    image: redis
+    container_name: affine_redis
+    healthcheck:
+      test:
+        - CMD
+        - redis-cli
+        - --raw
+        - incr
+        - ping
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - whiteboard_internal
+networks:
+  whiteboard_internal: null
+  gw_default:
+    external: true
