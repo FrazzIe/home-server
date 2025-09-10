@@ -9,6 +9,8 @@ x-solid: &a1
     - $DATA_DIR/solidtime/app-storage:/var/www/html/storage
     - $DATA_DIR/solidtime/logs:/var/www/html/storage/logs
     - $DATA_DIR/solidtime/app-storage:/var/www/html/storage/app
+  depends_on:
+    - solidtime-db
 x-solid-environment: &a2
   APP_NAME: solidtime
   VITE_APP_NAME: solidtime
