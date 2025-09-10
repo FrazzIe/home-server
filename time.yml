@@ -1,6 +1,6 @@
 x-solid: &a1
   restart: always
-  image: solidtime/solidtime:0.8
+  image: solidtime/solidtime:0.9
   user: 1000:1000
   networks:
     - solidtime_internal
@@ -55,8 +55,10 @@ services:
       CONTAINER_MODE: http
     healthcheck:
       test:
-        - CMD-SHELL
-        - curl --fail http://localhost:8000/health-check/up || exit 1
+        - CMD
+        - curl
+        - --fail
+        - http://localhost:8000/health-check/up
   solidtime-scheduler:
     <<: *a1
     environment:
@@ -64,8 +66,8 @@ services:
       CONTAINER_MODE: scheduler
     healthcheck:
       test:
-        - CMD-SHELL
-        - supervisorctl status scheduler:scheduler_00
+        - CMD
+        - healthcheck
   solidtime-queue:
     <<: *a1
     environment:
@@ -74,8 +76,8 @@ services:
       WORKER_COMMAND: php /var/www/html/artisan queue:work
     healthcheck:
       test:
-        - CMD-SHELL
-        - supervisorctl status worker:worker_00
+        - CMD
+        - healthcheck
   solidtime-gotenberg:
     image: gotenberg/gotenberg:8
     networks:
