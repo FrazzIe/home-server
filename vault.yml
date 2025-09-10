@@ -1,0 +1,93 @@
+services:
+  vaultwarden:
+    image: vaultwarden/server:1.34.3
+    container_name: vaultwarden
+    depends_on:
+      - vaultwarden-db
+    environment:
+      - DOMAIN=https://vault.fwatt.dev
+      - SIGNUPS_ALLOWED=false
+      - SENDS_ALLOWED=true
+      - INVITATIONS_ALLOWED=true
+      - DISABLE_ICON_DOWNLOAD=false
+      - EMAIL_CHANGE_ALLOWED=true
+      - PASSWORD_HINTS_ALLOWED=false
+      - EXPERIMENTAL_CLIENT_FEATURE_FLAGS=ssh-key-vault-item
+      - SMTP_HOST_FILE=/run/secrets/smtp_host
+      - SMTP_PORT=465
+      - SMTP_SECURITY=force_tls
+      - SMTP_FROM=no-reply@vault.fwatt.dev
+      - SMTP_USERNAME_FILE=/run/secrets/smtp_user
+      - SMTP_PASSWORD_FILE=/run/secrets/smtp_password
+      - DATABASE_URL_FILE=/run/secrets/vaultwarden_db_url
+      - ADMIN_TOKEN_FILE=/run/secrets/vaultwarden_admin_token
+    # ports:
+    #   - 8000:80
+    volumes:
+      - $DATA_DIR/vaultwarden/app:/data
+    secrets:
+      - smtp_host
+      - smtp_user
+      - smtp_password
+      - vaultwarden_db_url
+      - vaultwarden_admin_token
+    restart: unless-stopped
+    networks:
+      - vaultwarden_internal
+      - gw_default
+  vaultwarden-ldap-sync:
+    image: vividboarder/vaultwarden_ldap:2.1.2
+    container_name: vaultwarden-ldap-sync
+    depends_on:
+      - vaultwarden-db
+      - vaultwarden
+    environment:
+      - CONFIG_PATH=/ldap-sync/config.toml
+    volumes:
+      - $DATA_DIR/vaultwarden/ldap-sync:/ldap-sync
+    restart: always
+    networks:
+      - gw_default
+  vaultwarden-db:
+    image: postgres:17.0
+    container_name: vaultwarden-db
+    environment:
+      - POSTGRES_DB=vaultwarden
+      - POSTGRES_USER_FILE=/run/secrets/vaultwarden_db_user
+      - POSTGRES_PASSWORD_FILE=/run/secrets/vaultwarden_db_password
+    # ports:
+    #   - 5432:5432
+    volumes:
+      - $DATA_DIR/vaultwarden/db:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -d $$POSTGRES_DB -U `cat $$POSTGRES_USER_FILE`
+      interval: 1s
+      timeout: 5s
+      retries: 10
+    secrets:
+      - vaultwarden_db_user
+      - vaultwarden_db_password
+    restart: unless-stopped
+    networks:
+      - vaultwarden_internal
+networks:
+  vaultwarden_internal: null
+  gw_default:
+    external: true
+secrets:
+  smtp_host:
+    file: $SECRET_DIR/SMTP_HOST
+  smtp_user:
+    file: $SECRET_DIR/SMTP_USER
+  smtp_password:
+    file: $SECRET_DIR/SMTP_PASSWORD
+  vaultwarden_db_url:
+    file: $SECRET_DIR/VAULTWARDEN_DATABASE_URL
+  vaultwarden_db_user:
+    file: $SECRET_DIR/VAULTWARDEN_DATABASE_USER
+  vaultwarden_db_password:
+    file: $SECRET_DIR/VAULTWARDEN_DATABASE_PASSWORD
+  vaultwarden_admin_token:
+    file: $SECRET_DIR/VAULTWARDEN_ADMIN_TOKEN
