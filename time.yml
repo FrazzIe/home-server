@@ -24,7 +24,7 @@ x-solid-environment: &a2
   LOG_CHANNEL: stderr_daily
   LOG_LEVEL: debug
   DB_CONNECTION: pgsql
-  DB_HOST: postgres
+  DB_HOST: solidtime-db
   DB_PORT: 5432
   DB_SSLMODE: require
   DB_DATABASE: solidtime
@@ -85,7 +85,36 @@ services:
         - --silent
         - --fail
         - http://localhost:3000/health
+  solidtime-db:
+    image: postgres:17.0
+    container_name: solidtime-db
+    environment:
+      - POSTGRES_DB=solidtime
+      - POSTGRES_USER_FILE=/run/secrets/solidtime_db_user
+      - POSTGRES_PASSWORD_FILE=/run/secrets/solidtime_db_password
+    # ports:
+    #   - 5432:5432
+    volumes:
+      - $DATA_DIR/solidtime/db:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -d $$POSTGRES_DB -U `cat $$POSTGRES_USER_FILE`
+      interval: 1s
+      timeout: 5s
+      retries: 10
+    secrets:
+      - solidtime_db_user
+      - solidtime_db_password
+    restart: unless-stopped
+    networks:
+      - solidtime_internal
 networks:
   solidtime_internal: null
   gw_default:
     external: true
+secrets:
+  solidtime_db_user:
+    file: $SECRET_DIR/SOLIDTIME_DATABASE_USER
+  solidtime_db_password:
+    file: $SECRET_DIR/SOLIDTIME_DATABASE_PASSWORD
