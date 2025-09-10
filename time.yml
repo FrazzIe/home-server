@@ -4,7 +4,7 @@ x-solid: &a1
   user: 1000:1000
   networks:
     - solidtime_internal
-    - gw_default
+    - solidtime_npm
   volumes:
     - $DATA_DIR/solidtime/app-storage:/var/www/html/storage
     - $DATA_DIR/solidtime/logs:/var/www/html/storage/logs
@@ -113,9 +113,15 @@ services:
     restart: unless-stopped
     networks:
       - solidtime_internal
+      - solidtime_db_backup
+      - solidtime_db_admin
 networks:
   solidtime_internal: null
-  gw_default:
+  solidtime_db_backup:
+    external: true
+  solidtime_db_admin:
+    external: true
+  solidtime_npm:
     external: true
 secrets:
   solidtime_db_user:

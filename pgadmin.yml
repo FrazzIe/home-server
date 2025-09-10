@@ -1,0 +1,40 @@
+x-pgadmin-networks: &a1
+  lldap_db_admin: null
+  authelia_db_admin: null
+  ryot_db_admin: null
+  affine_db_admin: null
+  solidtime_db_admin: null
+  vaultwarden_db_admin: null
+services:
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=$SMTP_USER
+      - PGADMIN_DEFAULT_PASSWORD_FILE=/run/secrets/pgadmin_password
+      - PGADMIN_CONFIG_LOGIN_BANNER="<h4>Authorised users only!</h4>"
+    ports:
+      - 5050:80
+    volumes:
+      - $DATA_DIR/pgadmin:/var/lib/pgadmin
+    secrets:
+      - pgadmin_password
+    restart: unless-stopped
+    networks:
+      <<: *a1
+secrets:
+  pgadmin_password:
+    file: $SECRET_DIR/PGADMIN_PASSWORD
+networks:
+  lldap_db_admin:
+    external: true
+  ryot_db_admin:
+    external: true
+  authelia_db_admin:
+    external: true
+  affine_db_admin:
+    external: true
+  solidtime_db_admin:
+    external: true
+  vaultwarden_db_admin:
+    external: true

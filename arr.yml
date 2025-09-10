@@ -1,7 +1,7 @@
 version: "3.8"
 services:
   prowlarr:
-    image: lscr.io/linuxserver/prowlarr:1.37.0
+    image: linuxserver/prowlarr:1.37.0
     container_name: prowlarr
     environment:
       - PUID=$PUID
@@ -14,7 +14,7 @@ services:
     restart: unless-stopped
     networks:
       - arr_default
-      - gw_default
+      - arr_npm
   radarr:
     image: lscr.io/linuxserver/radarr:5.26.2
     container_name: radarr
@@ -32,7 +32,7 @@ services:
     restart: unless-stopped
     networks:
       - arr_default
-      - gw_default
+      - arr_npm
   sonarr:
     image: lscr.io/linuxserver/sonarr:4.0.15
     container_name: sonarr
@@ -50,7 +50,7 @@ services:
     restart: unless-stopped
     networks:
       - arr_default
-      - gw_default
+      - arr_npm
   bazarr:
     image: lscr.io/linuxserver/bazarr:1.5.2
     container_name: bazarr
@@ -66,7 +66,7 @@ services:
     restart: unless-stopped
     networks:
       - arr_default
-      - gw_default
+      - arr_npm
   sabnzbd:
     image: lscr.io/linuxserver/sabnzbd:4.5.1
     container_name: sabnzbd
@@ -146,5 +146,5 @@ secrets:
 networks:
   arr_default:
     external: true
-  gw_default:
+  arr_npm:
     external: true

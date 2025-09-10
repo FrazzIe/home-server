@@ -1,0 +1,62 @@
+services:
+  ryot:
+    image: ghcr.io/ignisda/ryot:v8
+    container_name: ryot
+    depends_on:
+      ryot-db:
+        condition: service_healthy
+    environment:
+      - TZ=$TZ
+      - SERVER_ADMIN_ACCESS_TOKEN=$RYOT_SERVER_ADMIN_ACCESS_TOKEN
+      - DATABASE_URL=$RYOT_DATABASE_URL
+      - DISABLE_TELEMETRY=true
+      - MOVIES_AND_SHOWS_TMDB_ACCESS_TOKEN=$RYOT_TMDB_ACCESS_TOKEN
+      - ANIME_AND_MANGA_MAL_CLIENT_ID=$RYOT_MAL_CLIENT_ID
+      - SERVER_SMTP_SERVER=$SMTP_HOST
+      - SERVER_SMTP_USER=$SMTP_USER
+      - SERVER_SMTP_PASSWORD=$SMTP_PASS
+      - USERS_ALLOW_REGISTRATION=false
+      - RUST_LOG=ryot=debug
+    restart: unless-stopped
+    networks:
+      - ryot_internal
+      - ryot_npm
+  ryot-db:
+    image: postgres:17.0
+    container_name: ryot-db
+    environment:
+      - POSTGRES_DB=ryot
+      - POSTGRES_USER_FILE=/run/secrets/ryot_db_user
+      - POSTGRES_PASSWORD_FILE=/run/secrets/ryot_db_password
+    # ports:
+    #   - 5432:5432
+    volumes:
+      - $DATA_DIR/ryot/db:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -d $$POSTGRES_DB -U `cat $$POSTGRES_USER_FILE`
+      interval: 1s
+      timeout: 5s
+      retries: 10
+    secrets:
+      - ryot_db_user
+      - ryot_db_password
+    restart: unless-stopped
+    networks:
+      - ryot_internal
+      - ryot_db_backup
+      - ryot_db_admin
+secrets:
+  ryot_db_user:
+    file: $SECRET_DIR/RYOT_DATABASE_USER
+  ryot_db_password:
+    file: $SECRET_DIR/RYOT_DATABASE_PASSWORD
+networks:
+  ryot_internal: null
+  ryot_db_backup:
+    external: true
+  ryot_db_admin:
+    external: true
+  ryot_npm:
+    external: true

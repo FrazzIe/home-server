@@ -29,7 +29,7 @@ services:
       start_period: 20s
     restart: unless-stopped
     networks:
-      - gw_default
+      - actual_budget_npm
 networks:
-  gw_default:
+  actual_budget_npm:
     external: true

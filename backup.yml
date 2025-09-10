@@ -1,3 +1,10 @@
+x-db-networks: &a1
+  lldap_db_backup: null
+  authelia_db_backup: null
+  ryot_db_backup: null
+  affine_db_backup: null
+  solidtime_db_backup: null
+  vaultwarden_db_backup: null
 services:
   borgmatic:
     image: ghcr.io/borgmatic-collective/borgmatic:latest
@@ -24,7 +31,7 @@ services:
       - $BACKUP_DIR/state:/root/.local/state/borgmatic
       - $BACKUP_DIR/rclone:/root/.config/rclone
     networks:
-      - gw_default
+      <<: *a1
     secrets:
       - borg_pp
       - pg_user
@@ -32,7 +39,17 @@ services:
       - smtp_pass
     restart: always
 networks:
-  gw_default:
+  vaultwarden_db_backup:
+    external: true
+  solidtime_db_backup:
+    external: true
+  ryot_db_backup:
+    external: true
+  lldap_db_backup:
+    external: true
+  authelia_db_backup:
+    external: true
+  affine_db_backup:
     external: true
 secrets:
   borg_pp:

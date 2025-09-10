@@ -1,28 +1,28 @@
 services:
   affine:
     image: ghcr.io/toeverything/affine:${AFFINE_REVISION:-stable}
-    container_name: affine_server
-    ports:
-      - 3010:3010
+    container_name: affine-server
     depends_on:
-      affine_redis:
+      affine-redis:
         condition: service_healthy
-      affine_migration:
+      affine-migration:
         condition: service_completed_successfully
+      affine-db:
+        condition: service_healthy
     volumes:
       - $DATA_DIR/affine/storage:/root/.affine/storage
       - $DATA_DIR/affine/config:/root/.affine/config
     environment:
-      - REDIS_SERVER_HOST=affine_redis
+      - REDIS_SERVER_HOST=affine-redis
       - DATABASE_URL=$AFFINE_DATABASE_URL
       - AFFINE_INDEXER_ENABLED=false
     restart: unless-stopped
     networks:
-      - whiteboard_internal
-      - gw_default
-  affine_migration:
+      - affine_internal
+      - affine_npm
+  affine-migration:
     image: ghcr.io/toeverything/affine:${AFFINE_REVISION:-stable}
-    container_name: affine_migration_job
+    container_name: affine-migration-job
     volumes:
       - $DATA_DIR/affine/storage:/root/.affine/storage
       - $DATA_DIR/affine/config:/root/.affine/config
@@ -31,18 +31,19 @@ services:
       - -c
       - node ./scripts/self-host-predeploy.js
     environment:
-      - REDIS_SERVER_HOST=affine_redis
+      - REDIS_SERVER_HOST=affine-redis
       - DATABASE_URL=$AFFINE_DATABASE_URL
       - AFFINE_INDEXER_ENABLED=false
     depends_on:
-      affine_redis:
+      affine-redis:
+        condition: service_healthy
+      affine-db:
         condition: service_healthy
     networks:
-      - whiteboard_internal
-      - gw_default
-  affine_redis:
+      - affine_internal
+  affine-redis:
     image: redis
-    container_name: affine_redis
+    container_name: affine-redis
     healthcheck:
       test:
         - CMD
@@ -55,8 +56,43 @@ services:
       retries: 5
     restart: unless-stopped
     networks:
-      - whiteboard_internal
+      - affine_internal
+  affine-db:
+    image: postgres:17.0
+    container_name: affine-db
+    environment:
+      - POSTGRES_DB=affine
+      - POSTGRES_USER_FILE=/run/secrets/affine_db_user
+      - POSTGRES_PASSWORD_FILE=/run/secrets/affine_db_password
+    # ports:
+    #   - 5432:5432
+    volumes:
+      - $DATA_DIR/affine/db:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -d $$POSTGRES_DB -U `cat $$POSTGRES_USER_FILE`
+      interval: 1s
+      timeout: 5s
+      retries: 10
+    secrets:
+      - affine_db_user
+      - affine_db_password
+    restart: unless-stopped
+    networks:
+      - affine_internal
+      - affine_db_backup
+      - affine_db_admin
+secrets:
+  affine_db_user:
+    file: $SECRET_DIR/AFFINE_DATABASE_USER
+  affine_db_password:
+    file: $SECRET_DIR/AFFINE_DATABASE_PASSWORD
 networks:
-  whiteboard_internal: null
-  gw_default:
+  affine_internal: null
+  affine_db_backup:
+    external: true
+  affine_db_admin:
+    external: true
+  affine_npm:
     external: true

@@ -1,0 +1,57 @@
+services:
+  # xbs-db:
+  #   image: mongo:4.4.4
+  #   container_name: xbs-db
+  #   environment:
+  #     - MONGO_INITDB_DATABASE=$DB_NAME
+  #     - MONGO_INITDB_ROOT_PASSWORD=$DB_PASSWORD
+  #     - MONGO_INITDB_ROOT_USERNAME=$DB_USERNAME
+  #   volumes:
+  #     - $DATA_DIR/xbrowsersync/db-data:/data/db
+  #     - $DATA_DIR/xbrowsersync/db-backups:/data/backups
+  #     - ./mongoconfig.js:/docker-entrypoint-initdb.d/mongoconfig.js
+  #   restart: unless-stopped
+  #   networks:
+  #     - xbs_internal
+  # xbs-api:
+  #   image: "browsersync/api:1.1.13
+  #   container_name: xbs-api
+  #   depends_on:
+  #     - xbs-db
+  #   environment:
+  #     - XBROWSERSYNC_DB_PWD=$DB_PASSWORD
+  #     - XBROWSERSYNC_DB_USER=$DB_USERNAME
+  #   ports:
+  #     - 8080:8080
+  #   healthcheck:
+  #     test: [ "CMD", "node", "/usr/src/api/healthcheck.js" ]
+  #     interval: 1m
+  #     timeout: 10s
+  #     retries: 5
+  #     start_period: 30s   
+  #   volumes:
+  #     - ./settings.json:/usr/src/api/config/settings.json
+  #     - ./healthcheck.js:/usr/src/api/healthcheck.js
+  #   restart: unless-stopped
+  #   networks:
+  #     - xbs_internal
+  #     - gw_default
+networks:
+  xbs_internal: null
+  gw_default:
+    external: true
+secrets:
+  smtp_host:
+    file: $SECRET_DIR/SMTP_HOST
+  smtp_user:
+    file: $SECRET_DIR/SMTP_USER
+  smtp_password:
+    file: $SECRET_DIR/SMTP_PASSWORD
+  vaultwarden_db_url:
+    file: $SECRET_DIR/VAULTWARDEN_DATABASE_URL
+  vaultwarden_db_user:
+    file: $SECRET_DIR/VAULTWARDEN_DATABASE_USER
+  vaultwarden_db_password:
+    file: $SECRET_DIR/VAULTWARDEN_DATABASE_PASSWORD
+  vaultwarden_admin_token:
+    file: $SECRET_DIR/VAULTWARDEN_ADMIN_TOKEN

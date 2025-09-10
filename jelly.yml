@@ -15,7 +15,8 @@ services:
       - $MEDIA_DIR:/media
     restart: unless-stopped
     networks:
-      - gw_default
+      - jelly_npm
+      - jellyfin_ldap
   jellyseerr:
     image: fallenbagel/jellyseerr:2.7.0
     container_name: jellyseerr
@@ -29,10 +30,12 @@ services:
       - $DATA_DIR/jellyseerr:/app/config
     restart: unless-stopped
     networks:
-      - gw_default
+      - jelly_npm
       - arr_default
 networks:
   arr_default:
     external: true
-  gw_default:
+  jelly_npm:
+    external: true
+  jellyfin_ldap:
     external: true

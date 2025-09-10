@@ -1,0 +1,92 @@
+x-ldap-networks: &a1
+  authelia_ldap: null
+  vaultwarden_ldap: null
+  jellyfin_ldap: null
+services:
+  lldap:
+    image: lldap/lldap:stable
+    container_name: lldap
+    depends_on:
+      lldap-db:
+        condition: service_healthy
+    environment:
+      - UID=$PUID
+      - GID=$PGID
+      - TZ=$TZ
+      - LLDAP_JWT_SECRET_FILE=/run/secrets/lldap_jwt_secret
+      - LLDAP_LDAP_USER_DN_FILE=/run/secrets/lldap_ldap_user_dn
+      - LLDAP_LDAP_BASE_DN_FILE=/run/secrets/lldap_ldap_base_dn
+      - LLDAP_LDAP_USER_PASS_FILE=/run/secrets/lldap_ldap_user_pass
+      - LLDAP_LDAP_USER_EMAIL=ro
+      - LLDAP_DATABASE_URL_FILE=/run/secrets/lldap_database_url
+    ports:
+      - 3890:3890
+      - 17170:17170
+    volumes:
+      - $DATA_DIR/lldap/app:/data
+    secrets:
+      - lldap_jwt_secret
+      - lldap_ldap_user_dn
+      - lldap_ldap_base_dn
+      - lldap_ldap_user_pass
+      - lldap_database_url
+    restart: unless-stopped
+    networks:
+      <<: *a1
+      lldap_internal: null
+      lldap_npm: null
+  lldap-db:
+    image: postgres:17.0
+    container_name: lldap-db
+    environment:
+      - POSTGRES_DB=lldap
+      - POSTGRES_USER_FILE=/run/secrets/lldap_db_user
+      - POSTGRES_PASSWORD_FILE=/run/secrets/lldap_db_password
+    # ports:
+    #   - 5432:5432
+    volumes:
+      - $DATA_DIR/lldap/db:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -d $$POSTGRES_DB -U `cat $$POSTGRES_USER_FILE`
+      interval: 1s
+      timeout: 5s
+      retries: 10
+    secrets:
+      - lldap_db_user
+      - lldap_db_password
+    restart: unless-stopped
+    networks:
+      - lldap_internal
+      - lldap_db_backup
+      - lldap_db_admin
+secrets:
+  lldap_jwt_secret:
+    file: $SECRET_DIR/LLDAP_JWT_SECRET
+  lldap_ldap_user_dn:
+    file: $SECRET_DIR/LLDAP_LDAP_USER_DN
+  lldap_ldap_base_dn:
+    file: $SECRET_DIR/LLDAP_LDAP_BASE_DN
+  lldap_ldap_user_pass:
+    file: $SECRET_DIR/LLDAP_LDAP_USER_PASS
+  lldap_database_url:
+    file: $SECRET_DIR/LLDAP_DATABASE_URL
+  lldap_db_user:
+    file: $SECRET_DIR/LLDAP_DATABASE_USER
+  lldap_db_password:
+    file: $SECRET_DIR/LLDAP_DATABASE_PASSWORD
+networks:
+  lldap_internal: null
+  lldap_db_backup:
+    external: true
+  lldap_db_admin:
+    external: true
+  lldap_npm:
+    external: true
+  authelia_ldap:
+    external: true
+  vaultwarden_ldap:
+    external: true
+  jellyfin_ldap:
+    external: true
