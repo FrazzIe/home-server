@@ -1,7 +1,7 @@
 version: "3.8"
 services:
   prowlarr:
-    image: linuxserver/prowlarr:1.37.0
+    image: linuxserver/prowlarr:2.0.5
     container_name: prowlarr
     environment:
       - PUID=$PUID
@@ -16,7 +16,7 @@ services:
       - arr_default
       - arr_npm
   radarr:
-    image: lscr.io/linuxserver/radarr:5.26.2
+    image: lscr.io/linuxserver/radarr:5.27.5
     container_name: radarr
     environment:
       - PUID=$PUID
