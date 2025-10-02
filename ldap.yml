@@ -2,6 +2,7 @@ x-ldap-networks: &a1
   authelia_ldap: null
   vaultwarden_ldap: null
   jellyfin_ldap: null
+  nextcloud_ldap: null
 services:
   lldap:
     image: lldap/lldap:stable
@@ -89,4 +90,6 @@ networks:
   vaultwarden_ldap:
     external: true
   jellyfin_ldap:
+    external: true
+  nextcloud_ldap:
     external: true

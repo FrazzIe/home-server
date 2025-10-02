@@ -1,0 +1,125 @@
+services:
+  nextcloud:
+    image: nextcloud:31.0
+    container_name: nextcloud
+    depends_on:
+      nextcloud-db:
+        condition: service_healthy
+      nextcloud-redis:
+        condition: service_healthy
+    environment:
+      - POSTGRES_HOST=nextcloud-db
+      - POSTGRES_DB=nextcloud
+      - POSTGRES_USER_FILE=/run/secrets/nextcloud_db_user
+      - POSTGRES_PASSWORD_FILE=/run/secrets/nextcloud_db_password
+      - REDIS_HOST=nextcloud-redis
+      - NEXTCLOUD_ADMIN_PASSWORD_FILE=/run/secrets/nextcloud_admin_password
+      - NEXTCLOUD_ADMIN_USER_FILE=/run/secrets/nextcloud_admin_user
+      - SMTP_HOST=$SMTP_HOST
+      - SMTP_PORT=465
+      - SMTP_SECURE=ssl
+      - SMTP_AUTH=1
+      - SMTP_NAME=$SMTP_USER
+      - SMTP_PASSWORD_FILE=/run/secrets/smtp_password
+      - MAIL_FROM_ADDRESS=no-reply
+      - MAIL_DOMAIN=cloud.fwatt.dev
+      - PHP_MEMORY_LIMIT=512M
+      - PHP_UPLOAD_LIMIT=512M
+      - PHP_OPCACHE_MEMORY_CONSUMPTION=128
+      - APACHE_BODY_LIMIT=1073741824
+      - NEXTCLOUD_DEFAULT_TIMEZONE=$TZ
+      - NEXTCLOUD_ALLOW_USER_TO_CHANGE_DISPLAY_NAME=false
+      - NEXTCLOUD_LOST_PASSWORD_LINK=https://auth.fwatt.dev/reset-password/step1
+      - NEXTCLOUD_LOGO_URL=
+      - NEXTCLOUD_DEFAULT_APP=dashboard,files
+      - NEXTCLOUD_APPSTORE_ENABLED=true
+      - NEXTCLOUD_TRUSTED_DOMAINS=cloud.fwatt.dev 192.168.0.63
+      - TRUSTED_PROXIES=172.16.42.0/24
+      - APACHE_DISABLE_REWRITE_IP=1
+      #- NEXTCLOUD_PREVIEW_LIBREOFFICE_PATH=/USR/BIN/LIBREOFFICE
+      #- NEXTCLOUD_PREVIEW_FFMPEG_PATH=/USR/BIN/FFMPEG
+      #- NEXTCLOUD_PREVIEW_FFPROBE_PATH=/USR/BIN/FFPROBE
+      #- NEXTCLOUD_PREVIEW_IMAGINARY_URL=HTTP://PREVIEWS_HPB:8088/
+      #- NEXTCLOUD_PREVIEW_IMAGINARY_KEY=SECRET
+    ports:
+      - 8089:80
+    volumes:
+      - $DATA_DIR/nextcloud/app:/var/www/html
+      - $DATA_DIR/nextcloud/config:/var/www/html/config
+      - $DATA_DIR/nextcloud/apps:/var/www/html/apps
+      - $DATA_DIR/nextcloud/custom_apps:/var/www/html/custom_apps
+      - $NEXTCLOUD_DIR:/var/www/html/data
+    secrets:
+      - nextcloud_admin_password
+      - nextcloud_admin_user
+      - nextcloud_db_user
+      - nextcloud_db_password
+      - smtp_password
+    restart: unless-stopped
+    networks:
+      - nextcloud_internal
+      - nextcloud_npm
+      - nextcloud_ldap
+  nextcloud-db:
+    image: postgres:17.0
+    container_name: nextcloud-db
+    environment:
+      - POSTGRES_DB=nextcloud
+      - POSTGRES_USER_FILE=/run/secrets/nextcloud_db_user
+      - POSTGRES_PASSWORD_FILE=/run/secrets/nextcloud_db_password
+    # ports:
+    #   - 5432:5432
+    volumes:
+      - $DATA_DIR/nextcloud/db:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -d $$POSTGRES_DB -U `cat $$POSTGRES_USER_FILE`
+      interval: 1s
+      timeout: 5s
+      retries: 10
+    secrets:
+      - nextcloud_db_user
+      - nextcloud_db_password
+    restart: unless-stopped
+    networks:
+      - nextcloud_internal
+      - nextcloud_db_backup
+      - nextcloud_db_admin
+  nextcloud-redis:
+    image: redis
+    container_name: nextcloud-redis
+    healthcheck:
+      test:
+        - CMD
+        - redis-cli
+        - --raw
+        - incr
+        - ping
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - nextcloud_internal
+secrets:
+  nextcloud_admin_user:
+    file: $SECRET_DIR/NEXTCLOUD_ADMIN_USER
+  nextcloud_admin_password:
+    file: $SECRET_DIR/NEXTCLOUD_ADMIN_PASSWORD
+  nextcloud_db_user:
+    file: $SECRET_DIR/NEXTCLOUD_DATABASE_USER
+  nextcloud_db_password:
+    file: $SECRET_DIR/NEXTCLOUD_DATABASE_PASSWORD
+  smtp_password:
+    file: $SECRET_DIR/SMTP_PASSWORD
+networks:
+  nextcloud_internal: null
+  nextcloud_db_backup:
+    external: true
+  nextcloud_db_admin:
+    external: true
+  nextcloud_npm:
+    external: true
+  nextcloud_ldap:
+    external: true

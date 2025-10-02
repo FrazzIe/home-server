@@ -7,6 +7,7 @@ x-npm-networks: &a1
   ryot_npm: null
   solidtime_npm: null
   vaultwarden_npm: null
+  nextcloud_npm: null
 services:
   nginx-proxy-manager:
     image: jc21/nginx-proxy-manager:2.11.3
@@ -168,4 +169,6 @@ networks:
   vaultwarden_npm:
     external: true
   lldap_npm:
+    external: true
+  nextcloud_npm:
     external: true
