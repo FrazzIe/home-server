@@ -2,6 +2,8 @@ constants:
   name: "db-backup"
   pg_user: "${PG_USER}"
   pg_password: "${PG_PASS}"
+  # mongo_xbs_user: "${MONGO_XBS_USER}"
+  # mongo_xbs_password: "${MONGO_XBS_PASS}"
 
 source_directories: []
 
@@ -21,6 +23,9 @@ sqlite_databases:
   - name: sonarr
     path: /mnt/source/docker/sonarr/sonarr.db
     restore_path: /mnt/restore/sonarr/sonarr.db
+  - name: sonarr-anime
+    path: /mnt/source/docker/sonarr-anime/sonarr.db
+    restore_path: /mnt/restore/sonarr-anime/sonarr.db
   - name: radarr
     path: /mnt/source/docker/radarr/radarr.db
     restore_path: /mnt/restore/radarr/radarr.db
@@ -44,17 +49,66 @@ sqlite_databases:
   - name: jellyseerr
     path: /mnt/source/docker/jellyseerr/db/db.sqlite3
     restore_path: /mnt/restore/jellyseerr/db/db.sqlite3
+  # finance
+  - name: actualbudget_accounts
+    path: /mnt/source/docker/actual-budget/server-files/account.sqlite
+    restore_path: /mnt/restore/actual-budget/server-files/account.sqlite
+  - name: actualbudget_userfiles_group-f2e71631-491f-4b08-b516-bf35241149f8
+    path: /mnt/source/docker/actual-budget/user-files/group-f2e71631-491f-4b08-b516-bf35241149f8.sqlite
+    restore_path: /mnt/restore/actual-budget/user-files/group-f2e71631-491f-4b08-b516-bf35241149f8.sqlite
 
 postgresql_databases:
-  - name: all
-    hostname: postgres
+  - name: lldap
+    hostname: lldap-db
     port: 5432
     username: "{pg_user}"
     password: "{pg_password}"
     no_owner: true
-    # custom?
     format: directory
-    #ssl_mode: disable
+  - name: authelia
+    hostname: authelia-db
+    port: 5432
+    username: "{pg_user}"
+    password: "{pg_password}"
+    no_owner: true
+    format: directory
+  - name: ryot
+    hostname: ryot-db
+    port: 5432
+    username: "{pg_user}"
+    password: "{pg_password}"
+    no_owner: true
+    format: directory
+  - name: affine
+    hostname: affine-db
+    port: 5432
+    username: "{pg_user}"
+    password: "{pg_password}"
+    no_owner: true
+    format: directory
+  - name: solidtime
+    hostname: solidtime-db
+    port: 5432
+    username: "{pg_user}"
+    password: "{pg_password}"
+    no_owner: true
+    format: directory
+  - name: vaultwarden
+    hostname: vaultwarden-db
+    port: 5432
+    username: "{pg_user}"
+    password: "{pg_password}"
+    no_owner: true
+    format: directory
+
+# mongodb_databases:
+#     - name: all
+#       hostname: xbs-db
+#       port: 27018
+#       username: "{mongo_xbs_user}"
+#       password: "{mongo_xbs_password}"
+#       authentication_database: mongousers
+#       options: "--ssl"
 
 after_backup:
   - echo Syncing backups

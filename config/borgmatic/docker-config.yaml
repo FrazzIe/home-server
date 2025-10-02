@@ -14,15 +14,19 @@ patterns:
   # arr
   - '+ /mnt/source/docker/bazarr/config/config.yaml'
   - '+ /mnt/source/docker/*arr/config.xml'
+  - '+ /mnt/source/docker/*arr-anime/config.xml'
   - '+ /mnt/source/docker/qbittorrent/qBittorrent/*.json'
   - '+ /mnt/source/docker/qbittorrent/qBittorrent/*.conf'
   - '+ /mnt/source/docker/sabnzbd/*.ini'
   # gw
-  - '+ /mnt/source/docker/authelia/*.yml'
-  - '+ /mnt/source/docker/authelia/*.yaml'
-  - '+ /mnt/source/docker/lldap/**'
   - '- /mnt/source/docker/nginx-proxy-manager/data/logs'
   - '+ /mnt/source/docker/nginx-proxy-manager/**'
+  - '- /mnt/source/docker/authelia/db'
+  - '+ /mnt/source/docker/authelia/app/*.yml'
+  - '+ /mnt/source/docker/authelia/app/*.yaml'
+  # ldap
+  - '- /mnt/source/docker/lldap/db'
+  - '+ /mnt/source/docker/lldap/app/**'
   # jelly
   - '- /mnt/source/docker/jellyfin/cache'
   - '- /mnt/source/docker/jellyfin/log'
@@ -32,6 +36,12 @@ patterns:
   # logs
   - '+ /mnt/source/docker/grafana/**'
   - '+ /mnt/source/docker/loki/**'
+  # finance
+  - '+ /mnt/source/docker/actual-budget/**'
+  # time
+  - '- /mnt/source/docker/solidtime/app-storage'
+  - '- /mnt/source/docker/solidtime/logs'
+  - '- /mnt/source/docker/solidtime/db'  
   # borgmatic config
   - '+ /etc/borgmatic.d/*.yaml'
   # ignore rest

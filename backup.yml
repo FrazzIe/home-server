@@ -7,7 +7,7 @@ x-db-networks: &a1
   vaultwarden_db_backup: null
 services:
   borgmatic:
-    image: ghcr.io/borgmatic-collective/borgmatic:latest
+    image: ghcr.io/borgmatic-collective/borgmatic:1.9.14
     container_name: borgmatic
     environment:
       - TZ=$TZ
@@ -55,8 +55,8 @@ secrets:
   borg_pp:
     file: $SECRET_DIR/BORG_PASSPHRASE
   pg_user:
-    file: $SECRET_DIR/POSTGRES_USER
+    file: $SECRET_DIR/BACKUP_PG_DATABASE_USER
   pg_pass:
-    file: $SECRET_DIR/POSTGRES_PASSWORD
+    file: $SECRET_DIR/BACKUP_PG_DATABASE_PASSWORD
   smtp_pass:
     file: $SECRET_DIR/SMTP_PASSWORD
