@@ -27,6 +27,8 @@ services:
       - $MEDIA_DIR:/media
       - $TORRENT_DIR:/qbit-data
       - $NZB_DIR:/nzb-data
+      - $DEBRID_DIR:/debrid-data
+      - $JDOWNLOADER_DIR:/jd-data
     ports:
       - 7878:7878
     restart: unless-stopped
@@ -45,6 +47,8 @@ services:
       - $MEDIA_DIR:/media
       - $TORRENT_DIR:/qbit-data
       - $NZB_DIR:/nzb-data
+      - $DEBRID_DIR:/debrid-data
+      - $JDOWNLOADER_DIR:/jd-data
     ports:
       - 8989:8989
     restart: unless-stopped
@@ -154,6 +158,38 @@ services:
     ports:
       - 8191:8191
     restart: unless-stopped
+  rdtclient:
+    image: ghcr.io/rogerfar/rdtclient:2.0.116
+    container_name: rdtclient
+    environment:
+      - PUID=$PUID
+      - PGID=$PGID
+      - TZ=$TZ
+    ports:
+      - 6500:6500
+    volumes:
+      - $DATA_DIR/rdtclient:/data/db
+      - $DEBRID_DIR:/data/downloads
+    restart: unless-stopped
+    networks:
+      - arr_default
+  jdownloader:
+    image: ghcr.io/jlesage/jdownloader-2:v25.07.2
+    container_name: jdownloader
+    environment:
+      - USER_ID=$PUID
+      - GROUP_ID=$PGID
+      - TZ=$TZ
+      - KEEP_APP_RUNNING=1
+      - DARK_MODE=1
+    ports:
+      - 5800:5800
+    volumes:
+      - $DATA_DIR/jdownloader:/config
+      - $JDOWNLOADER_DIR:/output
+    restart: unless-stopped
+    networks:
+      - arr_default
 secrets:
   openvpn_user:
     file: $SECRET_DIR/OPENVPN_USER
