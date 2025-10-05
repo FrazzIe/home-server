@@ -1,12 +1,24 @@
+x-nextcloud: &a1
+  build:
+    context: $IMAGE_DIR/
+    dockerfile: nextcloud.Dockerfile
+  depends_on:
+    nextcloud-db:
+      condition: service_healthy
+    nextcloud-redis:
+      condition: service_healthy
+    nextcloud-imaginary:
+      condition: service_healthy
+  volumes:
+    - $DATA_DIR/nextcloud/app:/var/www/html
+    - $DATA_DIR/nextcloud/config:/var/www/html/config
+    - $DATA_DIR/nextcloud/apps:/var/www/html/apps
+    - $DATA_DIR/nextcloud/custom_apps:/var/www/html/custom_apps
+    - $NEXTCLOUD_DIR:/var/www/html/data
 services:
   nextcloud:
-    image: nextcloud:31.0
+    <<: *a1
     container_name: nextcloud
-    depends_on:
-      nextcloud-db:
-        condition: service_healthy
-      nextcloud-redis:
-        condition: service_healthy
     environment:
       - POSTGRES_HOST=nextcloud-db
       - POSTGRES_DB=nextcloud
@@ -36,19 +48,15 @@ services:
       - NEXTCLOUD_TRUSTED_DOMAINS=cloud.fwatt.dev 192.168.0.63
       - TRUSTED_PROXIES=172.16.42.0/24
       - APACHE_DISABLE_REWRITE_IP=1
-      #- NEXTCLOUD_PREVIEW_LIBREOFFICE_PATH=/USR/BIN/LIBREOFFICE
-      #- NEXTCLOUD_PREVIEW_FFMPEG_PATH=/USR/BIN/FFMPEG
-      #- NEXTCLOUD_PREVIEW_FFPROBE_PATH=/USR/BIN/FFPROBE
-      #- NEXTCLOUD_PREVIEW_IMAGINARY_URL=HTTP://PREVIEWS_HPB:8088/
-      #- NEXTCLOUD_PREVIEW_IMAGINARY_KEY=SECRET
+      - NEXTCLOUD_ENABLE_PREVIEWS=true
+      - NEXTCLOUD_PREVIEW_MAX_X=2048
+      - NEXTCLOUD_PREVIEW_MAX_Y=2048
+      - NEXTCLOUD_PREVIEW_LIBREOFFICE_PATH=/usr/bin/libreoffice
+      - NEXTCLOUD_PREVIEW_FFMPEG_PATH=/usr/bin/ffmpeg
+      - NEXTCLOUD_PREVIEW_FFPROBE_PATH=/usr/bin/ffprobe
+      - NEXTCLOUD_PREVIEW_IMAGINARY_URL=http://nextcloud-imaginary:9000
     ports:
       - 8089:80
-    volumes:
-      - $DATA_DIR/nextcloud/app:/var/www/html
-      - $DATA_DIR/nextcloud/config:/var/www/html/config
-      - $DATA_DIR/nextcloud/apps:/var/www/html/apps
-      - $DATA_DIR/nextcloud/custom_apps:/var/www/html/custom_apps
-      - $NEXTCLOUD_DIR:/var/www/html/data
     secrets:
       - nextcloud_admin_password
       - nextcloud_admin_user
@@ -99,6 +107,24 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    restart: unless-stopped
+    networks:
+      - nextcloud_internal
+  nextcloud-cron:
+    <<: *a1
+    container_name: nextcloud-cron
+    entrypoint: /cron.sh
+    restart: unless-stopped
+    networks:
+      - nextcloud_internal
+  nextcloud-imaginary:
+    image: ghcr.io/nextcloud-releases/aio-imaginary:20250927_081431
+    container_name: nextcloud-imaginary
+    # ports:
+    #   - 9000:9000
+    environment:
+      - PORT=9000
+    command: -concurrency 50 -enable-url-source
     restart: unless-stopped
     networks:
       - nextcloud_internal
