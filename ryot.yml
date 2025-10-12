@@ -1,6 +1,6 @@
 services:
   ryot:
-    image: ghcr.io/ignisda/ryot:v8
+    image: ghcr.io/ignisda/ryot:v9.3.3
     container_name: ryot
     depends_on:
       ryot-db:
